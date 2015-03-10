@@ -3,7 +3,13 @@ function Shader() {
     this.program = gl.createProgram();
 };
 
-Shader.prototype.addShader = function(type, source) {
+Shader.prototype.cleanup = function() {
+    for (var i = 0; i < this.shaders.length; i++) {
+        gl.deleteShader(this.shaders[i]);
+    }
+};
+
+Shader.prototype.attachShader = function(type, source) {
     var shader = gl.createShader(type);
 
     gl.shaderSource(shader, source);
@@ -18,7 +24,7 @@ Shader.prototype.addShader = function(type, source) {
     }
 };
 
-Shader.prototype.initialize = function() {
+Shader.prototype.link = function() {
     gl.linkProgram(this.program);
 
     var message = gl.getProgramInfoLog(this.program);
@@ -27,8 +33,3 @@ Shader.prototype.initialize = function() {
     }
 };
 
-Shader.prototype.cleanup = function() {
-    for (var i = 0; i < this.shaders.length; i++) {
-        gl.deleteShader(this.shaders[i]);
-    }
-};

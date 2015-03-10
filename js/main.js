@@ -29,7 +29,7 @@ var update = function(e) {
     gl.viewport(0, 0, 300, 300);
 
     var shader = new Shader();
-    shader.addShader(gl.VERTEX_SHADER,
+    shader.attachShader(gl.VERTEX_SHADER,
         "#version 100\n" +
         "\n" +
         "attribute vec3 position;\n" +
@@ -41,7 +41,7 @@ var update = function(e) {
         "    gl_Position = vec4(position, 1.0);\n" +
         "    fTexCoord = texCoord;\n" +
         "}\n");
-    shader.addShader(gl.FRAGMENT_SHADER,
+    shader.attachShader(gl.FRAGMENT_SHADER,
         "#version 100\n" +
         "\n" +
         "precision mediump float;\n" +
@@ -51,10 +51,9 @@ var update = function(e) {
         "void main() {\n" +
         "    gl_FragColor = vec4(0.0, fTexCoord, 1.0);\n" +
         "}\n");
-    shader.initialize();
+    shader.link();
 
     var mesh = new Mesh();
-    mesh.initialize();
 
     mesh.setVertices([
         0, 0.5, 0,

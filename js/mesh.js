@@ -4,10 +4,6 @@ function Mesh() {
     this.numVertices = 0;
 };
 
-Mesh.prototype.initialize = function() {
-    return this;
-};
-
 Mesh.prototype.cleanup = function() {
     if (this.vertexBuffer) {
         gl.deleteBuffer(this.vertexBuffer);
