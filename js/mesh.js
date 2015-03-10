@@ -1,4 +1,6 @@
-function Mesh() {
+function Mesh(type) {
+    this.type = type || gl.TRIANGLES;
+
     this.vertexBuffer = null;
     this.normalBuffer = null;
     this.texCoordBuffer = null;
@@ -46,7 +48,7 @@ Mesh.prototype.draw = function(shader) {
         gl.vertexAttribPointer(texCoordLocation, 2, gl.FLOAT, false, 0, 0);
     }
 
-    gl.drawArrays(gl.TRIANGLES, 0, this.numVertices);
+    gl.drawArrays(this.type, 0, this.numVertices);
 
     gl.bindBuffer(gl.ARRAY_BUFFER, null);
     gl.disableVertexAttribArray(texCoordLocation);
@@ -191,8 +193,7 @@ Mesh.makeUvSphere = function(radius, horizontalResolution, verticalResolution) {
         indices[2 * i + 1] = i + horizontalResolution;
     }
 
-    var mesh = new Mesh();
-    //var mesh = new Mesh(gl.TRIANGLE_STRIP);
+    var mesh = new Mesh(gl.TRIANGLE_STRIP);
 
     mesh.setVertices(vertices);
     mesh.setNormals(normals);
