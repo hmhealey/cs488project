@@ -1,5 +1,6 @@
 function Mesh() {
     this.vertexBuffer = gl.createBuffer();
+    this.normalBuffer = gl.createBuffer();
     this.texCoordBuffer = gl.createBuffer();
     this.numVertices = 0;
 };
@@ -8,6 +9,11 @@ Mesh.prototype.cleanup = function() {
     if (this.vertexBuffer) {
         gl.deleteBuffer(this.vertexBuffer);
         this.vertexBuffer = null;
+    }
+
+    if (this.normalBuffer) {
+        gl.deleteBuffer(this.normalBuffer);
+        this.normalBuffer = null;
     }
 
     if (this.texCoordBuffer) {
@@ -24,6 +30,11 @@ Mesh.prototype.draw = function(shader) {
     gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
     gl.vertexAttribPointer(positionLocation, 3, gl.FLOAT, false, 0, 0);
 
+    var normalLocation = gl.getAttribLocation(shader.program, "normal");
+    gl.enableVertexAttribArray(normalLocation);
+    gl.bindBuffer(gl.ARRAY_BUFFER, this.normalBuffer);
+    gl.vertexAttribPointer(normalLocation, 3, gl.FLOAT, false, 0, 0);
+
     var texCoordLocation = gl.getAttribLocation(shader.program, "texCoord");
     gl.enableVertexAttribArray(texCoordLocation);
     gl.bindBuffer(gl.ARRAY_BUFFER, this.texCoordBuffer);
@@ -33,6 +44,7 @@ Mesh.prototype.draw = function(shader) {
 
     gl.bindBuffer(gl.ARRAY_BUFFER, null);
     gl.disableVertexAttribArray(texCoordLocation);
+    gl.disableVertexAttribArray(normalLocation);
     gl.disableVertexAttribArray(positionLocation);
 
     gl.useProgram(null);
@@ -43,6 +55,12 @@ Mesh.prototype.setVertices = function(vertices) {
 
     gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
+    gl.bindBuffer(gl.ARRAY_BUFFER, null);
+};
+
+Mesh.prototype.setNormals = function(normals) {
+    gl.bindBuffer(gl.ARRAY_BUFFER, this.normalBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(normals), gl.STATIC_DRAW);
     gl.bindBuffer(gl.ARRAY_BUFFER, null);
 };
 
