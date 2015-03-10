@@ -1,4 +1,4 @@
-function Shader(gl) {
+function Shader() {
     this.shaders = [];
     this.program = gl.createProgram();
 };

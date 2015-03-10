@@ -28,7 +28,7 @@ var update = function(e) {
 
     gl.viewport(0, 0, 300, 300);
 
-    var shader = new Shader(gl);
+    var shader = new Shader();
     shader.addShader(gl.VERTEX_SHADER,
         "#version 100\n" +
         "\n" +
@@ -53,7 +53,7 @@ var update = function(e) {
         "}\n");
     shader.initialize();
 
-    var mesh = new Mesh(gl);
+    var mesh = new Mesh();
     mesh.initialize();
 
     mesh.setVertices([

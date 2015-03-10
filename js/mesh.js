@@ -1,4 +1,4 @@
-function Mesh(gl) {
+function Mesh() {
     this.vertexBuffer = gl.createBuffer();
     this.texCoordBuffer = gl.createBuffer();
     this.numVertices = 0;
