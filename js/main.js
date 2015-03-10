@@ -1,3 +1,5 @@
+"use strict";
+
 var gl;
 
 var onLoad = function(e) {
