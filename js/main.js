@@ -24,6 +24,8 @@ var initialize = function(e) {
 var update = function(e) {
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
+    gl.viewport(0, 0, 300, 300);
+
     var shader = new Shader(gl);
     shader.addShader(gl.VERTEX_SHADER,
         "#version 100\n" +
@@ -56,4 +58,4 @@ var update = function(e) {
     shader.cleanup();
 };
 
-window.addEventListener("load", onLoad);
+attachEvent(window, "load", onLoad);
