@@ -14,10 +14,20 @@ Shader.prototype.addShader = function(type, source) {
 
     this.gl.attachShader(this.program, shader);
     this.shaders.push(shader);
+
+    var message = this.gl.getShaderInfoLog(shader);
+    if (message != "") {
+        console.log("Shader.addShader - Unable to compile and attach shader - " + message);
+    }
 };
 
 Shader.prototype.initialize = function() {
     this.gl.linkProgram(this.program);
+
+    var message = this.gl.getProgramInfoLog(this.program);
+    if (message != "") {
+        console.log("Shader.initialize - Unable to link shader program - " + message);
+    }
 };
 
 Shader.prototype.cleanup = function() {
