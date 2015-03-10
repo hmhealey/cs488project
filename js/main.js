@@ -1,6 +1,7 @@
 "use strict";
 
 var gl;
+var ext;
 
 var texture;
 
@@ -12,6 +13,8 @@ var onLoad = function(e) {
     } catch (e) { }
 
     if (gl) {
+        ext = gl.getExtension("OES_element_index_uint");
+
         initialize();
 
         setInterval(update, 1000 / 60);
@@ -104,25 +107,7 @@ var update = function(e) {
         "}\n");
     shader.link();
 
-    var mesh = new Mesh();
-
-    mesh.setVertices([
-        0, 0.5, 0,
-        -0.5, -0.5, 0,
-        0.5, -0.5, 0
-    ]);
-
-    mesh.setNormals([
-        0, 0, 1,
-        0, 0, 1,
-        0, 0, 1
-    ]);
-
-    mesh.setTexCoords([
-        0.5, 1.0,
-        0.0, 0.0,
-        1.0, 0.0
-    ]);
+    var mesh = Mesh.makeUvSphere(1, 10, 10);
 
     gl.useProgram(shader.program);
 

@@ -5,6 +5,9 @@ function Mesh(type) {
     this.normalBuffer = null;
     this.texCoordBuffer = null;
     this.numVertices = 0;
+
+    this.indexBuffer = null
+    this.numIndices = 0;
 };
 
 Mesh.prototype.cleanup = function() {
@@ -48,7 +51,15 @@ Mesh.prototype.draw = function(shader) {
         gl.vertexAttribPointer(texCoordLocation, 2, gl.FLOAT, false, 0, 0);
     }
 
-    gl.drawArrays(this.type, 0, this.numVertices);
+    if (!this.indexBuffer) {
+        gl.drawArrays(this.type, 0, this.numVertices);
+    } else {
+        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
+
+        gl.drawElements(this.type, this.numIndices, gl.UNSIGNED_INT, 0);
+
+        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
+    }
 
     gl.bindBuffer(gl.ARRAY_BUFFER, null);
     gl.disableVertexAttribArray(texCoordLocation);
@@ -63,11 +74,11 @@ Mesh.prototype.setVertices = function(vertices) {
         this.vertexBuffer = gl.createBuffer();
     }
 
-    this.numVertices = vertices.length / 3;
-
     gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
     gl.bindBuffer(gl.ARRAY_BUFFER, null);
+
+    this.numVertices = vertices.length / 3;
 };
 
 Mesh.prototype.setNormals = function(normals) {
@@ -88,6 +99,18 @@ Mesh.prototype.setTexCoords = function(texCoords) {
     gl.bindBuffer(gl.ARRAY_BUFFER, this.texCoordBuffer);
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(texCoords), gl.STATIC_DRAW);
     gl.bindBuffer(gl.ARRAY_BUFFER, null);
+};
+
+Mesh.prototype.setIndices = function(indices) {
+    if (!this.indexBuffer) {
+        this.indexBuffer = gl.createBuffer();
+    }
+
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
+    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint32Array(indices), gl.STATIC_DRAW);
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
+
+    this.numIndices = indices.length;
 };
 
 Mesh.makeSquare = function(size) {
@@ -111,10 +134,10 @@ Mesh.makeRectangle = function(width, height) {
         0, 0, 1
     ]);
 
-    /*mesh.setIndices([
+    mesh.setIndices([
         0, 2, 1,
         1, 2, 3
-    ]);*/
+    ]);
 
     return mesh;
 };
@@ -171,9 +194,9 @@ Mesh.makeUvSphere = function(radius, horizontalResolution, verticalResolution) {
 
     for (var i = 0; i < verticalResolution + 1; i++) {
         for (var j = 0; j < horizontalResolution; j++) {
-            var x = cos(2 * M_PI * j / horizontalResolution) * sin(M_PI * i / verticalResolution);
-            var y = sin(-M_PI / 2 + M_PI * i / verticalResolution);
-            var z = sin(2 * M_PI * j / horizontalResolution) * sin(M_PI * i / verticalResolution);
+            var x = Math.cos(2 * Math.PI * j / horizontalResolution) * Math.sin(Math.PI * i / verticalResolution);
+            var y = Math.sin(-Math.PI / 2 + Math.PI * i / verticalResolution);
+            var z = Math.sin(2 * Math.PI * j / horizontalResolution) * Math.sin(Math.PI * i / verticalResolution);
 
             var vertex = (i * horizontalResolution + j) * 3;
             vertices[vertex] = radius * x;
@@ -197,7 +220,7 @@ Mesh.makeUvSphere = function(radius, horizontalResolution, verticalResolution) {
 
     mesh.setVertices(vertices);
     mesh.setNormals(normals);
-    //mesh.setIndices(indices);
+    mesh.setIndices(indices);
 
     return mesh;
 };
