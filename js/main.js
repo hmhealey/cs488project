@@ -2,6 +2,8 @@
 
 var gl;
 
+var texture;
+
 var onLoad = function(e) {
     var canvas = document.getElementById("canvas");
 
@@ -12,15 +14,23 @@ var onLoad = function(e) {
     if (gl) {
         initialize();
 
-        update(); // only update once while we're testing and not actually doing anything that changes
-        //setInterval(update, 1000 / 60);
+        setInterval(update, 1000 / 60);
     } else {
         window.alert("Your browser doesn't support WebGL :(");
     }
 };
 
+var onUnload = function(e) {
+    if (gl) {
+        cleanup();
+    }
+};
+
 var initialize = function(e) {
     gl.clearColor(0.6, 0.6, 0.6, 1.0);
+
+    texture = new Texture();
+    texture.setImageFromPath("Ayreon_-_01011001.jpg");
 };
 
 var update = function(e) {
@@ -73,4 +83,9 @@ var update = function(e) {
     shader.cleanup();
 };
 
+var cleanup = function() {
+    texture.cleanup();
+};
+
 attachEvent(window, "load", onLoad);
+attachEvent(window, "unload", onUnload);
