@@ -41,6 +41,10 @@ var update = function(e) {
 
     gl.viewport(0, 0, 500, 500);
 
+    gl.enable(gl.DEPTH_TEST);
+    gl.enable(gl.CULL_FACE);
+    gl.cullFace(gl.BACK);
+
     var shader = new Shader();
     shader.attachShader(gl.VERTEX_SHADER,
         "#version 100\n" +
@@ -122,6 +126,9 @@ var update = function(e) {
 
     mesh.cleanup();
     shader.cleanup();
+
+    gl.disable(gl.CULL_FACE);
+    gl.disable(gl.DEPTH_TEST);
 };
 
 var cleanup = function() {
