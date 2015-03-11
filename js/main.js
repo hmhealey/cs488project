@@ -39,7 +39,7 @@ var initialize = function(e) {
 var update = function(e) {
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-    //gl.viewport(0, 0, 300, 300);
+    gl.viewport(0, 0, 500, 500);
 
     var shader = new Shader();
     shader.attachShader(gl.VERTEX_SHADER,
