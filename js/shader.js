@@ -1,6 +1,7 @@
 function Shader() {
     this.shaders = [];
     this.program = gl.createProgram();
+    this.linked = false;
 };
 
 Shader.prototype.cleanup = function() {
@@ -24,8 +25,35 @@ Shader.prototype.attachShader = function(type, source) {
     }
 };
 
+/** Requests a shader from the given url and uses it as source code for a given shader type. If this is successful,
+ *  the provided callback is called with the shader type as an argument. The callback can be undefined. **/
+Shader.prototype.loadShader = function(type, url, callback) {
+    var requestCallback = (function(shader) {
+        return function(source) {
+            shader.attachShader(type, source);
+
+            if (callback) {
+                callback(type);
+            }
+        };
+    })(this);
+
+    requestFile(url, requestCallback, function(url, status) {
+        console.log("Shader.loadShader - Unable to load shader from " + url + " - " + status);
+    });
+};
+
 Shader.prototype.link = function() {
     gl.linkProgram(this.program);
+
+    // keep track if linking succeeded
+    var error = gl.getError();
+    if (error == gl.NO_ERROR) {
+        this.linked = true;
+    } else {
+        console.log(error);
+        this.linked = false;
+    }
 
     var message = gl.getProgramInfoLog(this.program);
     if (message != "") {
