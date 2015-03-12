@@ -5,6 +5,8 @@ var ext;
 
 var texture;
 
+var paused = false;
+
 var onLoad = function(e) {
     var canvas = document.getElementById("canvas");
 
@@ -13,30 +15,32 @@ var onLoad = function(e) {
     } catch (e) { }
 
     if (gl) {
+        // attach other events
+        attachEvent(window, "keypress", onKeyPress);
+        attachEvent(window, "keydown", onKeyDown);
+        attachEvent(window, "keyup", onKeyUp);
+
+        // load required extensions
         ext = gl.getExtension("OES_element_index_uint");
 
+        // perform opengl initialization
         initialize();
 
-        setInterval(update, 1000 / 60);
+        // start rendering
+        window.requestAnimationFrame(update);
     } else {
         window.alert("Your browser doesn't support WebGL :(");
     }
 };
 
-var onUnload = function(e) {
-    if (gl) {
-        cleanup();
-    }
-};
-
-var initialize = function(e) {
+var initialize = function() {
     gl.clearColor(0.6, 0.6, 0.6, 1.0);
 
     texture = new Texture();
     texture.setImageFromPath("Ayreon_-_01011001.jpg");
 };
 
-var update = function(e) {
+var update = function(time) {
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
     gl.viewport(0, 0, 500, 500);
@@ -129,11 +133,39 @@ var update = function(e) {
 
     gl.disable(gl.CULL_FACE);
     gl.disable(gl.DEPTH_TEST);
+
+    if (!paused) {
+        window.requestAnimationFrame(update);
+    }
 };
 
 var cleanup = function() {
     texture.cleanup();
 };
+
+var onUnload = function(e) {
+    if (gl) {
+        cleanup();
+    }
+};
+
+var onKeyPress = function(e) {
+    paused = !paused;
+
+    if (!paused) {
+        // cancel any pending updates first so that we don't end up with duplicate callbacks on each frame
+        window.cancelAnimationFrame(update);
+        window.requestAnimationFrame(update);
+
+        console.log("rendering has been unpaused");
+    } else {
+        console.log("rendering has been paused");
+    }
+};
+
+var onKeyDown = function(e) { };
+
+var onKeyUp = function(e) { };
 
 attachEvent(window, "load", onLoad);
 attachEvent(window, "unload", onUnload);
