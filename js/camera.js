@@ -25,4 +25,4 @@ Camera.prototype.updateMatrices = function() {
 
     this.projection = mat4.create();
     mat4.perspective(this.projection, this.fov * Math.PI / 180, this.aspect, this.near, this.far);
-}
+};
