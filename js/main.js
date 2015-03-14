@@ -3,6 +3,7 @@
 var gl;
 var ext;
 
+var camera;
 var shader;
 var texture;
 
@@ -37,6 +38,18 @@ var onLoad = function(e) {
 var initialize = function() {
     gl.clearColor(0.6, 0.6, 0.6, 1.0);
 
+    camera = new Camera({
+        screenWidth: 500,
+        screenHeight: 500,
+        fov: 45,
+        aspect: 1,
+        near: 0.1,
+        far: 100,
+        position: vec3.fromValues(0, 0, 0),
+        view: vec3.fromValues(0, 0, -1),
+        up: vec3.fromValues(0, 1, 0)
+    });
+
     shader = new Shader();
     var shaderCallback = function() {
         if (shader.shaders.length == 2) {
@@ -61,8 +74,31 @@ var update = function(time) {
         gl.enable(gl.CULL_FACE);
         gl.cullFace(gl.BACK);
 
-        //var mesh = Mesh.makeCube(1);
-        var mesh = Mesh.makeUvSphere(1, 20, 20);
+        shader.bind();
+
+        // update camera matrices
+        var model = mat4.create();
+        mat4.translate(model, model, vec3.fromValues(0, 0, -10));
+        mat4.rotateX(model, model, Math.PI / 6);
+        mat4.rotateY(model, model, Math.PI / 4);
+
+        var modelView = mat4.create();
+        mat4.multiply(modelView, camera.view, model);
+
+        var modelViewProjection = mat4.create();
+        mat4.multiply(modelViewProjection, camera.projection, modelView);
+
+        var normalMatrix = mat3.create();
+        mat3.fromMat4(normalMatrix, modelView);
+        mat3.transpose(normalMatrix, normalMatrix);
+
+        gl.uniformMatrix4fv(gl.getUniformLocation(shader.program, "modelView"), false, modelView);
+        gl.uniformMatrix4fv(gl.getUniformLocation(shader.program, "modelViewProjection"), false, modelViewProjection);
+        gl.uniformMatrix3fv(gl.getUniformLocation(shader.program, "normalMatrix"), false, normalMatrix);
+
+        //var mesh = Mesh.makeSquare(1);
+        var mesh = Mesh.makeCube(1);
+        //var mesh = Mesh.makeUvSphere(1, 20, 20);
 
         gl.useProgram(shader.program);
 
@@ -77,7 +113,6 @@ var update = function(time) {
         mesh.draw(shader);
 
         mesh.cleanup();
-        shader.cleanup();
 
         gl.disable(gl.CULL_FACE);
         gl.disable(gl.DEPTH_TEST);

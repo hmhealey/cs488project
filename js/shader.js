@@ -61,3 +61,10 @@ Shader.prototype.link = function() {
     }
 };
 
+Shader.prototype.bind = function() {
+    gl.useProgram(this.program);
+};
+
+Shader.prototype.release = function() {
+    gl.useProgram(null);
+};
