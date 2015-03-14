@@ -57,12 +57,18 @@ var initialize = function() {
             shader.link();
         }
     };
-    shader.loadShader(gl.VERTEX_SHADER, "shaders/phong.vert", shaderCallback);
-    shader.loadShader(gl.FRAGMENT_SHADER, "shaders/phong.frag", shaderCallback);
+    //shader.loadShader(gl.VERTEX_SHADER, "shaders/phong.vert", shaderCallback);
+    //shader.loadShader(gl.FRAGMENT_SHADER, "shaders/phong.frag", shaderCallback);
+    //shader.loadShader(gl.VERTEX_SHADER, "shaders/flat.vert", shaderCallback);
+    //shader.loadShader(gl.FRAGMENT_SHADER, "shaders/flat.frag", shaderCallback);
+    shader.loadShader(gl.VERTEX_SHADER, "shaders/texCoords.vert", shaderCallback);
+    shader.loadShader(gl.FRAGMENT_SHADER, "shaders/texCoords.frag", shaderCallback);
 
     texture = new Texture();
     texture.setImageFromPath("Ayreon_-_01011001.jpg");
 };
+
+var rotation = 0;
 
 var update = function(time) {
     if (shader.linked && texture.loaded) {
@@ -80,7 +86,8 @@ var update = function(time) {
         var model = mat4.create();
         mat4.translate(model, model, vec3.fromValues(0, 0, -10));
         mat4.rotateX(model, model, Math.PI / 6);
-        mat4.rotateY(model, model, Math.PI / 4);
+        mat4.rotateY(model, model, rotation);
+        rotation += Math.PI / 120;
 
         var modelView = mat4.create();
         mat4.multiply(modelView, camera.view, model);
