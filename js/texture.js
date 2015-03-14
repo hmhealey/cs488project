@@ -1,5 +1,7 @@
-function Texture() {
+function Texture(target) {
+    this.target = target || gl.TEXTURE_2D;
     this.texture = gl.createTexture();
+    this.loaded = true;
 };
 
 Texture.prototype.cleanup = function() {
@@ -12,6 +14,7 @@ Texture.prototype.cleanup = function() {
 Texture.prototype.setImageFromPath = function(path, width, height) {
     var image = new Image(width, height);
     this.setImageOnLoad(image);
+    this.loaded = false;
     image.src = path;
 };
 
@@ -19,19 +22,29 @@ Texture.prototype.setImageOnLoad = function(image) {
     attachEvent(image, "load", (function(texture, image) {
         return function() {
             texture.setImage(image);
+            texture.loaded = true;
         }
     })(this, image));
 };
 
 Texture.prototype.setImage = function(image) {
-    gl.bindTexture(gl.TEXTURE_2D, this.texture);
+    gl.bindTexture(this.target, this.texture);
 
-    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+    gl.texImage2D(this.target, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
+    gl.texParameteri(this.target, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+    gl.texParameteri(this.target, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+    gl.texParameteri(this.target, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(this.target, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
 
-    gl.bindTexture(gl.TEXTURE_2D, null);
+    gl.bindTexture(this.target, null);
+
+    return this;
 };
 
+Texture.prototype.bind = function() {
+    gl.bindTexture(this.target, this.texture);
+};
+
+Texture.prototype.release = function() {
+    gl.bindTexture(this.target, null);
+};
