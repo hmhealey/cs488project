@@ -1,12 +1,12 @@
-function Material(opts) {
-    opts = opts || {};
+function Material(args) {
+    args = args || {};
 
-    this.ambient = opts["ambient"] || vec4.fromValues(1.0, 1.0, 1.0, 1.0);
-    this.diffuse = opts["diffuse"] || vec4.fromValues(1.0, 1.0, 1.0, 1.0);
-    this.specular = opts["specular"] || vec4.fromValues(1.0, 1.0, 1.0, 1.0);
-    this.shininess = opts["shininess"] || 0;
+    this.ambient = args["ambient"] || vec4.fromValues(1.0, 1.0, 1.0, 1.0);
+    this.diffuse = args["diffuse"] || vec4.fromValues(1.0, 1.0, 1.0, 1.0);
+    this.specular = args["specular"] || vec4.fromValues(1.0, 1.0, 1.0, 1.0);
+    this.shininess = args["shininess"] || 0;
 
-    this.texture = opts["texture"] || null;
+    this.texture = args["texture"] || null;
 };
 
 Material.prototype.cleanup = function() {
