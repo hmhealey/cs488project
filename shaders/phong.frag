@@ -6,7 +6,7 @@ uniform vec4 materialAmbient;
 uniform vec4 materialDiffuse;
 uniform vec4 materialSpecular;
 uniform float materialShininess;
-//uniform texture2D texture;
+uniform sampler2D texture;
 
 varying vec3 fPosition;
 varying vec3 fNormal;
@@ -18,7 +18,8 @@ void main() {
 
     // TODO set the light components as uniforms r something
     vec4 ambient = materialAmbient * vec4(0.1, 0.1, 0.1, 1.0);
-    vec4 diffuse = materialDiffuse * vec4(0.8, 0.8, 0.8, 1.0);
+    //vec4 diffuse = materialDiffuse * vec4(0.8, 0.8, 0.8, 1.0);
+    vec4 diffuse = materialDiffuse * texture2D(texture, fTexCoord) * vec4(0.8, 0.8, 0.8, 1.0);
     vec4 specular = materialSpecular * vec4(0.4, 0.4, 0.4, 1.0);
     float shininess = materialShininess;
 

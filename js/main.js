@@ -52,7 +52,7 @@ var initialize = function() {
 };
 
 var update = function(time) {
-    if (shader.linked) {
+    if (shader.linked && texture.loaded) {
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
         gl.viewport(0, 0, 500, 500);
@@ -61,12 +61,14 @@ var update = function(time) {
         gl.enable(gl.CULL_FACE);
         gl.cullFace(gl.BACK);
 
-        var mesh = Mesh.makeUvSphere(1, 10, 10);
+        //var mesh = Mesh.makeCube(1);
+        var mesh = Mesh.makeUvSphere(1, 20, 20);
 
         gl.useProgram(shader.program);
 
         var material = new Material({
-            diffuse: vec4.fromValues(1.0, 0.0, 0.0, 1.0),
+            //diffuse: vec4.fromValues(1.0, 0.0, 0.0, 1.0),
+            texture: texture,
             specular: vec4.fromValues(1.0, 1.0, 1.0, 1.0),
             shininess: 10
         });

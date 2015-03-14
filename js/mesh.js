@@ -134,6 +134,13 @@ Mesh.makeRectangle = function(width, height) {
         0, 0, 1
     ]);
 
+    mesh.setTexCoords([
+        0, 0,
+        1, 0,
+        0, 1,
+        1, 1
+    ]);
+
     mesh.setIndices([
         0, 2, 1,
         1, 2, 3
@@ -179,6 +186,93 @@ Mesh.makeBox = function(width, height, depth) {
         0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1
     ]);
 
+        /*// top face
+        -width / 2, height / 2, -depth / 2, // A
+        -width / 2, height / 2, depth / 2, // C
+        width / 2, height / 2, -depth / 2, // B
+        width / 2, height / 2, -depth / 2, // B
+        -width / 2, height / 2, depth / 2, // C
+        width / 2, height / 2, depth / 2, // D
+        // bottom face
+        width / 2, -height / 2, depth / 2, // H
+        -width / 2, -height / 2, depth / 2, // G
+        width / 2, -height / 2, -depth / 2, // F
+        width / 2, -height / 2, -depth / 2, // F
+        -width / 2, -height / 2, depth / 2, // G
+        -width / 2, -height / 2, -depth / 2, // E
+        // left face
+        -width / 2, height / 2, -depth / 2, // A
+        -width / 2, -height / 2, -depth / 2, // E
+        -width / 2, height / 2, depth / 2, // C
+        -width / 2, height / 2, depth / 2, // C
+        -width / 2, -height / 2, -depth / 2, // E
+        -width / 2, -height / 2, depth / 2, // G
+        // right face
+        width / 2, height / 2, depth / 2, // D
+        width / 2, -height / 2, depth / 2, // H
+        width / 2, height / 2, -depth / 2, // B
+        width / 2, height / 2, -depth / 2, // B
+        width / 2, -height / 2, depth / 2, // H
+        width / 2, -height / 2, -depth / 2, // F
+        // front face
+        -width / 2, height / 2, depth / 2, // C
+        -width / 2, -height / 2, depth / 2, // G
+        width / 2, height / 2, depth / 2, // D
+        width / 2, height / 2, depth / 2, // D
+        -width / 2, -height / 2, depth / 2, // G
+        width / 2, -height / 2, depth / 2, // H
+        // back face
+        width / 2, height / 2, -depth / 2, // B
+        width / 2, -height / 2, -depth / 2, // F
+        -width / 2, height / 2, -depth / 2, // A
+        -width / 2, height / 2, -depth / 2, // A
+        width / 2, -height / 2, -depth / 2, // F
+        -width / 2, -height / 2, -depth / 2, // E*/
+
+    mesh.setTexCoords([
+        0, 1,
+        0, 0,
+        1, 1,
+        1, 1,
+        0, 0,
+        1, 0,
+
+        1, 0,
+        0, 0,
+        1, 1,
+        1, 1,
+        0, 0,
+        0, 1,
+
+        1, 1,
+        0, 1,
+        1, 0,
+        1, 0,
+        0, 1,
+        0, 0,
+
+        1, 0,
+        0, 0,
+        1, 1,
+        1, 1,
+        0, 0,
+        0, 1,
+
+        0, 0,
+        0, 1,
+        1, 0,
+        1, 0,
+        0, 1,
+        1, 1,
+
+        1, 0,
+        1, 1,
+        0, 0,
+        0, 0,
+        1, 1,
+        0, 1
+    ]);
+
     return mesh;
 };
 
@@ -191,6 +285,7 @@ Mesh.makeUvSphere = function(radius, horizontalResolution, verticalResolution) {
     var numVertices = horizontalResolution * (verticalResolution + 1);
     var vertices = new Array(numVertices * 3);
     var normals = new Array(numVertices * 3);
+    var texCoords = new Array(numVertices * 2);
 
     for (var i = 0; i < verticalResolution + 1; i++) {
         for (var j = 0; j < horizontalResolution; j++) {
@@ -206,6 +301,10 @@ Mesh.makeUvSphere = function(radius, horizontalResolution, verticalResolution) {
             normals[vertex] = x;
             normals[vertex + 1] = y;
             normals[vertex + 2] = z;
+
+            var coord = (i * horizontalResolution + j) * 2;
+            texCoords[coord] = 1 - j / (horizontalResolution - 1);
+            texCoords[coord + 1] = 1 - i / verticalResolution;
         }
     }
 
@@ -219,6 +318,7 @@ Mesh.makeUvSphere = function(radius, horizontalResolution, verticalResolution) {
     var mesh = new Mesh(gl.TRIANGLE_STRIP);
 
     mesh.setVertices(vertices);
+    mesh.setTexCoords(texCoords);
     mesh.setNormals(normals);
     mesh.setIndices(indices);
 

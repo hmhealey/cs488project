@@ -14,8 +14,14 @@ Material.prototype.cleanup = function() {
 };
 
 Material.prototype.applyTo = function(shader) {
-    gl.uniform4fv(gl.getUniformLocation(shader.program, "materialAmbient"), this.ambient);
     gl.uniform4fv(gl.getUniformLocation(shader.program, "materialDiffuse"), this.diffuse);
+    gl.uniform4fv(gl.getUniformLocation(shader.program, "materialAmbient"), this.ambient);
     gl.uniform4fv(gl.getUniformLocation(shader.program, "materialSpecular"), this.specular);
     gl.uniform1f(gl.getUniformLocation(shader.program, "materialShininess"), this.shininess);
+
+    if (this.texture) {
+        // we aren't supporting multitexturing yet so just bind to texture0
+        this.texture.bind();
+        gl.uniform1i(gl.getUniformLocation(shader.program, "texture"), 0);
+    }
 };
