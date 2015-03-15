@@ -20,9 +20,15 @@ function Camera(args) {
     this.updateMatrices();
 };
 
+Camera.mainCamera = null;
+
 Camera.prototype.updateMatrices = function() {
     mat4.lookAt(this.view, this.position, vec3.add(vec3.create(), this.position, this.forward), this.up);
     mat4.invert(this.matrix, this.view);
 
     mat4.perspective(this.projection, this.fov * Math.PI / 180, this.aspect, this.near, this.far);
+};
+
+Camera.prototype.updateViewport = function() {
+    gl.viewport(0, 0, this.screenWidth, this.screenHeight);
 };

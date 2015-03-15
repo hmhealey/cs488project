@@ -3,7 +3,6 @@
 var gl;
 var ext;
 
-var camera;
 var shader;
 var texture;
 var textures = [];
@@ -40,7 +39,7 @@ var onLoad = function(e) {
 var initialize = function() {
     gl.clearColor(0.6, 0.6, 0.6, 1.0);
 
-    camera = new Camera({
+    Camera.mainCamera = new Camera({
         screenWidth: 500,
         screenHeight: 500,
         fov: 45,
@@ -90,7 +89,7 @@ var update = function(time) {
     if (shader.linked) {
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-        gl.viewport(0, 0, camera.screenWidth, camera.screenHeight);
+        Camera.mainCamera.updateViewport();
 
         gl.enable(gl.DEPTH_TEST);
         gl.enable(gl.CULL_FACE);
@@ -98,7 +97,7 @@ var update = function(time) {
         shader.bind();
 
         // update camera matrices
-        shader.setCamera(camera);
+        shader.setCamera(Camera.mainCamera);
 
         // draw the scene
         root.draw(shader, mat4.create());
