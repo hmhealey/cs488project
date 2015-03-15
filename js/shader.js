@@ -4,6 +4,9 @@ function Shader() {
     this.linked = false;
 
     this.locations = {};
+
+    this.camera = null;
+    this.modelMatrix = mat4.create();
 };
 
 Shader.LOG_MISSING_ATTRIBUTES = false;
@@ -169,4 +172,39 @@ Shader.prototype.disableVertexAttribute = function(name) {
         }
         return false;
     }
+};
+
+Shader.prototype.updateMatrices = function(camera, modelMatrix) {
+    var dirty = false;
+
+    if (camera && camera != this.camera) {
+        this.camera = camera;
+        dirty = true;
+    }
+
+    if (modelMatrix && modelMatrix != this.modelMatrix) {
+        this.modelMatrix = modelMatrix;
+        dirty = true;
+    }
+
+    if (dirty && this.camera != null) {
+        var modelView = mat4.multiply(mat4.create(), this.camera.view, this.modelMatrix);
+        var modelViewProjection = mat4.multiply(mat4.create(), this.camera.projection, modelView);
+
+        var normalMatrix = mat3.fromMat4(mat3.create(), modelView);
+        mat3.invert(normalMatrix, normalMatrix);
+        mat3.transpose(normalMatrix, normalMatrix);
+
+        this.setUniformMatrix4("modelView", modelView);
+        this.setUniformMatrix4("modelViewProjection", modelViewProjection);
+        this.setUniformMatrix3("normalMatrix", normalMatrix);
+    }
+};
+
+Shader.prototype.setCamera = function(camera) {
+    this.updateMatrices(camera, null);
+};
+
+Shader.prototype.setModelMatrix = function(modelMatrix) {
+    this.updateMatrices(null, modelMatrix);
 };

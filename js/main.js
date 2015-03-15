@@ -85,20 +85,7 @@ var update = function(time) {
         mat4.rotateY(model, model, rotation);
         rotation += Math.PI / 120;
 
-        var modelView = mat4.create();
-        mat4.multiply(modelView, camera.view, model);
-
-        var modelViewProjection = mat4.create();
-        mat4.multiply(modelViewProjection, camera.projection, modelView);
-
-        var normalMatrix = mat3.create();
-        mat3.fromMat4(normalMatrix, modelView);
-        mat3.invert(normalMatrix, normalMatrix);
-        mat3.transpose(normalMatrix, normalMatrix);
-
-        shader.setUniformMatrix4("modelView", modelView);
-        shader.setUniformMatrix4("modelViewProjection", modelViewProjection);
-        shader.setUniformMatrix3("normalMatrix", normalMatrix);
+        shader.updateMatrices(camera, model);
 
         //var mesh = Mesh.makeSquare(1);
         var mesh = Mesh.makeCube(1);
