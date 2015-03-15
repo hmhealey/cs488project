@@ -186,91 +186,13 @@ Mesh.makeBox = function(width, height, depth) {
         0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1
     ]);
 
-        /*// top face
-        -width / 2, height / 2, -depth / 2, // A
-        -width / 2, height / 2, depth / 2, // C
-        width / 2, height / 2, -depth / 2, // B
-        width / 2, height / 2, -depth / 2, // B
-        -width / 2, height / 2, depth / 2, // C
-        width / 2, height / 2, depth / 2, // D
-        // bottom face
-        width / 2, -height / 2, depth / 2, // H
-        -width / 2, -height / 2, depth / 2, // G
-        width / 2, -height / 2, -depth / 2, // F
-        width / 2, -height / 2, -depth / 2, // F
-        -width / 2, -height / 2, depth / 2, // G
-        -width / 2, -height / 2, -depth / 2, // E
-        // left face
-        -width / 2, height / 2, -depth / 2, // A
-        -width / 2, -height / 2, -depth / 2, // E
-        -width / 2, height / 2, depth / 2, // C
-        -width / 2, height / 2, depth / 2, // C
-        -width / 2, -height / 2, -depth / 2, // E
-        -width / 2, -height / 2, depth / 2, // G
-        // right face
-        width / 2, height / 2, depth / 2, // D
-        width / 2, -height / 2, depth / 2, // H
-        width / 2, height / 2, -depth / 2, // B
-        width / 2, height / 2, -depth / 2, // B
-        width / 2, -height / 2, depth / 2, // H
-        width / 2, -height / 2, -depth / 2, // F
-        // front face
-        -width / 2, height / 2, depth / 2, // C
-        -width / 2, -height / 2, depth / 2, // G
-        width / 2, height / 2, depth / 2, // D
-        width / 2, height / 2, depth / 2, // D
-        -width / 2, -height / 2, depth / 2, // G
-        width / 2, -height / 2, depth / 2, // H
-        // back face
-        width / 2, height / 2, -depth / 2, // B
-        width / 2, -height / 2, -depth / 2, // F
-        -width / 2, height / 2, -depth / 2, // A
-        -width / 2, height / 2, -depth / 2, // A
-        width / 2, -height / 2, -depth / 2, // F
-        -width / 2, -height / 2, -depth / 2, // E*/
-
     mesh.setTexCoords([
-        0, 1,
-        0, 0,
-        1, 1,
-        1, 1,
-        0, 0,
-        1, 0,
-
-        1, 0,
-        0, 0,
-        1, 1,
-        1, 1,
-        0, 0,
-        0, 1,
-
-        1, 1,
-        0, 1,
-        1, 0,
-        1, 0,
-        0, 1,
-        0, 0,
-
-        1, 0,
-        0, 0,
-        1, 1,
-        1, 1,
-        0, 0,
-        0, 1,
-
-        0, 0,
-        0, 1,
-        1, 0,
-        1, 0,
-        0, 1,
-        1, 1,
-
-        1, 0,
-        1, 1,
-        0, 0,
-        0, 0,
-        1, 1,
-        0, 1
+        0, 0, 0, 1, 1, 0, 1, 0, 0, 1, 1, 1,
+        1, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 1,
+        0, 0, 0, 1, 1, 0, 1, 0, 0, 1, 1, 1,
+        0, 0, 0, 1, 1, 0, 1, 0, 0, 1, 1, 1,
+        0, 0, 0, 1, 1, 0, 1, 0, 0, 1, 1, 1,
+        0, 0, 0, 1, 1, 0, 1, 0, 0, 1, 1, 1
     ]);
 
     return mesh;
