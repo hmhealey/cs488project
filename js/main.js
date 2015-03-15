@@ -57,12 +57,8 @@ var initialize = function() {
             shader.link();
         }
     };
-    //shader.loadShader(gl.VERTEX_SHADER, "shaders/phong.vert", shaderCallback);
-    //shader.loadShader(gl.FRAGMENT_SHADER, "shaders/phong.frag", shaderCallback);
-    //shader.loadShader(gl.VERTEX_SHADER, "shaders/flat.vert", shaderCallback);
-    //shader.loadShader(gl.FRAGMENT_SHADER, "shaders/flat.frag", shaderCallback);
-    shader.loadShader(gl.VERTEX_SHADER, "shaders/texCoords.vert", shaderCallback);
-    shader.loadShader(gl.FRAGMENT_SHADER, "shaders/texCoords.frag", shaderCallback);
+    shader.loadShader(gl.VERTEX_SHADER, "shaders/phong.vert", shaderCallback);
+    shader.loadShader(gl.FRAGMENT_SHADER, "shaders/phong.frag", shaderCallback);
 
     texture = new Texture();
     texture.setImageFromPath("Ayreon_-_01011001.jpg");
@@ -97,6 +93,7 @@ var update = function(time) {
 
         var normalMatrix = mat3.create();
         mat3.fromMat4(normalMatrix, modelView);
+        mat3.invert(normalMatrix, normalMatrix);
         mat3.transpose(normalMatrix, normalMatrix);
 
         gl.uniformMatrix4fv(gl.getUniformLocation(shader.program, "modelView"), false, modelView);
@@ -104,8 +101,8 @@ var update = function(time) {
         gl.uniformMatrix3fv(gl.getUniformLocation(shader.program, "normalMatrix"), false, normalMatrix);
 
         //var mesh = Mesh.makeSquare(1);
-        var mesh = Mesh.makeCube(1);
-        //var mesh = Mesh.makeUvSphere(1, 20, 20);
+        //var mesh = Mesh.makeCube(1);
+        var mesh = Mesh.makeUvSphere(1, 20, 20);
 
         gl.useProgram(shader.program);
 
