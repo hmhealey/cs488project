@@ -6,6 +6,8 @@ var ext;
 var camera;
 var shader;
 var texture;
+var textures = [];
+var root;
 
 var paused = false;
 
@@ -45,8 +47,8 @@ var initialize = function() {
         aspect: 1,
         near: 0.1,
         far: 100,
-        position: vec3.fromValues(0, 0, 0),
-        view: vec3.fromValues(0, 0, -1),
+        position: vec3.fromValues(0, 2, 1),
+        forward: vec3.fromValues(0, 0, -1),
         up: vec3.fromValues(0, 1, 0)
     });
 
@@ -62,12 +64,30 @@ var initialize = function() {
 
     texture = new Texture();
     texture.setImageFromPath("Ayreon_-_01011001.jpg");
+    textures.push(texture);
+
+    var blank = new Texture();
+    blank.setImageFromPath("white.png");
+    textures.push(blank);
+
+    var grass = new Material({
+        diffuse: vec4.fromValues(0.8, 1.0, 0.8, 1.0),
+        shininess: 128,
+        texture: blank
+    });
+
+    root = new Entity({name: "root"});
+    var ground = new Entity({name: "ground", mesh: Mesh.makeSquare(1), material: grass});
+    ground.translate([0, 0, -10]);
+    ground.rotate("x", -75);
+    ground.scale([10, 10, 1]);
+    root.addChild(ground);
 };
 
 var rotation = 0;
 
 var update = function(time) {
-    if (shader.linked && texture.loaded) {
+    if (shader.linked) {
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
         gl.viewport(0, 0, camera.screenWidth, camera.screenHeight);
@@ -75,38 +95,15 @@ var update = function(time) {
         gl.enable(gl.DEPTH_TEST);
         gl.enable(gl.CULL_FACE);
         gl.cullFace(gl.BACK);
-
         shader.bind();
 
         // update camera matrices
-        var model = mat4.create();
-        mat4.translate(model, model, vec3.fromValues(0, 0, -10));
-        mat4.rotateX(model, model, Math.PI / 6);
-        mat4.rotateY(model, model, rotation);
-        rotation += Math.PI / 120;
+        shader.setCamera(camera);
 
-        shader.updateMatrices(camera, model);
-
-        //var mesh = Mesh.makeSquare(1);
-        var mesh = Mesh.makeCube(1);
-        //var mesh = Mesh.makeUvSphere(1, 20, 20);
-
-        gl.useProgram(shader.program);
-
-        var material = new Material({
-            //diffuse: vec4.fromValues(1.0, 0.0, 0.0, 1.0),
-            texture: texture,
-            specular: vec4.fromValues(1.0, 1.0, 1.0, 1.0),
-            shininess: 10
-        });
-        material.applyTo(shader);
-
-        mesh.draw(shader);
-
-        mesh.cleanup();
+        // draw the scene
+        root.draw(shader, mat4.create());
 
         shader.release();
-
         gl.disable(gl.CULL_FACE);
         gl.disable(gl.DEPTH_TEST);
     }
