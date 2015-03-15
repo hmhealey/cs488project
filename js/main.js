@@ -70,7 +70,7 @@ var update = function(time) {
     if (shader.linked && texture.loaded) {
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-        gl.viewport(0, 0, 500, 500);
+        gl.viewport(0, 0, camera.screenWidth, camera.screenHeight);
 
         gl.enable(gl.DEPTH_TEST);
         gl.enable(gl.CULL_FACE);

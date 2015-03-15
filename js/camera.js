@@ -1,6 +1,6 @@
 function Camera(args) {
     this.screenWidth = args['screenWidth'] || 500;
-    this.screenheight = args['screenWidth'] || 500;
+    this.screenHeight = args['screenHidth'] || 500;
 
     this.fov = args['fov'] || 45;
     this.aspect = args['aspect'] || 1;
