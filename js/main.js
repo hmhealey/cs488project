@@ -28,7 +28,7 @@ var onLoad = function(e) {
         // load required extensions
         ext = gl.getExtension("OES_element_index_uint");
 
-        // perform opengl initialization
+        // perform initialization
         initialize();
 
         // update the camera with the new window size
@@ -87,6 +87,12 @@ var initialize = function() {
     ground.rotate("x", -75);
     ground.scale([10, 10, 1]);
     root.addChild(ground);
+
+    onFramerate = (function(framerateCounter) {
+        return function(fps) {
+            framerateCounter.innerText = fps;
+        };
+    })(document.getElementById("framerateCounter"));
 };
 
 var rotation = 0;
@@ -104,12 +110,16 @@ var update = function(time) {
         shader.setCamera(Camera.mainCamera);
 
         // draw the scene
-        root.draw(shader, mat4.create());
+        if (root != null) {
+            root.draw(shader, mat4.create());
+        }
 
         shader.release();
         gl.disable(gl.CULL_FACE);
         gl.disable(gl.DEPTH_TEST);
     }
+
+    onFrameRendered();
 
     if (!paused) {
         window.requestAnimationFrame(update);
