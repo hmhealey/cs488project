@@ -96,13 +96,13 @@ var update = function(time) {
         mat3.invert(normalMatrix, normalMatrix);
         mat3.transpose(normalMatrix, normalMatrix);
 
-        gl.uniformMatrix4fv(gl.getUniformLocation(shader.program, "modelView"), false, modelView);
-        gl.uniformMatrix4fv(gl.getUniformLocation(shader.program, "modelViewProjection"), false, modelViewProjection);
-        gl.uniformMatrix3fv(gl.getUniformLocation(shader.program, "normalMatrix"), false, normalMatrix);
+        shader.setUniformMatrix4("modelView", modelView);
+        shader.setUniformMatrix4("modelViewProjection", modelViewProjection);
+        shader.setUniformMatrix3("normalMatrix", normalMatrix);
 
         //var mesh = Mesh.makeSquare(1);
-        //var mesh = Mesh.makeCube(1);
-        var mesh = Mesh.makeUvSphere(1, 20, 20);
+        var mesh = Mesh.makeCube(1);
+        //var mesh = Mesh.makeUvSphere(1, 20, 20);
 
         gl.useProgram(shader.program);
 
