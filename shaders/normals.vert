@@ -15,5 +15,4 @@ void main() {
 
     fPosition = vec3(modelView * vec4(position, 1.0));
     fNormal = normalize(normalMatrix * normal);
-    //fNormal = normal;
 }
