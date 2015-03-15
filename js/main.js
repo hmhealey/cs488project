@@ -3,6 +3,7 @@
 var gl;
 var ext;
 
+var camera;
 var shader;
 var texture;
 var textures = [];
@@ -22,12 +23,16 @@ var onLoad = function(e) {
         attachEvent(window, "keypress", onKeyPress);
         attachEvent(window, "keydown", onKeyDown);
         attachEvent(window, "keyup", onKeyUp);
+        attachEvent(window, "resize", onResize);
 
         // load required extensions
         ext = gl.getExtension("OES_element_index_uint");
 
         // perform opengl initialization
         initialize();
+
+        // update the camera with the new window size
+        onResize(null);
 
         // start rendering
         window.requestAnimationFrame(update);
@@ -39,7 +44,7 @@ var onLoad = function(e) {
 var initialize = function() {
     gl.clearColor(0.6, 0.6, 0.6, 1.0);
 
-    Camera.mainCamera = new Camera({
+    camera = new Camera({
         screenWidth: 500,
         screenHeight: 500,
         fov: 45,
@@ -50,6 +55,7 @@ var initialize = function() {
         forward: vec3.fromValues(0, 0, -1),
         up: vec3.fromValues(0, 1, 0)
     });
+    Camera.mainCamera = camera;
 
     shader = new Shader();
     var shaderCallback = function() {
@@ -88,8 +94,6 @@ var rotation = 0;
 var update = function(time) {
     if (shader.linked) {
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-
-        Camera.mainCamera.updateViewport();
 
         gl.enable(gl.DEPTH_TEST);
         gl.enable(gl.CULL_FACE);
@@ -139,6 +143,21 @@ var onKeyPress = function(e) {
 var onKeyDown = function(e) { };
 
 var onKeyUp = function(e) { };
+
+var onResize = function(e) {
+    var width = window.innerWidth;
+    var height = window.innerHeight;
+
+    canvas.width = width;
+    canvas.height = height;
+
+    camera.screenWidth = width;
+    camera.screenHeight = height;
+    camera.aspect = width / height;
+
+    camera.updateMatrices();
+    camera.updateViewport();
+};
 
 attachEvent(window, "load", onLoad);
 attachEvent(window, "unload", onUnload);
