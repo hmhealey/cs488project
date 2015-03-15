@@ -4,6 +4,8 @@ function Texture(target) {
     this.loaded = true;
 };
 
+Texture.LOG_TEXTURE_LOADING = false;
+
 Texture.prototype.cleanup = function() {
     if (this.texture) {
         gl.deleteTexture(this.texture);
@@ -23,6 +25,10 @@ Texture.prototype.setImageOnLoad = function(image) {
         return function() {
             texture.setImage(image);
             texture.loaded = true;
+
+            if (Texture.LOG_TEXTURE_LOADING) {
+                console.log("Texture.setImageOnLoad - Loaded image " + image.src);
+            }
         }
     })(this, image));
 };
