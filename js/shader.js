@@ -7,6 +7,7 @@ function Shader() {
 };
 
 Shader.LOG_MISSING_ATTRIBUTES = false;
+Shader.LOG_MISSING_UNIFORMS = false;
 
 Shader.prototype.cleanup = function() {
     for (var i = 0; i < this.shaders.length; i++) {
@@ -71,6 +72,58 @@ Shader.prototype.bind = function() {
 
 Shader.prototype.release = function() {
     gl.useProgram(null);
+};
+
+Shader.prototype.setUniform = function(name, value, func) {
+    if (!(name in this.locations)) {
+        this.locations[name] = gl.getUniformLocation(this.program, name);
+    }
+
+    var location = this.locations[name];
+
+    if (location != -1) {
+        func.call(gl, location, value);
+        return true;
+    } else {
+        if (Shader.LOG_MISSING_UNIFORMS) {
+            console.log("Shader.setUniform - Unable to set uniform " + name +
+                        " because it isn't supported by the current shader");
+        }
+        return false;
+    }
+};
+
+Shader.prototype.setUniformMatrix = function(name, mat, transpose, func) {
+    transpose = transpose || false;
+
+    if (!(name in this.locations)) {
+        this.locations[name] = gl.getUniformLocation(this.program, name);
+    }
+
+    var location = this.locations[name];
+
+    if (location != -1) {
+        func.call(gl, location, transpose, mat);
+        return true;
+    } else {
+        if (Shader.LOG_MISSING_UNIFORMS) {
+            console.log("Shader.setUniform - Unable to set uniform " + name +
+                        " because it isn't supported by the current shader");
+        }
+        return false;
+    }
+};
+
+Shader.prototype.setUniformMatrix2 = function(name, mat, transpose) {
+    return this.setUniformMatrix(name, mat, transpose, gl.uniformMatrix2fv);
+};
+
+Shader.prototype.setUniformMatrix3 = function(name, mat, transpose) {
+    return this.setUniformMatrix(name, mat, transpose, gl.uniformMatrix3fv);
+};
+
+Shader.prototype.setUniformMatrix4 = function(name, mat, transpose) {
+    return this.setUniformMatrix(name, mat, transpose, gl.uniformMatrix4fv);
 };
 
 Shader.prototype.enableVertexAttribute = function(name, buffer, size, type) {
