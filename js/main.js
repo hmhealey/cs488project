@@ -118,6 +118,8 @@ var update = function(time) {
 
         mesh.cleanup();
 
+        shader.release();
+
         gl.disable(gl.CULL_FACE);
         gl.disable(gl.DEPTH_TEST);
     }
