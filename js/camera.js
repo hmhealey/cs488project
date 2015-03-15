@@ -1,4 +1,6 @@
 function Camera(args) {
+    args = args || {};
+
     this.screenWidth = args['screenWidth'] || 500;
     this.screenHeight = args['screenHidth'] || 500;
 
