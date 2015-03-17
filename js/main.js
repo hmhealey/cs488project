@@ -1,7 +1,6 @@
 "use strict";
 
 var gl;
-var ext;
 
 var shader;
 var level;
@@ -23,7 +22,9 @@ var onLoad = function(e) {
         attachEvent(window, "resize", onResize);
 
         // load required extensions
-        ext = gl.getExtension("OES_element_index_uint");
+        if (!gl.getExtension("OES_element_index_uint")) console.log("Unable to load OES_element_index_uint");
+        if (!gl.getExtension("OES_texture_float")) console.log("Unable to load OES_texture_float");
+        if (!gl.getExtension("OES_texture_float_linear")) console.log("Unable to load OES_texture_float_linear");
 
         // perform initialization
         initialize();

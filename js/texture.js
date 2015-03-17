@@ -54,3 +54,19 @@ Texture.prototype.bind = function() {
 Texture.prototype.release = function() {
     gl.bindTexture(this.target, null);
 };
+
+Texture.fromColour = function(colour) {
+    var texture = new Texture();
+
+    texture.bind();
+
+    gl.texImage2D(texture.target, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.FLOAT, colour);
+    gl.texParameteri(texture.target, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+    gl.texParameteri(texture.target, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+    gl.texParameteri(texture.target, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(texture.target, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+
+    texture.release();
+
+    return texture;
+};
