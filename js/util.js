@@ -36,3 +36,19 @@ var requestFile = function(url, callback, errorCallback) {
 
     request.send(null);
 };
+
+/** Returns a deep copy of the provided object. **/
+var deepCopy = function(obj) {
+    // http://stackoverflow.com/questions/728360/most-elegant-way-to-clone-a-javascript-object
+    if (null == obj || "object" != typeof obj) return obj;
+
+    var copy = obj.constructor();
+
+    for (var attr in obj) {
+        if (obj.hasOwnProperty(attr)) {
+            copy[attr] = obj[attr];
+        }
+    }
+
+    return copy;
+};

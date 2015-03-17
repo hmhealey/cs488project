@@ -21,8 +21,8 @@ var onLoad = function(e) {
     if (gl) {
         // attach other events
         attachEvent(window, "keypress", onKeyPress);
-        attachEvent(window, "keydown", onKeyDown);
-        attachEvent(window, "keyup", onKeyUp);
+        attachEvent(window, "keydown", Input.onKeyDown);
+        attachEvent(window, "keyup", Input.onKeyUp);
         attachEvent(window, "resize", onResize);
 
         // load required extensions
@@ -121,6 +121,8 @@ var update = function(time) {
 
     onFrameRendered();
 
+    Input.update();
+
     if (!paused) {
         window.requestAnimationFrame(update);
     }
@@ -149,10 +151,6 @@ var onKeyPress = function(e) {
         console.log("rendering has been paused");
     }
 };
-
-var onKeyDown = function(e) { };
-
-var onKeyUp = function(e) { };
 
 var onResize = function(e) {
     var width = window.innerWidth;
