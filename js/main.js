@@ -3,11 +3,8 @@
 var gl;
 var ext;
 
-var camera;
 var shader;
-var texture;
-var textures = [];
-var root;
+var level;
 
 var paused = false;
 
@@ -30,6 +27,7 @@ var onLoad = function(e) {
 
         // perform initialization
         initialize();
+        Input.initialize();
 
         // update the camera with the new window size
         onResize(null);
@@ -44,18 +42,7 @@ var onLoad = function(e) {
 var initialize = function() {
     gl.clearColor(0.6, 0.6, 0.6, 1.0);
 
-    camera = new Camera({
-        screenWidth: 500,
-        screenHeight: 500,
-        fov: 45,
-        aspect: 1,
-        near: 0.1,
-        far: 100,
-        position: vec3.fromValues(0, 2, 1),
-        forward: vec3.fromValues(0, 0, -1),
-        up: vec3.fromValues(0, 1, 0)
-    });
-    Camera.mainCamera = camera;
+    loadLevel("test");
 
     shader = new Shader();
     var shaderCallback = function() {
@@ -66,27 +53,6 @@ var initialize = function() {
     };
     shader.loadShader(gl.VERTEX_SHADER, "shaders/phong.vert", shaderCallback);
     shader.loadShader(gl.FRAGMENT_SHADER, "shaders/phong.frag", shaderCallback);
-
-    texture = new Texture();
-    texture.setImageFromPath("Ayreon_-_01011001.jpg");
-    textures.push(texture);
-
-    var blank = new Texture();
-    blank.setImageFromPath("white.png");
-    textures.push(blank);
-
-    var grass = new Material({
-        diffuse: vec4.fromValues(0.8, 1.0, 0.8, 1.0),
-        shininess: 128,
-        texture: blank
-    });
-
-    root = new Entity({name: "root"});
-    var ground = new Entity({name: "ground", mesh: Mesh.makeSquare(1), material: grass});
-    ground.translate([0, 0, -10]);
-    ground.rotate("x", -75);
-    ground.scale([10, 10, 1]);
-    root.addChild(ground);
 
     onFramerate = (function(framerateCounter) {
         return function(fps) {
@@ -104,17 +70,19 @@ var update = function(time) {
         gl.enable(gl.DEPTH_TEST);
         gl.enable(gl.CULL_FACE);
         gl.cullFace(gl.BACK);
+
         shader.bind();
 
         // update camera matrices
-        shader.setCamera(Camera.mainCamera);
+        shader.setCamera(level.mainCamera);
 
         // draw the scene
-        if (root != null) {
-            root.draw(shader, mat4.create());
+        if (level != null && level.root != null) {
+            level.root.draw(shader, mat4.create());
         }
 
         shader.release();
+
         gl.disable(gl.CULL_FACE);
         gl.disable(gl.DEPTH_TEST);
     }
@@ -153,18 +121,12 @@ var onKeyPress = function(e) {
 };
 
 var onResize = function(e) {
-    var width = window.innerWidth;
-    var height = window.innerHeight;
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
 
-    canvas.width = width;
-    canvas.height = height;
-
-    camera.screenWidth = width;
-    camera.screenHeight = height;
-    camera.aspect = width / height;
-
-    camera.updateMatrices();
-    camera.updateViewport();
+    if (level != null && level.mainCamera != null) {
+        level.mainCamera.updateScreenSize();
+    }
 };
 
 attachEvent(window, "load", onLoad);
