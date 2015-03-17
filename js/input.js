@@ -11,7 +11,11 @@ var Input = {
         91: false, // command key (and windows key?)
         27: false, // escape
     },
-    previousKeys = deepCopy(keys)
+    previousKeys: {} // initialized in Input.initialize()
+};
+
+Input.initialize = function() {
+    Input.previousKeys = deepCopy(Input.keys);
 };
 
 Input.update = function() {
