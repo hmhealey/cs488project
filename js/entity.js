@@ -4,10 +4,36 @@ function Entity(args) {
     this.name = args['name'] || "";
 
     this.transform = args['transform'] || mat4.create();
+
+    if ('scale' in args) {
+        mat4.scale(this.transform, this.transform, toVec3(args['scale']));
+    }
+
+    if ('rotation' in args) {
+        mat4.rotateZ(this.transform, this.transform, args['rotation'][2] * Math.PI / 180);
+        mat4.rotateY(this.transform, this.transform, args['rotation'][1] * Math.PI / 180);
+        mat4.rotateX(this.transform, this.transform, args['rotation'][0] * Math.PI / 180);
+    }
+
+    if ('position' in args) {
+        mat4.translate(this.transform, this.transform, args['position']);
+    }
+
     this.children = args['children'] || [];
 
     this.mesh = args['mesh'] || null;
     this.material = args['material'] || null;
+};
+
+Entity.prototype.getPosition = function() {
+    // we could probably just pull the translate values from the transform matrix
+    var position = vec3.fromValues(0, 0, 0);
+    vec3.transformMat4(position, position, this.transform);
+    return position;
+};
+
+Entity.prototype.translate = function(amount) {
+    mat4.translate(this.transform, this.transform, amount);
 };
 
 Entity.prototype.rotate = function(axis, angle) {
@@ -28,8 +54,12 @@ Entity.prototype.scale = function(amount) {
     mat4.scale(this.transform, this.transform, amount);
 };
 
-Entity.prototype.translate = function(amount) {
-    mat4.translate(this.transform, this.transform, amount);
+Entity.prototype.getTransform = function() {
+    return transform;
+};
+
+Entity.prototype.setTransform = function(transform) {
+    this.transform = transform;
 };
 
 Entity.prototype.addChild = function(child) {

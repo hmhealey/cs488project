@@ -52,3 +52,18 @@ var deepCopy = function(obj) {
 
     return copy;
 };
+
+/** Returns true if the given value is a regular array or a typed array. **/
+var isArrayOrTypedArray = function(value) {
+    // this apparently doesn't work for Arrays created in other frames, but I don't plan on using frames
+    return value && (value instanceof Array || (value.buffer && value.buffer instanceof ArrayBuffer));
+};
+
+/** Returns a vec3 when given a vec3. Returns a vec3 where each element is the argument when given a single value. **/
+var toVec3 = function(value) {
+    if (isArrayOrTypedArray(value)) {
+        return value;
+    } else {
+        return vec3.fromValues(value, value, value);
+    }
+};

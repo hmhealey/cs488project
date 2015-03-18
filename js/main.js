@@ -72,17 +72,17 @@ var update = function(time) {
         gl.enable(gl.CULL_FACE);
         gl.cullFace(gl.BACK);
 
-        shader.bind();
-
-        // update camera matrices
-        shader.setCamera(level.mainCamera);
-
-        // draw the scene
         if (level != null && level.root != null) {
-            level.root.draw(shader, mat4.create());
-        }
+            shader.bind();
 
-        shader.release();
+            // update camera matrices
+            shader.setCamera(level.mainCamera);
+
+            // draw the scene
+            level.root.draw(shader, mat4.create());
+
+            shader.release();
+        }
 
         gl.disable(gl.CULL_FACE);
         gl.disable(gl.DEPTH_TEST);
@@ -122,11 +122,16 @@ var onKeyPress = function(e) {
 };
 
 var onResize = function(e) {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
+    var screenWidth = window.innerWidth;
+    var screenHeight = window.innerHeight;
+
+    canvas.width = screenWidth;
+    canvas.height = screenHeight;
+
+    gl.viewport(0, 0, screenWidth, screenHeight);
 
     if (level != null && level.mainCamera != null) {
-        level.mainCamera.updateScreenSize();
+        level.mainCamera.updateScreenSize(screenWidth, screenHeight);
     }
 };
 
