@@ -2,9 +2,6 @@ var textures = [];
 
 var root = new Entity({name: "root"});
 
-/*var blank = new Texture();
-blank.setImageFromPath("white.png");
-textures.push(blank);*/
 var blank = Texture.fromColour(vec4.fromValues(1.0, 1.0, 1.0, 1.0));
 
 var notGrass = new Material({
