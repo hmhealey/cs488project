@@ -5,8 +5,8 @@ function Entity(args) {
 
     this.transform = args['transform'] || mat4.create();
 
-    if ('scale' in args) {
-        mat4.scale(this.transform, this.transform, toVec3(args['scale']));
+    if ('position' in args) {
+        mat4.translate(this.transform, this.transform, args['position']);
     }
 
     if ('rotation' in args) {
@@ -15,8 +15,8 @@ function Entity(args) {
         mat4.rotateX(this.transform, this.transform, args['rotation'][0] * Math.PI / 180);
     }
 
-    if ('position' in args) {
-        mat4.translate(this.transform, this.transform, args['position']);
+    if ('scale' in args) {
+        mat4.scale(this.transform, this.transform, toVec3(args['scale']));
     }
 
     this.children = args['children'] || [];
