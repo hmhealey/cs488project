@@ -19,6 +19,7 @@ function Entity(args) {
         mat4.scale(this.transform, this.transform, toVec3(args['scale']));
     }
 
+    this.parent = null;
     this.children = args['children'] || [];
 
     this.mesh = args['mesh'] || null;
@@ -63,7 +64,12 @@ Entity.prototype.setTransform = function(transform) {
 };
 
 Entity.prototype.addChild = function(child) {
-    this.children.push(child);
+    if (child.parent == null) {
+        this.children.push(child);
+        child.parent = this;
+    } else {
+        console.log("Unable to make " + child.name + " a child of " + this.name + " because it already has parent " + child.parent.name);
+    }
 };
 
 Entity.prototype.draw = function(shader, parentTransform) {
