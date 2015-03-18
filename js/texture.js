@@ -13,8 +13,9 @@ Texture.prototype.cleanup = function() {
     }
 };
 
-Texture.prototype.setImageFromPath = function(path, width, height) {
-    var image = new Image(width, height);
+Texture.prototype.setImageFromPath = function(path) {
+    var image = new Image();
+
     this.setImageOnLoad(image);
     this.loaded = false;
     image.src = path;
@@ -54,6 +55,18 @@ Texture.prototype.bind = function() {
 Texture.prototype.release = function() {
     gl.bindTexture(this.target, null);
 };
+
+Texture.fromImagePath = function(path) {
+    var texture = new Texture();
+    texture.setImageFromPath(path);
+    return texture;
+};
+
+Texture.fromImage = function(image) {
+    var texture = new Texture();
+    texture.setImage(image);
+    return texture;
+}
 
 Texture.fromColour = function(colour) {
     var texture = new Texture();
