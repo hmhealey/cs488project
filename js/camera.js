@@ -25,17 +25,17 @@ Camera.prototype = Object.create(Entity.prototype);
 Camera.prototype.constructor = Camera;
 
 Camera.prototype.translate = function(amount) {
-    Entity.prototype.translate.apply(this, amount);
+    Entity.prototype.translate.call(this, amount);
     this.updateViewMatrix();
 };
 
 Camera.prototype.rotate = function(axis, angle) {
-    Entity.prototype.rotate.apply(this, axis, angle);
+    Entity.prototype.rotate.call(this, axis, angle);
     this.updateViewMatrix();
 };
 
 Camera.prototype.setTransform = function(transform) {
-    Entity.prototype.setTransform.apply(this, transform);
+    Entity.prototype.setTransform.call(this, transform);
     this.updateViewMatrix();
 };
 
