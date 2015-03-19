@@ -50,6 +50,7 @@ PlayerController.prototype.update = function(entity) {
         var dir = vec3.fromValues(dx, dy, dz);
         vec3.normalize(dir, dir);
         vec3.scale(dir, dir, this.speed);
+        vec3.transformQuat(dir, dir, entity.transform.rotation);
 
         entity.transform.translate(dir);
     }
