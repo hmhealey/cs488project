@@ -7,6 +7,9 @@ var level;
 
 var paused = false;
 
+var lastTick;
+var TICK_RATE = 10;
+
 var onLoad = function(e) {
     var canvas = document.getElementById("canvas");
 
@@ -60,9 +63,9 @@ var initialize = function() {
             framerateCounter.innerText = fps;
         };
     })(document.getElementById("framerateCounter"));
-};
 
-var rotation = 0;
+    lastTick = new Date().getTime();
+};
 
 var update = function(time) {
     if (shader.linked) {
@@ -72,25 +75,23 @@ var update = function(time) {
         gl.enable(gl.CULL_FACE);
         gl.cullFace(gl.BACK);
 
-        if (level != null && level.root != null) {
-            shader.bind();
-
-            // update camera matrices
-            shader.setCamera(level.mainCamera);
-
-            // draw the scene
-            level.root.draw(shader, mat4.create());
-
-            shader.release();
+        if (level) {
+            level.draw(shader);
         }
 
         gl.disable(gl.CULL_FACE);
         gl.disable(gl.DEPTH_TEST);
     }
 
-    onFrameRendered();
-
+    // update input state
     Input.update();
+
+    // update game logic
+    if (level) {
+        level.update();
+    }
+
+    onFrameRendered();
 
     if (!paused) {
         window.requestAnimationFrame(update);
@@ -108,16 +109,22 @@ var onUnload = function(e) {
 };
 
 var onKeyPress = function(e) {
-    paused = !paused;
+    if (e.charCode == 112) {
+        paused = !paused;
 
-    if (!paused) {
-        // cancel any pending updates first so that we don't end up with duplicate callbacks on each frame
-        window.cancelAnimationFrame(update);
-        window.requestAnimationFrame(update);
+        if (!paused) {
+            // cancel any pending updates first so that we don't end up with duplicate callbacks on each frame
+            window.cancelAnimationFrame(update);
 
-        console.log("rendering has been unpaused");
-    } else {
-        console.log("rendering has been paused");
+            window.requestAnimationFrame(update);
+
+            // reset the last tick time so that we don't simulate the entire game catching up to now
+            lastTick = new Date().getTime();
+
+            console.log("rendering has been unpaused");
+        } else {
+            console.log("rendering has been paused");
+        }
     }
 };
 

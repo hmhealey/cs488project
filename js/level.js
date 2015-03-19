@@ -15,6 +15,28 @@ Level.prototype.cleanup = function() {
     // we're probably still leaking meshes here
 };
 
+Level.prototype.draw = function(shader) {
+    shader.bind();
+
+    // update camera matrices
+    if (this.mainCamera) {
+        shader.setCamera(this.mainCamera);
+    }
+
+    // draw the scene
+    if (this.root) {
+        this.root.draw(shader, mat4.create());
+    }
+
+    shader.release();
+};
+
+Level.prototype.update = function() {
+    if (this.root) {
+        this.root.update();
+    }
+};
+
 function loadLevel(path, root) {
     var doLoadLevel = (function(_root) {
         return function(levelScript) {

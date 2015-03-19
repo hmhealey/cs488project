@@ -93,6 +93,7 @@ var camera = new Camera({
     position: vec3.fromValues(0, 2, 10),
     rotation: vec3.fromValues(0, 0, 0)
 });
+camera.controller = new PlayerController({speed: 0.1, rotationSpeed: 5});
 root.addChild(camera);
 
 return new Level({root: root, mainCamera: camera, textures: textures});

@@ -24,6 +24,8 @@ function Entity(args) {
 
     this.mesh = args['mesh'] || null;
     this.material = args['material'] || null;
+
+    this.controller = args['controller'] || null;
 };
 
 Entity.prototype.getPosition = function() {
@@ -83,5 +85,15 @@ Entity.prototype.draw = function(shader, parentTransform) {
 
     for (var i = 0; i < this.children.length; i++) {
         this.children[i].draw(shader, transform);
+    }
+};
+
+Entity.prototype.update = function() {
+    if (this.controller) {
+        this.controller.update(this);
+    }
+
+    for (var i = 0; i < this.children.length; i++) {
+        this.children[i].update();
     }
 };
