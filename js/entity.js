@@ -11,7 +11,7 @@ function Entity(args) {
     this.controller = args['controller'] || null;
 };
 
-Entity.prototype.draw = function(shader, parentTransform) {
+Entity.prototype.draw = function(shader) {
     var transform = this.transform.getLocalToWorldMatrix();
 
     if (this.mesh) {
@@ -21,7 +21,7 @@ Entity.prototype.draw = function(shader, parentTransform) {
     }
 
     for (var i = 0; i < this.transform.children.length; i++) {
-        this.transform.children[i].entity.draw(shader, transform);
+        this.transform.children[i].entity.draw(shader);
     }
 };
 
