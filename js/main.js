@@ -120,10 +120,11 @@ var onKeyPress = function(e) {
 
             // reset the last tick time so that we don't simulate the entire game catching up to now
             lastTick = new Date().getTime();
-
-            console.log("rendering has been unpaused");
         } else {
-            console.log("rendering has been paused");
+            // a hacky way to show in the UI that the game is paused
+            window.requestAnimationFrame(function() {
+                onFramerate("Paused");
+            });
         }
     }
 };
