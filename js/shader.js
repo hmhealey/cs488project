@@ -188,8 +188,8 @@ Shader.prototype.updateMatrices = function(camera, modelMatrix) {
     }
 
     if (dirty && this.camera != null) {
-        var modelView = mat4.multiply(mat4.create(), this.camera.view, this.modelMatrix);
-        var modelViewProjection = mat4.multiply(mat4.create(), this.camera.projection, modelView);
+        var modelView = mat4.multiply(mat4.create(), this.camera.getViewMatrix(), this.modelMatrix);
+        var modelViewProjection = mat4.multiply(mat4.create(), this.camera.getProjectionMatrix(), modelView);
 
         var normalMatrix = mat3.fromMat4(mat3.create(), modelView);
         mat3.invert(normalMatrix, normalMatrix);

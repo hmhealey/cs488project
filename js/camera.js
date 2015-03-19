@@ -13,34 +13,21 @@ function Camera(args) {
     this.near = args['near'] || 0.1;
     this.far = args['far'] || 1000;
 
-    this.view = mat4.create();
     this.projection = mat4.create();
 
     this.updateProjectionMatrix();
-    this.updateViewMatrix();
 };
 
 // make Camera inherit from Entity
 Camera.prototype = Object.create(Entity.prototype);
 Camera.prototype.constructor = Camera;
 
-Camera.prototype.translate = function(amount) {
-    Entity.prototype.translate.call(this, amount);
-    this.updateViewMatrix();
+Camera.prototype.getViewMatrix = function() {
+    return this.transform.getWorldToLocalMatrix();
 };
 
-Camera.prototype.rotate = function(axis, angle) {
-    Entity.prototype.rotate.call(this, axis, angle);
-    this.updateViewMatrix();
-};
-
-Camera.prototype.setTransform = function(transform) {
-    Entity.prototype.setTransform.call(this, transform);
-    this.updateViewMatrix();
-};
-
-Camera.prototype.updateViewMatrix = function() {
-    mat4.invert(this.view, this.transform);
+Camera.prototype.getProjectionMatrix = function() {
+    return this.projection;
 };
 
 Camera.prototype.setVerticalFov = function(fov) {

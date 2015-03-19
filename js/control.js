@@ -24,10 +24,10 @@ PlayerController.prototype.update = function(entity) {
     }
 
     if (dpitch != 0) {
-        entity.rotate('x', dpitch);
+        entity.transform.rotate('x', dpitch);
     }
     if (dyaw != 0) {
-        entity.rotate('y', dyaw);
+        entity.transform.rotate('y', dyaw);
     }
 
     var dz = 0;
@@ -51,6 +51,6 @@ PlayerController.prototype.update = function(entity) {
         vec3.normalize(dir, dir);
         vec3.scale(dir, dir, this.speed);
 
-        entity.translate(dir);
+        entity.transform.translate(dir);
     }
 };

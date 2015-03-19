@@ -29,8 +29,8 @@ var ground = new Entity({
     name: "ground",
     mesh: Mesh.makeSquare(20),
     material: grass,
-    position: vec4.fromValues(0, 0, 0),
-    rotation: vec4.fromValues(-90, 0, 0)
+    position: vec3.fromValues(0, 0, 0),
+    rotation: vec3.fromValues(-90, 0, 0)
 });
 root.addChild(ground);
 
