@@ -3,6 +3,7 @@ function Entity(args) {
 
     this.name = args['name'] || "";
 
+    this.transform1 = new Transform(this, args);
     this.transform = args['transform'] || mat4.create();
 
     if ('position' in args) {
@@ -20,7 +21,8 @@ function Entity(args) {
     }
 
     this.parent = null;
-    this.children = args['children'] || [];
+    //this.children = args['children'] || [];
+    this.children = this.transform1.children;
 
     this.mesh = args['mesh'] || null;
     this.material = args['material'] || null;
@@ -66,12 +68,7 @@ Entity.prototype.setTransform = function(transform) {
 };
 
 Entity.prototype.addChild = function(child) {
-    if (child.parent == null) {
-        this.children.push(child);
-        child.parent = this;
-    } else {
-        console.log("Unable to make " + child.name + " a child of " + this.name + " because it already has parent " + child.parent.name);
-    }
+    child.transform1.setParent(this.transform1);
 };
 
 Entity.prototype.draw = function(shader, parentTransform) {
@@ -84,7 +81,7 @@ Entity.prototype.draw = function(shader, parentTransform) {
     }
 
     for (var i = 0; i < this.children.length; i++) {
-        this.children[i].draw(shader, transform);
+        this.children[i].entity.draw(shader, transform);
     }
 };
 
@@ -94,6 +91,6 @@ Entity.prototype.update = function() {
     }
 
     for (var i = 0; i < this.children.length; i++) {
-        this.children[i].update();
+        this.children[i].entity.update();
     }
 };
