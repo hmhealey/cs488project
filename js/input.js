@@ -4,6 +4,10 @@ var Input = {
         65: false, // a
         83: false, // s
         68: false, // d
+        38: false, // up arrow
+        37: false, // left arrow
+        40: false, // down arrow
+        39: false, // right arrow
         32: false, // space
         16: false, // shift
         17: false, // ctrl
@@ -36,4 +40,12 @@ Input.onKeyUp = function(event) {
     if (key in Input.keys) {
         Input.keys[key] = false;
     }
+};
+
+Input.isKeyDown = function(keyCode) {
+    return Input.keys[keyCode] || false;
+};
+
+Input.wasKeyDown = function(keyCode) {
+    return Input.previousKeys[keyCode] || false;
 };
