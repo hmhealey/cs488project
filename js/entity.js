@@ -5,17 +5,10 @@ function Entity(args) {
 
     this.transform = new Transform(this, args);
 
-    this.parent = null;
-    this.children = this.transform.children;
-
     this.mesh = args['mesh'] || null;
     this.material = args['material'] || null;
 
     this.controller = args['controller'] || null;
-};
-
-Entity.prototype.addChild = function(child) {
-    child.transform.setParent(this.transform);
 };
 
 Entity.prototype.draw = function(shader, parentTransform) {
@@ -27,8 +20,8 @@ Entity.prototype.draw = function(shader, parentTransform) {
         this.mesh.draw(shader);
     }
 
-    for (var i = 0; i < this.children.length; i++) {
-        this.children[i].entity.draw(shader, transform);
+    for (var i = 0; i < this.transform.children.length; i++) {
+        this.transform.children[i].entity.draw(shader, transform);
     }
 };
 
@@ -37,7 +30,7 @@ Entity.prototype.update = function() {
         this.controller.update(this);
     }
 
-    for (var i = 0; i < this.children.length; i++) {
-        this.children[i].entity.update();
+    for (var i = 0; i < this.transform.children.length; i++) {
+        this.transform.children[i].entity.update();
     }
 };

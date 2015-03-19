@@ -67,3 +67,11 @@ var toVec3 = function(value) {
         return vec3.fromValues(value, value, value);
     }
 };
+
+var removeFromArray = function(array, value) {
+    var index = array.indexOf(value);
+
+    if (index != -1) {
+        array.splice(index, 1);
+    }
+};

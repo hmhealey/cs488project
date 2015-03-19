@@ -3,8 +3,13 @@ function Transform(entity, args) {
 
     this.entity = entity;
 
+    // stores node hierarchy
     this.parent = args["parent"] || null;
     this.children = args["children"] || [];
+
+    if ("parent" in args) {
+        this.setParent(args["parent"]);
+    }
 
     // local transformations
     this.position = args["position"] || vec3.create();
@@ -29,15 +34,15 @@ function Transform(entity, args) {
 };
 
 Transform.prototype.setParent = function(parent) {
+    // remove us as a child of our existing parent
     if (this.parent) {
-        // remove us as a child of our existing parent
-        this.parent.children.splice(array.indexOf(this), 1);
+        removeFromArray(this.parent.children, this);
     }
 
     this.parent = parent;
 
+    // add us as a child of our existing parent
     if (parent)  {
-        // add us as a child of our existing parent
         this.parent.children.push(this);
     }
 
