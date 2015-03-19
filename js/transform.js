@@ -31,6 +31,12 @@ function Transform(entity, args) {
 
     this.worldToLocal = mat4.create();
     this.worldToLocalDirty = true;
+
+    // vectors storing the facing of the transform
+    this.forward = vec3.create();
+    this.up = vec3.create();
+    this.right = vec3.create();
+    this.facingsDirty = true;
 };
 
 Transform.prototype.setParent = function(parent) {
@@ -157,4 +163,43 @@ Transform.prototype.setScale = function(scale) {
     this.scale = scale;
 
     this.setDirty();
+};
+
+Transform.prototype.updateFacings = function() {
+    var matrix = this.getMatrix();
+
+    vec3.set(this.forward, 0, 0, -1);
+    vec3.transformQuat(this.forward, this.forward, matrix);
+
+    vec3.set(this.up, 0, 1, 0);
+    vec3.transformQuat(this.up, this.up, matrix);
+
+    vec3.set(this.right, 1, 0, 0);
+    vec3.transformQuat(this.right, this.right, matrix);
+
+    this.facingsDirty = false;
+};
+
+Transform.prototype.getForward = function() {
+    if (this.facingsDirty) {
+        this.updateFacings();
+    }
+
+    return this.forward;
+};
+
+Transform.prototype.getUp = function() {
+    if (this.facingsDirty) {
+        this.updateFacings();
+    }
+
+    return this.up;
+};
+
+Transform.prototype.getRight = function() {
+    if (this.facingsDirty) {
+        this.updateFacings();
+    }
+
+    return this.right;
 };
