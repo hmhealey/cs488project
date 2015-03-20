@@ -58,6 +58,16 @@ var initialize = function() {
     shader.loadShader(gl.VERTEX_SHADER, "shaders/phong.vert", shaderCallback);
     shader.loadShader(gl.FRAGMENT_SHADER, "shaders/phong.frag", shaderCallback);
 
+    ParticleEmitter.shader = new Shader();
+    var particleShaderCallback = function() {
+        if (ParticleEmitter.shader.shaders.length == 2) {
+            // both shaders have been loaded
+            ParticleEmitter.shader.link();
+        }
+    };
+    ParticleEmitter.shader.loadShader(gl.VERTEX_SHADER, "shaders/particles.vert", particleShaderCallback);
+    ParticleEmitter.shader.loadShader(gl.FRAGMENT_SHADER, "shaders/particles.frag", particleShaderCallback);
+
     onFramerate = (function(framerateCounter) {
         return function(fps) {
             framerateCounter.innerText = fps;

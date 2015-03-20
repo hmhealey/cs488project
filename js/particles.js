@@ -1,0 +1,111 @@
+function ParticleEmitter(args) {
+    args = args || {};
+
+    Entity.call(this, args);
+
+    //this.colour = args['colour'] || vec4.fromValues(1, 1, 1, 1); // TODO implement setting a colour as part of the emitter
+    //this.shape = args['shape'] || null; // TODO implement particles that aren't just points
+
+    //this.spawnRadius = args['spawnRadius'] || 0; // TODO implement randomness in spawn location
+
+    this.spawnStart = 'spawnDuration' in args ? new Date().getTime() : 0;
+    this.spawnDuration = args['spawnDuration'] || 0;
+
+    this.lastSpawn = this.spawnStart;
+    this.spawnRate = args['spawnRate'] || 10;
+
+    this.spawnVelocity = args['spawnVelocity'] || vec3.create(); // TODO implement randomness in spawn velocity
+    this.gravity = args['gravity'] || vec3.fromValues(0, -0.981 / 60, 0); // 1 unit = 1 metre
+
+    // properties of individual particles
+    this.offsets = gl.createBuffer();
+    //this.colours = gl.createBuffer(); // TODO implement changing colours for particles?
+    this.positions = [];
+    this.velocities = [];
+};
+
+ParticleEmitter.prototype = Object.create(Entity);
+ParticleEmitter.prototype.constructor = ParticleEmitter;
+
+// use a separate shader than the rest of the drawing since we need some additional features
+// when drawing points or instances
+ParticleEmitter.shader = null;
+
+ParticleEmitter.prototype.draw = function(shader) {
+    if (this.positions.length > 0 && ParticleEmitter.shader != null) {
+        ParticleEmitter.shader.bind();
+
+        // super sketchy setup of camera
+        ParticleEmitter.shader.setCamera(level.mainCamera);
+
+        // set model matrix
+        console.log(this.transform.getLocalToWorldMatrix());
+        ParticleEmitter.shader.setModelMatrix(this.transform.getLocalToWorldMatrix());
+
+        gl.bindBuffer(gl.ARRAY_BUFFER, this.offsets);
+
+        // update stored particle positions
+        // this could be improved by just keeping positions as a Float32Array and not reconstructing it constantly
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.positions), gl.DYNAMIC_DRAW);
+
+        ParticleEmitter.shader.enableVertexAttribute("position", this.offsets);
+
+        gl.drawArrays(gl.POINTS, 0, this.positions.length / 3);
+
+        ParticleEmitter.shader.disableVertexAttribute("position");
+        gl.bindBuffer(gl.ARRAY_BUFFER, null);
+
+        ParticleEmitter.shader.release();
+    }
+
+    // rebind the normal shader so that other drawing still works
+    shader.bind();
+
+    // we may want to consider recursing on children?
+};
+
+ParticleEmitter.prototype.update = function() {
+    // update position/location of existing particles
+    for (var i = 0; i < this.positions.length; i++) {
+        // note that each entry is just a single component of a particle's position/velocity
+        this.positions[i] += this.velocities[i];
+        this.velocities[i] += this.gravity[i % 3];
+    }
+
+    // spawn new particles if necessary
+    var time = new Date().getTime();
+
+    if (this.spawnStart + this.spawnDuration > time) {
+        // this won't go well if we pause and unpause the game
+        while (time - this.lastSpawn >= spawnRate) {
+            // actually spawn a particle
+            this.spawnParticle();
+
+            this.lastSpawn += spawnRate;
+        }
+    }
+};
+
+ParticleEmitter.prototype.cleanup = function(shader) {
+    if (this.offsets != null) {
+        gl.deleteBuffer(this.offsets);
+    }
+
+    if (this.colours != null) {
+        gl.deleteBuffers(this.colours);
+    }
+};
+
+ParticleEmitter.prototype.spawnParticle = function() {
+    this.positions.push(this.transform.position[0], this.transform.position[1], this.transform.position[2]);
+    this.velocities.push(this.spawnVelocity[0], this.spawnVelocity[1], this.spawnVelocity[2]);
+};
+
+ParticleEmitter.prototype.emitFor = function(spawnDuration) {
+    this.spawnStart = new Date().time();
+    this.spawnDuration = spawnDuration;
+};
+
+ParticleEmitter.prototype.stopEmitting = function() {
+    this.spawnDuration = 0;
+};

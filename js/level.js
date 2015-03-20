@@ -12,6 +12,10 @@ Level.prototype.cleanup = function() {
         }
     }
 
+    if (this.root != null) {
+        this.root.cleanup();
+    }
+
     // we're probably still leaking meshes here
 };
 

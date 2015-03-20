@@ -12,11 +12,9 @@ function Entity(args) {
 };
 
 Entity.prototype.draw = function(shader) {
-    var transform = this.transform.getLocalToWorldMatrix();
-
     if (this.mesh) {
         this.material.applyTo(shader);
-        shader.setModelMatrix(transform);
+        shader.setModelMatrix(this.transform.getLocalToWorldMatrix());
         this.mesh.draw(shader);
     }
 
@@ -32,5 +30,11 @@ Entity.prototype.update = function() {
 
     for (var i = 0; i < this.transform.children.length; i++) {
         this.transform.children[i].entity.update();
+    }
+};
+
+Entity.prototype.cleanup = function() {
+    for (var i = 0; i < this.transform.children.length; i++) {
+        this.transform.children[i].entity.cleanup();
     }
 };

@@ -177,7 +177,7 @@ Shader.prototype.disableVertexAttribute = function(name) {
 Shader.prototype.updateMatrices = function(camera, modelMatrix) {
     var dirty = false;
 
-    if (camera && camera != this.camera) {
+    if (camera /*&& camera != this.camera*/) { // the camera's matrices may still have changed
         this.camera = camera;
         dirty = true;
     }

@@ -85,6 +85,21 @@ var album = new Entity({
     parent: root.transform
 });
 
+// TODO add var definition so that this isn't global
+var cube3 = new Entity({
+    name: "cube3",
+    mesh: Mesh.makeCube(0.5),
+    material: red,
+    position: vec3.fromValues(0, 2, 0),
+    parent: root.transform
+});
+
+emitter = new ParticleEmitter({
+    name: "emitter",
+    spawnVelocity: vec3.fromValues(0, 0.1, 0),
+    parent: cube3.transform
+});
+
 var camera = new Camera({
     name: "camera",
     fov: 45,
