@@ -139,15 +139,46 @@ Transform.prototype.setRotation = function(rotation) {
     this.setDirty();
 };
 
-Transform.prototype.rotate = function(axis, angle) {
+Transform.prototype.rotate = function(axis, angle, relativeTo) {
+    // convert angle (in degrees) into radians
     angle = angle * Math.PI / 180;
 
-    if (axis == "x") {
-        quat.rotateX(this.rotation, this.rotation, angle);
-    } else if (axis == "y") {
-        quat.rotateY(this.rotation, this.rotation, angle);
-    } else if (axis == "z") {
-        quat.rotateZ(this.rotation, this.rotation, angle);
+    // default to rotating around an axis in our local coordinate space
+    relativeTo = relativeTo || "local";
+
+    var rotateAroundLocalAxis = function(_this, _axis, _angle) {
+        // calculate new rotation quaternion
+        var q = quat.create();
+        quat.setAxisAngle(q, _axis, _angle);
+
+        // rotate us
+        quat.multiply(_this.rotation, _this.rotation, q);
+    };
+
+    if (relativeTo == "local") {
+        if (axis == "x") {
+            quat.rotateX(this.rotation, this.rotation, angle);
+        } else if (axis == "y") {
+            quat.rotateY(this.rotation, this.rotation, angle);
+        } else if (axis == "z") {
+            quat.rotateZ(this.rotation, this.rotation, angle);
+        } else {
+            // assume that axis is a vector
+            rotateAroundLocalAxis(this, axis, angle);
+        }
+    } else {
+        if (axis == "x") {
+            axis = vec4.fromValues(1, 0, 0, 0);
+        } else if (axis == "y") {
+            axis = vec4.fromValues(0, 1, 0, 0);
+        } else if (axis == "z") {
+            axis = vec4.fromValues(0, 0, 1, 0);
+        }
+
+        // transform the axis into local space
+        vec4.transformMat4(axis, axis, this.getWorldToLocalMatrix());
+
+        rotateAroundLocalAxis(this, axis, angle);
     }
 
     this.setDirty();
