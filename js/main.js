@@ -48,15 +48,8 @@ var initialize = function() {
 
     loadLevel("test");
 
-    shader = new Shader();
-    var shaderCallback = function() {
-        if (shader.shaders.length == 2) {
-            // both shaders have been loaded
-            shader.link();
-        }
-    };
-    shader.loadShader(gl.VERTEX_SHADER, "shaders/phong.vert", shaderCallback);
-    shader.loadShader(gl.FRAGMENT_SHADER, "shaders/phong.frag", shaderCallback);
+    shader = new Shader(gl.VERTEX_SHADER, "shaders/phong.vert",
+                        gl.FRAGMENT_SHADER, "shaders/phong.frag");
 
     onFramerate = (function(framerateCounter) {
         return function(fps) {

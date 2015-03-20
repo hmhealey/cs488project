@@ -7,6 +7,20 @@ function Shader() {
 
     this.camera = null;
     this.modelMatrix = mat4.create();
+
+    if (arguments.length > 0) {
+        var linkAfterLoading = (function(shader, numShaders) {
+            return function(type) {
+                if (shader.shaders.length == numShaders) {
+                    shader.link();
+                }
+            }
+        })(this, arguments.length / 2);
+
+        for (var i = 0; i < arguments.length; i += 2) {
+            this.loadShader(arguments[i], arguments[i + 1], linkAfterLoading);
+        }
+    }
 };
 
 Shader.LOG_MISSING_ATTRIBUTES = false;
