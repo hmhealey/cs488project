@@ -16,7 +16,22 @@ function ParticleEmitter(args) {
 
     this.minSpawnSpeed = args['minSpawnSpeed'] || args['spawnSpeed'] || 1;
     this.maxSpawnSpeed = args['maxSpawnSpeed'] || args['spawnSpeed'] || 1;
-    this.spawnOrientation = args['spawnOrientation'] || vec3.fromValues(0, 1, 0);
+
+    if ('spawnOrientation' in args) {
+        if (args['spawnOrientation'].length == 3) {
+            // spawnOrientation is a vector so we store a quaternion that'll rotate the y axis
+            // to the provided orientation
+            this.spawnOrientation = quat.create();
+            quat.rotationTo(this.spawnOrientation, vec3.fromValues(0, 1, 0), args['spawnOrientation']);
+        } else {
+            // spawnOrientation is a quaternion
+            this.spawnOrientation = args['spawnOrientation'];
+        }
+    } else {
+        this.spawnOrientation = quat.create();
+    }
+    this.spawnOrientationRandomness = args['spawnOrientationRandomness'] || 0;
+
     this.gravity = args['gravity'] || vec3.fromValues(0, -0.981 / 60, 0); // 1 unit = 1 metre
 
     // properties of individual particles
@@ -100,9 +115,25 @@ ParticleEmitter.prototype.cleanup = function(shader) {
 ParticleEmitter.prototype.spawnParticle = function() {
     this.positions.push(this.transform.position[0], this.transform.position[1], this.transform.position[2]);
 
-    // set particle velocity
-    var velocity = vec3.clone(this.spawnOrientation);
+    // set initial orientation
+    var velocity = vec3.fromValues(0, 1, 0);
+    vec3.transformQuat(velocity, velocity, this.spawnOrientation);
+    
+    // sets any randomness in the orientation
+    if (this.spawnOrientationRandomness != 0) {
+        // pick a random vector on the x-z plane as the axis
+        var x = Math.random();
+        var deltaAxis = vec3.fromValues(x, 0, 1 - x);
+
+        // and rotate around it to get our delta
+        var angle = (1 - 2 * Math.random()) * this.spawnOrientationRandomness;
+        var delta = quat.setAxisAngle(quat.create(), deltaAxis, angle * Math.PI / 180);
+        vec3.transformQuat(velocity, velocity, delta)
+    }
+
+    // set particle speed
     vec3.scale(velocity, velocity, (this.maxSpawnSpeed - this.minSpawnSpeed) * Math.random() + this.minSpawnSpeed);
+
     this.velocities.push(velocity[0], velocity[1], velocity[2]);
 };
 

@@ -89,7 +89,7 @@ var album = new Entity({
 var cube3 = new Entity({
     name: "cube3",
     mesh: Mesh.makeCube(0.5),
-    material: red,
+    material: blue,
     position: vec3.fromValues(0, 2, 0),
     parent: root.transform
 });
@@ -97,8 +97,9 @@ var cube3 = new Entity({
 emitter = new ParticleEmitter({
     name: "emitter",
     spawnOrientation: vec3.fromValues(0, 1, 0),
+    spawnOrientationRandomness: 30,
     minSpawnSpeed: 0.1,
-    maxSpawnSpeed: 0.5,
+    maxSpawnSpeed: 0.3,
     parent: cube3.transform
 });
 
