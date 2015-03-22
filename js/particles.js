@@ -93,11 +93,11 @@ ParticleEmitter.prototype.update = function() {
 
     if (this.spawnStart + this.spawnDuration > time) {
         // this won't go well if we pause and unpause the game
-        while (time - this.lastSpawn >= spawnRate) {
+        while (time - this.lastSpawn >= this.spawnRate) {
             // actually spawn a particle
             this.spawnParticle();
 
-            this.lastSpawn += spawnRate;
+            this.lastSpawn += this.spawnRate;
         }
     }
 };
@@ -138,7 +138,8 @@ ParticleEmitter.prototype.spawnParticle = function() {
 };
 
 ParticleEmitter.prototype.emitFor = function(spawnDuration) {
-    this.spawnStart = new Date().time();
+    this.spawnStart = new Date().getTime();
+    this.lastSpawn = this.spawnStart;
     this.spawnDuration = spawnDuration;
 };
 
