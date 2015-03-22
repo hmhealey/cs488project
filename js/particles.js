@@ -14,7 +14,9 @@ function ParticleEmitter(args) {
     this.lastSpawn = this.spawnStart;
     this.spawnRate = args['spawnRate'] || 10;
 
-    this.spawnVelocity = args['spawnVelocity'] || vec3.create(); // TODO implement randomness in spawn velocity
+    this.minSpawnSpeed = args['minSpawnSpeed'] || args['spawnSpeed'] || 1;
+    this.maxSpawnSpeed = args['maxSpawnSpeed'] || args['spawnSpeed'] || 1;
+    this.spawnOrientation = args['spawnOrientation'] || vec3.fromValues(0, 1, 0);
     this.gravity = args['gravity'] || vec3.fromValues(0, -0.981 / 60, 0); // 1 unit = 1 metre
 
     // properties of individual particles
@@ -39,7 +41,6 @@ ParticleEmitter.prototype.draw = function(shader) {
         ParticleEmitter.shader.setCamera(level.mainCamera);
 
         // set model matrix
-        console.log(this.transform.getLocalToWorldMatrix());
         ParticleEmitter.shader.setModelMatrix(this.transform.getLocalToWorldMatrix());
 
         gl.bindBuffer(gl.ARRAY_BUFFER, this.offsets);
@@ -98,7 +99,11 @@ ParticleEmitter.prototype.cleanup = function(shader) {
 
 ParticleEmitter.prototype.spawnParticle = function() {
     this.positions.push(this.transform.position[0], this.transform.position[1], this.transform.position[2]);
-    this.velocities.push(this.spawnVelocity[0], this.spawnVelocity[1], this.spawnVelocity[2]);
+
+    // set particle velocity
+    var velocity = vec3.clone(this.spawnOrientation);
+    vec3.scale(velocity, velocity, (this.maxSpawnSpeed - this.minSpawnSpeed) * Math.random() + this.minSpawnSpeed);
+    this.velocities.push(velocity[0], velocity[1], velocity[2]);
 };
 
 ParticleEmitter.prototype.emitFor = function(spawnDuration) {

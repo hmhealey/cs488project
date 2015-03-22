@@ -96,7 +96,9 @@ var cube3 = new Entity({
 
 emitter = new ParticleEmitter({
     name: "emitter",
-    spawnVelocity: vec3.fromValues(0, 0.1, 0),
+    spawnOrientation: vec3.fromValues(0, 1, 0),
+    minSpawnSpeed: 0.1,
+    maxSpawnSpeed: 0.5,
     parent: cube3.transform
 });
 
