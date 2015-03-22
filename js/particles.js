@@ -8,10 +8,9 @@ function ParticleEmitter(args) {
 
     //this.spawnRadius = args['spawnRadius'] || 0; // TODO implement randomness in spawn location
 
-    this.spawnStart = 'spawnDuration' in args ? new Date().getTime() : 0;
-    this.spawnDuration = args['spawnDuration'] || 0;
-
-    this.lastSpawn = this.spawnStart;
+    var time = new Date().getTime();
+    this.spawnEnd = 'spawnDuration' in args ? time + args['spawnDuration'] : 0;
+    this.lastSpawn = time;
     this.spawnRate = args['spawnRate'] || 10;
 
     this.minSpawnSpeed = args['minSpawnSpeed'] || args['spawnSpeed'] || 1;
@@ -91,7 +90,7 @@ ParticleEmitter.prototype.update = function() {
     // spawn new particles if necessary
     var time = new Date().getTime();
 
-    if (this.spawnStart + this.spawnDuration > time) {
+    if (this.spawnEnd == -1 || time < this.spawnEnd) {
         // this won't go well if we pause and unpause the game
         while (time - this.lastSpawn >= this.spawnRate) {
             // actually spawn a particle
@@ -138,11 +137,21 @@ ParticleEmitter.prototype.spawnParticle = function() {
 };
 
 ParticleEmitter.prototype.emitFor = function(spawnDuration) {
-    this.spawnStart = new Date().getTime();
-    this.lastSpawn = this.spawnStart;
-    this.spawnDuration = spawnDuration;
+    var time = new Date().getTime();
+    this.spawnEnd = time + spawnDuration;
+    this.lastSpawn = time;
+};
+
+ParticleEmitter.prototype.emitUntil = function(spawnEnd) {
+    this.spawnEnd = spawnEnd;
+    this.lastSpawn = new Date().getTime();
+};
+
+ParticleEmitter.prototype.startEmitting = function() {
+    this.spawnEnd = -1;
+    this.lastSpawn = new Date().getTime();
 };
 
 ParticleEmitter.prototype.stopEmitting = function() {
-    this.spawnDuration = 0;
+    this.spawnEnd = 0;
 };
