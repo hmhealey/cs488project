@@ -27,7 +27,7 @@ PlayerController.prototype.update = function(entity) {
         entity.transform.rotate('x', dpitch);
     }
     if (dyaw != 0) {
-        entity.transform.rotate('y', dyaw);
+        entity.transform.rotate('y', dyaw, 'world');
     }
 
     var dz = 0;
