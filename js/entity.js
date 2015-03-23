@@ -23,13 +23,15 @@ Entity.prototype.draw = function(shader) {
     }
 };
 
-Entity.prototype.update = function() {
+Entity.prototype.update = function(time) {
+    if (this.name == "root") console.log("The time is now " + time);
+
     if (this.controller) {
         this.controller.update(this);
     }
 
     for (var i = 0; i < this.transform.children.length; i++) {
-        this.transform.children[i].entity.update();
+        this.transform.children[i].entity.update(time);
     }
 };
 

@@ -35,9 +35,9 @@ Level.prototype.draw = function(shader) {
     shader.release();
 };
 
-Level.prototype.update = function() {
+Level.prototype.update = function(time) {
     if (this.root) {
-        this.root.update();
+        this.root.update(time);
     }
 };
 
