@@ -45,12 +45,9 @@ function ParticleEmitter(args) {
     this.offsets = gl.createBuffer();
     //this.colours = gl.createBuffer(); // TODO implement changing colours for particles?
 
-    this.positions = [];
-    this.velocities = [];
-
+    this.positions = new Float32Array(this.maxParticleCount * 3);
+    this.velocities = new Float32Array(this.maxParticleCount * 3);
     this.ages = new Float32Array(this.maxParticleCount);
-
-    console.log(this.ages);
 };
 
 ParticleEmitter.prototype = Object.create(Entity);
@@ -74,7 +71,7 @@ ParticleEmitter.prototype.draw = function(shader) {
 
         // update stored particle positions
         // this could be improved by just keeping positions as a Float32Array and not reconstructing it constantly
-        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.positions), gl.DYNAMIC_DRAW);
+        gl.bufferData(gl.ARRAY_BUFFER, this.positions, gl.DYNAMIC_DRAW);
 
         ParticleEmitter.shader.enableVertexAttribute("position", this.offsets);
 
@@ -158,7 +155,6 @@ ParticleEmitter.prototype.getAvailableIndex = (function() {
 ParticleEmitter.prototype.spawnParticle = function() {
     // use the next available slot in the particle arrays to store this
     var index = this.getAvailableIndex();
-    console.log(index);
 
     // set it's age to 0 since it's new
     this.ages[index] = 0;
