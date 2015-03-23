@@ -63,7 +63,7 @@ var initialize = function() {
     lastTick = new Date().getTime();
 };
 
-var update = function(time) {
+var update = function() {
     if (shader.linked) {
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
@@ -86,6 +86,8 @@ var update = function(time) {
     if (level) {
         level.update();
     }
+
+    lastTick = new Date().getTime();
 
     onFrameRendered();
 

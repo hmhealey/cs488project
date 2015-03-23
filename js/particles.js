@@ -3,6 +3,9 @@ function ParticleEmitter(args) {
 
     Entity.call(this, args);
 
+    // how long individual particles will live for
+    this.maxAge = args['maxAge'] || 500;
+
     //this.colour = args['colour'] || vec4.fromValues(1, 1, 1, 1); // TODO implement setting a colour as part of the emitter
     //this.shape = args['shape'] || null; // TODO implement particles that aren't just points
 
@@ -33,11 +36,21 @@ function ParticleEmitter(args) {
 
     this.gravity = args['gravity'] || vec3.fromValues(0, -0.981 / 60, 0); // 1 unit = 1 metre
 
+    // we can either explicitly set the maximum number of particles or just infer it from the
+    // max age and spawn rate (but pretend we spawn a bit faster than we actually do just to
+    // make sure we don't run out of space)
+    this.maxParticleCount = args['maxParticleCount'] || this.maxAge / (this.spawnRate - 2);
+
     // properties of individual particles
     this.offsets = gl.createBuffer();
     //this.colours = gl.createBuffer(); // TODO implement changing colours for particles?
+
     this.positions = [];
     this.velocities = [];
+
+    this.ages = new Float32Array(this.maxParticleCount);
+
+    console.log(this.ages);
 };
 
 ParticleEmitter.prototype = Object.create(Entity);
@@ -80,6 +93,14 @@ ParticleEmitter.prototype.draw = function(shader) {
 };
 
 ParticleEmitter.prototype.update = function() {
+    var time = new Date().getTime();
+    var delta = time - lastTick;
+
+    // update the age of existing particles
+    for (var i = 0; i < this.maxParticleCount; i++) {
+        this.ages[i] += delta;
+    }
+
     // update position/location of existing particles
     for (var i = 0; i < this.positions.length; i++) {
         // note that each entry is just a single component of a particle's position/velocity
@@ -88,8 +109,6 @@ ParticleEmitter.prototype.update = function() {
     }
 
     // spawn new particles if necessary
-    var time = new Date().getTime();
-
     if (this.spawnEnd == -1 || time < this.spawnEnd) {
         // this won't go well if we pause and unpause the game
         while (time - this.lastSpawn >= this.spawnRate) {
@@ -111,14 +130,48 @@ ParticleEmitter.prototype.cleanup = function(shader) {
     }
 };
 
-ParticleEmitter.prototype.spawnParticle = function() {
-    this.positions.push(this.transform.position[0], this.transform.position[1], this.transform.position[2]);
+// search through the particle array linearly until we find the next available slot to use
+ParticleEmitter.prototype.getAvailableIndex = (function() {
+    var lastParticleIndex = 0;
 
-    // set initial orientation
+    return function() {
+        for (var i = lastParticleIndex + 1; i < this.maxParticleCount; i++) {
+            if (this.ages[i] >= this.maxAge) {
+                lastParticleIndex = i;
+                return i;
+            }
+        }
+
+        for (var i = 0; i <= lastParticleIndex; i++) {
+            if (this.ages[i] >= this.maxAge) {
+                lastParticleIndex = i;
+                return i;
+            }
+        }
+
+        // we've run out of space for particles so just override the first particle
+        console.log("ParticleEmitter.getAvailableIndex - Ran out of space in the particle array");
+        return 0;
+    };
+})();
+
+ParticleEmitter.prototype.spawnParticle = function() {
+    // use the next available slot in the particle arrays to store this
+    var index = this.getAvailableIndex();
+    console.log(index);
+
+    // set it's age to 0 since it's new
+    this.ages[index] = 0;
+
+    // set the particle's initial position to match that of the emitter
+    this.positions[index * 3] = this.transform.position[0];
+    this.positions[index * 3 + 1] = this.transform.position[1];
+    this.positions[index * 3 + 2] = this.transform.position[2];
+
+    // construct an initial velocity based on the emitter's spawn orientation and particle spawn speed
     var velocity = vec3.fromValues(0, 1, 0);
     vec3.transformQuat(velocity, velocity, this.spawnOrientation);
     
-    // sets any randomness in the orientation
     if (this.spawnOrientationRandomness != 0) {
         // pick a random vector on the x-z plane as the axis
         var x = Math.random();
@@ -134,10 +187,11 @@ ParticleEmitter.prototype.spawnParticle = function() {
         vec3.transformQuat(velocity, velocity, delta)
     }
 
-    // set particle speed
     vec3.scale(velocity, velocity, (this.maxSpawnSpeed - this.minSpawnSpeed) * Math.random() + this.minSpawnSpeed);
 
-    this.velocities.push(velocity[0], velocity[1], velocity[2]);
+    this.velocities[index * 3] = velocity[0];
+    this.velocities[index * 3 + 1] = velocity[1];
+    this.velocities[index * 3 + 2] = velocity[2];
 };
 
 ParticleEmitter.prototype.emitFor = function(spawnDuration) {
