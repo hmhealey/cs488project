@@ -39,14 +39,14 @@ function ParticleEmitter(args) {
     // we can either explicitly set the maximum number of particles or just infer it from the
     // max age and spawn rate (but pretend we spawn a bit faster than we actually do just to
     // make sure we don't run out of space)
-    this.maxParticleCount = args['maxParticleCount'] || this.maxAge / (this.spawnRate - 2);
+    this.maxParticleCount = args['maxParticleCount'] || Math.ceil(this.maxAge / (this.spawnRate - 2));
     this.particleCount = 0;
 
     // the next index that we'll check when we need to spawn a new particle
     this.nextParticleIndex = 0;
 
     // properties of individual particles
-    this.particles = new Array(Math.ceil(this.maxParticleCount));
+    this.particles = new Array(this.maxParticleCount);
     for (var i = 0; i < this.particles.length; i++) {
         this.particles[i] = new Particle();
     }
@@ -97,8 +97,6 @@ ParticleEmitter.prototype.draw = function(shader) {
 };
 
 ParticleEmitter.prototype.update = function(time) {
-    var delta = time - lastTickTime;
-
     // keep track of how many particles are currently alive
     this.particleCount = 0;
 
@@ -111,7 +109,7 @@ ParticleEmitter.prototype.update = function(time) {
             vec3.add(particle.position, particle.position, particle.velocity);
             vec3.add(particle.velocity, particle.velocity, this.gravity);
 
-            particle.life -= delta;
+            particle.life -= TICK_RATE;
 
             // copy the particle position into a new array that we'll pass to the shader
             this.positions[this.particleCount * 3] = particle.position[0];
