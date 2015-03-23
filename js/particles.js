@@ -40,14 +40,19 @@ function ParticleEmitter(args) {
     // max age and spawn rate (but pretend we spawn a bit faster than we actually do just to
     // make sure we don't run out of space)
     this.maxParticleCount = args['maxParticleCount'] || this.maxAge / (this.spawnRate - 2);
+    this.particleCount = 0;
 
     // properties of individual particles
+    this.particles = new Array(Math.ceil(this.maxParticleCount));
+    for (var i = 0; i < this.particles.length; i++) {
+        this.particles[i] = new Particle();
+    }
+
+    // buffer objects and arrays used to pass properties to OpenGL
     this.offsets = gl.createBuffer();
     //this.colours = gl.createBuffer(); // TODO implement changing colours for particles?
 
     this.positions = new Float32Array(this.maxParticleCount * 3);
-    this.velocities = new Float32Array(this.maxParticleCount * 3);
-    this.ages = new Float32Array(this.maxParticleCount);
 };
 
 ParticleEmitter.prototype = Object.create(Entity);
@@ -58,7 +63,7 @@ ParticleEmitter.prototype.constructor = ParticleEmitter;
 ParticleEmitter.shader = null;
 
 ParticleEmitter.prototype.draw = function(shader) {
-    if (this.positions.length > 0 && ParticleEmitter.shader != null) {
+    if (this.particleCount > 0 && ParticleEmitter.shader != null) {
         ParticleEmitter.shader.bind();
 
         // super sketchy setup of camera
@@ -70,21 +75,20 @@ ParticleEmitter.prototype.draw = function(shader) {
         gl.bindBuffer(gl.ARRAY_BUFFER, this.offsets);
 
         // update stored particle positions
-        // this could be improved by just keeping positions as a Float32Array and not reconstructing it constantly
-        gl.bufferData(gl.ARRAY_BUFFER, this.positions, gl.DYNAMIC_DRAW);
+        gl.bufferData(gl.ARRAY_BUFFER, this.positions.subarray(0, this.particleCount * 3), gl.STREAM_DRAW);
 
         ParticleEmitter.shader.enableVertexAttribute("position", this.offsets);
 
-        gl.drawArrays(gl.POINTS, 0, this.positions.length / 3);
+        gl.drawArrays(gl.POINTS, 0, this.particleCount);
 
         ParticleEmitter.shader.disableVertexAttribute("position");
         gl.bindBuffer(gl.ARRAY_BUFFER, null);
 
         ParticleEmitter.shader.release();
-    }
 
-    // rebind the normal shader so that other drawing still works
-    shader.bind();
+        // rebind the normal shader so that other drawing still works
+        shader.bind();
+    }
 
     // we may want to consider recursing on children?
 };
@@ -93,16 +97,27 @@ ParticleEmitter.prototype.update = function() {
     var time = new Date().getTime();
     var delta = time - lastTick;
 
-    // update the age of existing particles
-    for (var i = 0; i < this.maxParticleCount; i++) {
-        this.ages[i] += delta;
-    }
+    // keep track of how many particles are currently alive
+    this.particleCount = 0;
 
-    // update position/location of existing particles
-    for (var i = 0; i < this.positions.length; i++) {
-        // note that each entry is just a single component of a particle's position/velocity
-        this.positions[i] += this.velocities[i];
-        this.velocities[i] += this.gravity[i % 3];
+    // update properties of particles
+    for (var i = 0; i < this.maxParticleCount; i++) {
+        var particle = this.particles[i];
+
+        // only bother updating the particle if it's alive
+        if (particle.life > 0) {
+            vec3.add(particle.position, particle.position, particle.velocity);
+            vec3.add(particle.velocity, particle.velocity, this.gravity);
+
+            particle.life -= delta;
+
+            // copy the particle position into a new array that we'll pass to the shader
+            this.positions[this.particleCount * 3] = particle.position[0];
+            this.positions[this.particleCount * 3 + 1] = particle.position[1];
+            this.positions[this.particleCount * 3 + 2] = particle.position[2];
+
+            this.particleCount += 1;
+        }
     }
 
     // spawn new particles if necessary
@@ -129,18 +144,19 @@ ParticleEmitter.prototype.cleanup = function(shader) {
 
 // search through the particle array linearly until we find the next available slot to use
 ParticleEmitter.prototype.getAvailableIndex = (function() {
+    // TODO change how we store this since it's currently shared between instances
     var lastParticleIndex = 0;
 
     return function() {
         for (var i = lastParticleIndex + 1; i < this.maxParticleCount; i++) {
-            if (this.ages[i] >= this.maxAge) {
+            if (this.particles[i].life <= 0) {
                 lastParticleIndex = i;
                 return i;
             }
         }
 
         for (var i = 0; i <= lastParticleIndex; i++) {
-            if (this.ages[i] >= this.maxAge) {
+            if (this.particles[i].life <= 0) {
                 lastParticleIndex = i;
                 return i;
             }
@@ -155,14 +171,6 @@ ParticleEmitter.prototype.getAvailableIndex = (function() {
 ParticleEmitter.prototype.spawnParticle = function() {
     // use the next available slot in the particle arrays to store this
     var index = this.getAvailableIndex();
-
-    // set it's age to 0 since it's new
-    this.ages[index] = 0;
-
-    // set the particle's initial position to match that of the emitter
-    this.positions[index * 3] = this.transform.position[0];
-    this.positions[index * 3 + 1] = this.transform.position[1];
-    this.positions[index * 3 + 2] = this.transform.position[2];
 
     // construct an initial velocity based on the emitter's spawn orientation and particle spawn speed
     var velocity = vec3.fromValues(0, 1, 0);
@@ -183,11 +191,14 @@ ParticleEmitter.prototype.spawnParticle = function() {
         vec3.transformQuat(velocity, velocity, delta)
     }
 
+    // scale our orientation vector by speed to get the final velocity
     vec3.scale(velocity, velocity, (this.maxSpawnSpeed - this.minSpawnSpeed) * Math.random() + this.minSpawnSpeed);
 
-    this.velocities[index * 3] = velocity[0];
-    this.velocities[index * 3 + 1] = velocity[1];
-    this.velocities[index * 3 + 2] = velocity[2];
+    // actually set particle properties
+    vec3.copy(this.particles[index].position, this.transform.position);
+    vec3.copy(this.particles[index].velocity, velocity);
+
+    this.particles[index].life = this.maxAge;
 };
 
 ParticleEmitter.prototype.emitFor = function(spawnDuration) {
@@ -208,4 +219,10 @@ ParticleEmitter.prototype.startEmitting = function() {
 
 ParticleEmitter.prototype.stopEmitting = function() {
     this.spawnEnd = 0;
+};
+
+function Particle() {
+    this.position = vec3.create();
+    this.velocity = vec3.create();
+    this.life = 0;
 };
