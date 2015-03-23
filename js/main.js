@@ -151,5 +151,9 @@ var onResize = function(e) {
     }
 };
 
+var getTime = function() {
+    return gameTime;
+};
+
 attachEvent(window, "load", onLoad);
 attachEvent(window, "unload", onUnload);
