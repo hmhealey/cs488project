@@ -102,8 +102,6 @@ var update = function() {
         lastTickTime += TICK_RATE;
     }
 
-    lastTick = new Date().getTime();
-
     onFrameRendered();
 
     if (!paused) {
