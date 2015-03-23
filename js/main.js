@@ -7,7 +7,13 @@ var level;
 
 var paused = false;
 
-var lastTick;
+// the current game time
+var gameTime = 0;
+
+// the time that the last update tick occurred at
+var lastTickTime;
+
+// the number of milliseconds between update ticks
 var TICK_RATE = 10;
 
 var onLoad = function(e) {
@@ -57,10 +63,12 @@ var initialize = function() {
         };
     })(document.getElementById("framerateCounter"));
 
-    lastTick = new Date().getTime();
+    lastTickTime = new Date().getTime();
 };
 
-var update = function(time) {
+var update = function() {
+    var time = new Date().getTime();
+
     if (shader.linked) {
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
@@ -80,8 +88,15 @@ var update = function(time) {
     Input.update();
 
     // update game logic
-    if (level) {
-        level.update();
+    while (time - lastTickTime > TICK_RATE) {
+        // our internal representation of game time that only passses when the game isn't paused
+        gameTime += TICK_RATE;
+
+        if (level) {
+            level.update(gameTime);
+        }
+
+        lastTickTime += TICK_RATE;
     }
 
     onFrameRendered();
@@ -112,7 +127,7 @@ var onKeyPress = function(e) {
             window.requestAnimationFrame(update);
 
             // reset the last tick time so that we don't simulate the entire game catching up to now
-            lastTick = new Date().getTime();
+            lastTickTime = new Date().getTime();
         } else {
             // a hacky way to show in the UI that the game is paused
             window.requestAnimationFrame(function() {
