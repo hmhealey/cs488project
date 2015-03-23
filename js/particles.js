@@ -39,7 +39,7 @@ function ParticleEmitter(args) {
     // we can either explicitly set the maximum number of particles or just infer it from the
     // max age and spawn rate (but pretend we spawn a bit faster than we actually do just to
     // make sure we don't run out of space)
-    this.maxParticleCount = args['maxParticleCount'] || Math.ceil(this.maxAge / (this.spawnRate - 2));
+    this.maxParticleCount = args['maxParticleCount'] || Math.ceil(this.maxAge / this.spawnRate);
     this.particleCount = 0;
 
     // the next index that we'll check when we need to spawn a new particle
