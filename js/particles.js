@@ -42,6 +42,9 @@ function ParticleEmitter(args) {
     this.maxParticleCount = args['maxParticleCount'] || this.maxAge / (this.spawnRate - 2);
     this.particleCount = 0;
 
+    // the next index that we'll check when we need to spawn a new particle
+    this.nextParticleIndex = 0;
+
     // properties of individual particles
     this.particles = new Array(Math.ceil(this.maxParticleCount));
     for (var i = 0; i < this.particles.length; i++) {
@@ -142,35 +145,30 @@ ParticleEmitter.prototype.cleanup = function(shader) {
     }
 };
 
-// search through the particle array linearly until we find the next available slot to use
-ParticleEmitter.prototype.getAvailableIndex = (function() {
-    // TODO change how we store this since it's currently shared between instances
-    var lastParticleIndex = 0;
-
-    return function() {
-        for (var i = lastParticleIndex + 1; i < this.maxParticleCount; i++) {
-            if (this.particles[i].life <= 0) {
-                lastParticleIndex = i;
-                return i;
-            }
+ParticleEmitter.prototype.getNextParticleIndex = function() {
+    // search through the particle array linearly until we find the next available slot to use
+    for (var i = this.nextParticleIndex; i < this.maxParticleCount; i++) {
+        if (this.particles[i].life <= 0) {
+            this.nextParticleIndex = i + 1;
+            return i;
         }
+    }
 
-        for (var i = 0; i <= lastParticleIndex; i++) {
-            if (this.particles[i].life <= 0) {
-                lastParticleIndex = i;
-                return i;
-            }
+    for (var i = 0; i < this.nextParticleIndex; i++) {
+        if (this.particles[i].life <= 0) {
+            this.nextParticleIndex = i + 1;
+            return i;
         }
+    }
 
-        // we've run out of space for particles so just override the first particle
-        console.log("ParticleEmitter.getAvailableIndex - Ran out of space in the particle array");
-        return 0;
-    };
-})();
+    // we've run out of space for particles so just override the first particle
+    console.log("ParticleEmitter.getAvailableIndex - Ran out of space in the particle array");
+    return 0;
+};
 
 ParticleEmitter.prototype.spawnParticle = function() {
     // use the next available slot in the particle arrays to store this
-    var index = this.getAvailableIndex();
+    var index = this.getNextParticleIndex();
 
     // construct an initial velocity based on the emitter's spawn orientation and particle spawn speed
     var velocity = vec3.fromValues(0, 1, 0);
