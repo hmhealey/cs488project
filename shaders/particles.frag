@@ -11,11 +11,9 @@ uniform sampler2D texture;
 varying vec3 fPosition;
 varying vec3 fNormal;
 varying vec2 fTexCoord;
+varying vec4 fColour;
 
 void main() {
-    gl_FragColor = vec4(fNormal, 1); // suppress warnings about fNormal not being read
-    gl_FragColor = vec4(fTexCoord, 0, 1); // suppress warnings about fTexCoord not being read
-
     // TODO set the light components as uniforms r something
     vec4 ambient = materialAmbient * vec4(0.1, 0.1, 0.1, 1.0);
     //vec4 diffuse = materialDiffuse * vec4(0.8, 0.8, 0.8, 1.0);
@@ -42,5 +40,5 @@ void main() {
     iSpecular = clamp(iSpecular, 0.0, 1.0);
 
     //gl_FragColor = iAmbient + iDiffuse + iSpecular;
-    gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
+    gl_FragColor = fColour;
 }

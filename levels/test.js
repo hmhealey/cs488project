@@ -102,6 +102,7 @@ emitter = new ParticleEmitter({
     maxSpawnSpeed: 0.12,
     gravity: vec3.fromValues(0, -0.002, 0),
     maxAge: 800,
+    colour: vec4.fromValues(0.4, 0.0, 0.9, 1.0),
     parent: cube3.transform
 });
 

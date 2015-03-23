@@ -6,7 +6,7 @@ function ParticleEmitter(args) {
     // how long individual particles will live for
     this.maxAge = args['maxAge'] || 500;
 
-    //this.colour = args['colour'] || vec4.fromValues(1, 1, 1, 1); // TODO implement setting a colour as part of the emitter
+    this.colour = args['colour'] || vec4.fromValues(1, 1, 1, 1);
     //this.shape = args['shape'] || null; // TODO implement particles that aren't just points
 
     //this.spawnRadius = args['spawnRadius'] || 0; // TODO implement randomness in spawn location
@@ -52,10 +52,11 @@ function ParticleEmitter(args) {
     }
 
     // buffer objects and arrays used to pass properties to OpenGL
-    this.offsets = gl.createBuffer();
-    //this.colours = gl.createBuffer(); // TODO implement changing colours for particles?
+    this.positionBuffer = gl.createBuffer();
+    this.colourBuffer = gl.createBuffer();
 
     this.positions = new Float32Array(this.maxParticleCount * 3);
+    this.colours = new Float32Array(this.maxParticleCount * 4);
 };
 
 ParticleEmitter.prototype = Object.create(Entity);
@@ -75,12 +76,12 @@ ParticleEmitter.prototype.draw = function(shader) {
         // set model matrix
         ParticleEmitter.shader.setModelMatrix(this.transform.getLocalToWorldMatrix());
 
-        gl.bindBuffer(gl.ARRAY_BUFFER, this.offsets);
-
-        // update stored particle positions
+        // update particle properties
+        ParticleEmitter.shader.enableVertexAttribute("position", this.positionBuffer);
         gl.bufferData(gl.ARRAY_BUFFER, this.positions.subarray(0, this.particleCount * 3), gl.STREAM_DRAW);
 
-        ParticleEmitter.shader.enableVertexAttribute("position", this.offsets);
+        ParticleEmitter.shader.enableVertexAttribute("colour", this.colourBuffer, 4);
+        gl.bufferData(gl.ARRAY_BUFFER, this.colours.subarray(0, this.particleCount * 4), gl.STREAM_DRAW);
 
         gl.drawArrays(gl.POINTS, 0, this.particleCount);
 
@@ -111,10 +112,15 @@ ParticleEmitter.prototype.update = function(time) {
 
             particle.life -= TICK_RATE;
 
-            // copy the particle position into a new array that we'll pass to the shader
+            // copy the particle position and colour into a new array that we'll pass to the shader
             this.positions[this.particleCount * 3] = particle.position[0];
             this.positions[this.particleCount * 3 + 1] = particle.position[1];
             this.positions[this.particleCount * 3 + 2] = particle.position[2];
+
+            this.colours[this.particleCount * 4] = particle.colour[0];
+            this.colours[this.particleCount * 4 + 1] = particle.colour[1];
+            this.colours[this.particleCount * 4 + 2] = particle.colour[2];
+            this.colours[this.particleCount * 4 + 3] = particle.colour[3];
 
             this.particleCount += 1;
         }
@@ -133,12 +139,12 @@ ParticleEmitter.prototype.update = function(time) {
 };
 
 ParticleEmitter.prototype.cleanup = function(shader) {
-    if (this.offsets != null) {
-        gl.deleteBuffer(this.offsets);
+    if (this.positionBuffer != null) {
+        gl.deleteBuffer(this.positionBuffer);
     }
 
-    if (this.colours != null) {
-        gl.deleteBuffers(this.colours);
+    if (this.colourBuffer != null) {
+        gl.deleteBuffers(this.colourBuffer);
     }
 };
 
@@ -194,6 +200,8 @@ ParticleEmitter.prototype.spawnParticle = function() {
     vec3.copy(this.particles[index].velocity, velocity);
 
     this.particles[index].life = this.maxAge;
+
+    this.particles[index].colour = this.colour;
 };
 
 ParticleEmitter.prototype.emitFor = function(spawnDuration) {
@@ -219,5 +227,8 @@ ParticleEmitter.prototype.stopEmitting = function() {
 function Particle() {
     this.position = vec3.create();
     this.velocity = vec3.create();
+
     this.life = 0;
+
+    this.colour = vec4.create();
 };
