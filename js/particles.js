@@ -11,7 +11,7 @@ function ParticleEmitter(args) {
 
     //this.spawnRadius = args['spawnRadius'] || 0; // TODO implement randomness in spawn location
 
-    var time = new Date().getTime();
+    var time = getTime();
     this.spawnEnd = 'spawnDuration' in args ? time + args['spawnDuration'] : 0;
     this.lastSpawn = time;
     this.spawnRate = args['spawnRate'] || 10;
@@ -96,9 +96,8 @@ ParticleEmitter.prototype.draw = function(shader) {
     // we may want to consider recursing on children?
 };
 
-ParticleEmitter.prototype.update = function() {
-    var time = new Date().getTime();
-    var delta = time - lastTick;
+ParticleEmitter.prototype.update = function(time) {
+    var delta = time - lastTickTime;
 
     // keep track of how many particles are currently alive
     this.particleCount = 0;
@@ -200,19 +199,19 @@ ParticleEmitter.prototype.spawnParticle = function() {
 };
 
 ParticleEmitter.prototype.emitFor = function(spawnDuration) {
-    var time = new Date().getTime();
+    var time = getTime();
     this.spawnEnd = time + spawnDuration;
     this.lastSpawn = time;
 };
 
 ParticleEmitter.prototype.emitUntil = function(spawnEnd) {
     this.spawnEnd = spawnEnd;
-    this.lastSpawn = new Date().getTime();
+    this.lastSpawn = getTime();
 };
 
 ParticleEmitter.prototype.startEmitting = function() {
     this.spawnEnd = -1;
-    this.lastSpawn = new Date().getTime();
+    this.lastSpawn = getTime();
 };
 
 ParticleEmitter.prototype.stopEmitting = function() {
