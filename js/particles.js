@@ -122,7 +122,11 @@ ParticleEmitter.prototype.spawnParticle = function() {
     if (this.spawnOrientationRandomness != 0) {
         // pick a random vector on the x-z plane as the axis
         var x = Math.random();
-        var deltaAxis = vec3.fromValues(x, 0, 1 - x);
+        var deltaAxis = vec3.fromValues(x, 0, Math.sqrt(1 - x * x));
+
+        // randomly flip the components of the axis so that we cover all possible axes
+        if (Math.random() > 0.5) deltaAxis[0] *= -1;
+        if (Math.random() > 0.5) deltaAxis[2] *= -1;
 
         // and rotate around it to get our delta
         var angle = (1 - 2 * Math.random()) * this.spawnOrientationRandomness;
