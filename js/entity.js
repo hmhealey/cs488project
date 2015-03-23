@@ -24,8 +24,6 @@ Entity.prototype.draw = function(shader) {
 };
 
 Entity.prototype.update = function(time) {
-    if (this.name == "root") console.log("The time is now " + time);
-
     if (this.controller) {
         this.controller.update(this);
     }
