@@ -122,6 +122,22 @@ Shader.prototype.setUniform = function(name, value, func) {
     }
 };
 
+Shader.prototype.setUniformFloat = function(name, value) {
+    return this.setUniform(name, value, gl.uniform1f);
+};
+
+Shader.prototype.setUniformVector2 = function(name, value) {
+    return this.setUniform(name, value, gl.uniform2fv);
+};
+
+Shader.prototype.setUniformVector3 = function(name, value) {
+    return this.setUniform(name, value, gl.uniform3fv);
+};
+
+Shader.prototype.setUniformVector4 = function(name, value) {
+    return this.setUniform(name, value, gl.uniform4fv);
+};
+
 Shader.prototype.setUniformMatrix = function(name, mat, transpose, func) {
     transpose = transpose || false;
 
