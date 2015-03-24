@@ -15,23 +15,27 @@ Material.prototype.cleanup = function() {
     // does nothing yet, but this is just here to be consistent with other classes
 };
 
-Material.prototype.apply = function() {
-    if (this.shader.linked) {
-        this.shader.bind();
+Material.prototype.apply = function(shader) {
+    shader = shader || this.shader;
 
-        gl.uniform4fv(gl.getUniformLocation(this.shader.program, "materialDiffuse"), this.diffuse);
-        gl.uniform4fv(gl.getUniformLocation(this.shader.program, "materialAmbient"), this.ambient);
-        gl.uniform4fv(gl.getUniformLocation(this.shader.program, "materialSpecular"), this.specular);
-        gl.uniform1f(gl.getUniformLocation(this.shader.program, "materialShininess"), this.shininess);
+    if (shader && shader.linked) {
+        if (shader == this.shader) {
+            shader.bind();
+        }
+
+        gl.uniform4fv(gl.getUniformLocation(shader.program, "materialDiffuse"), this.diffuse);
+        gl.uniform4fv(gl.getUniformLocation(shader.program, "materialAmbient"), this.ambient);
+        gl.uniform4fv(gl.getUniformLocation(shader.program, "materialSpecular"), this.specular);
+        gl.uniform1f(gl.getUniformLocation(shader.program, "materialShininess"), this.shininess);
 
         if (this.texture && this.texture.loaded) {
             // we aren't supporting multitexturing yet so just bind to texture0
             this.texture.bind();
-            gl.uniform1i(gl.getUniformLocation(this.shader.program, "texture"), 0);
+            gl.uniform1i(gl.getUniformLocation(shader.program, "texture"), 0);
         }
 
         // return the shader so we can set up any other properties
-        return this.shader;
+        return shader;
     } else {
         return null;
     }
