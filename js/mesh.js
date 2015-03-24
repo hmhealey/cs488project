@@ -28,17 +28,7 @@ Mesh.prototype.cleanup = function() {
 };
 
 Mesh.prototype.draw = function(shader) {
-    if (this.vertexBuffer) {
-        shader.enableVertexAttribute("position", this.vertexBuffer);
-    }
-
-    if (this.normalBuffer) {
-        shader.enableVertexAttribute("normal", this.normalBuffer);
-    }
-
-    if (this.texCoordBuffer) {
-        shader.enableVertexAttribute("texCoord", this.texCoordBuffer, 2, gl.FLOAT);
-    }
+    this.enableAttributes(shader);
 
     if (!this.indexBuffer) {
         gl.drawArrays(this.type, 0, this.numVertices);
@@ -50,6 +40,24 @@ Mesh.prototype.draw = function(shader) {
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
     }
 
+    this.disableAttributes(shader);
+};
+
+Mesh.prototype.enableAttributes = function(shader) {
+    if (this.vertexBuffer) {
+        shader.enableVertexAttribute("position", this.vertexBuffer);
+    }
+
+    if (this.normalBuffer) {
+        shader.enableVertexAttribute("normal", this.normalBuffer);
+    }
+
+    if (this.texCoordBuffer) {
+        shader.enableVertexAttribute("texCoord", this.texCoordBuffer, 2, gl.FLOAT);
+    }
+};
+
+Mesh.prototype.disableAttributes = function(shader) {
     gl.bindBuffer(gl.ARRAY_BUFFER, null);
 
     shader.disableVertexAttribute("texCoord");
