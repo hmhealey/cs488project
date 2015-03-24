@@ -110,8 +110,13 @@ emitter = new ParticleEmitter({
     maxSpawnSpeed: 0.12,
     gravity: vec3.fromValues(0, -0.002, 0),
     maxAge: 800,
-    colour: vec4.fromValues(0.4, 0.0, 0.9, 1.0),
-    pointSize: 4,
+    /*pointSize: 20,
+    colour: vec4.fromValues(0.5, 0.0, 1, 1.0),*/
+    mesh: Mesh.makeCube(0.2),
+    material: new Material({
+        shininess: 10000,
+        texture: Texture.fromColour(vec4.fromValues(0.5, 0, 1, 1))
+    }),
     parent: cube3.transform
 });
 

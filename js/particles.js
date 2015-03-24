@@ -6,8 +6,8 @@ function ParticleEmitter(args) {
     // how long individual particles will live for
     this.maxAge = args['maxAge'] || 500;
 
+    // used as alternatives to material/mesh for point particles
     this.colour = args['colour'] || vec4.fromValues(1, 1, 1, 1);
-    //this.shape = args['shape'] || null; // TODO implement particles that aren't just points
     this.pointSize = args['pointSize'] || 1;
 
     //this.spawnRadius = args['spawnRadius'] || 0; // TODO implement randomness in spawn location
@@ -53,18 +53,23 @@ function ParticleEmitter(args) {
     }
 
     // buffer objects and arrays used to pass properties to OpenGL
-    this.positionBuffer = gl.createBuffer();
+    this.offsetBuffer = gl.createBuffer();
     this.colourBuffer = gl.createBuffer();
 
     this.positions = new Float32Array(this.maxParticleCount * 3);
     this.colours = new Float32Array(this.maxParticleCount * 4);
 };
 
-ParticleEmitter.prototype = Object.create(Entity);
+ParticleEmitter.prototype = Object.create(Entity.prototype);
 ParticleEmitter.prototype.constructor = ParticleEmitter;
 
 ParticleEmitter.prototype.draw = function() {
-    var shader = Shader.getShader("particles/point");
+    var shader;
+    if (this.mesh) {
+        shader = Shader.getShader("particles/phong");
+    } else {
+        shader = Shader.getShader("particles/point");
+    }
 
     if (this.particleCount > 0 && shader.linked) {
         shader.bind();
@@ -75,25 +80,54 @@ ParticleEmitter.prototype.draw = function() {
         // set model matrix
         shader.setModelMatrix(this.transform.getLocalToWorldMatrix());
 
-        shader.setUniformFloat("pointSize", this.pointSize);
-
         // update particle properties
-        shader.enableVertexAttribute("position", this.positionBuffer);
+        shader.enableVertexAttribute("offset", this.offsetBuffer);
         gl.bufferData(gl.ARRAY_BUFFER, this.positions.subarray(0, this.particleCount * 3), gl.STREAM_DRAW);
 
-        shader.enableVertexAttribute("colour", this.colourBuffer, 4);
-        gl.bufferData(gl.ARRAY_BUFFER, this.colours.subarray(0, this.particleCount * 4), gl.STREAM_DRAW);
+        if (this.material) {
+            this.material.apply(shader);
+        } else {
+            shader.enableVertexAttribute("colour", this.colourBuffer, 4);
+            gl.bufferData(gl.ARRAY_BUFFER, this.colours.subarray(0, this.particleCount * 4), gl.STREAM_DRAW);
+        }
 
-        gl.drawArrays(gl.POINTS, 0, this.particleCount);
+        if (this.mesh) {
+            // set up the attributes that are per-instance (and shared by all vertices)
+            ext.vertexAttribDivisorANGLE(shader.getAttributeLocation("offset"), 1);
 
-        shader.disableVertexAttribute("position");
+            this.mesh.enableAttributes(shader);
+
+            // slightly duplicates mesh code, but that's okay for now since I don't want to deal with
+            // this extension all over the place
+            if (!this.mesh.indexBuffer) {
+                ext.drawArraysInstancedANGLE(this.mesh.type, 0, this.mesh.numVertices, this.particleCount);
+            } else {
+                gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.mesh.indexBuffer);
+
+                ext.drawElementsInstancedANGLE(this.mesh.type, this.mesh.numIndices, gl.UNSIGNED_INT, 0, this.particleCount);
+
+                gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
+            }
+
+            this.mesh.disableAttributes(shader);
+
+            // for some reason, we need to disable these or it affects other shaders somehow
+            ext.vertexAttribDivisorANGLE(shader.getAttributeLocation("offset"), 0);
+
+            if (!this.material) {
+                ext.vertexAttribDivisorANGLE(shader.getAttributeLocation("colour"), 0);
+            }
+        } else {
+            shader.setUniformFloat("pointSize", this.pointSize);
+
+            gl.drawArrays(gl.POINTS, 0, this.particleCount);
+        }
+
+        shader.disableVertexAttribute("offset");
         gl.bindBuffer(gl.ARRAY_BUFFER, null);
 
         shader.release();
     }
-
-    // draw a mesh (if one exists) and recurse
-    Entity.prototype.draw.call(this);
 };
 
 ParticleEmitter.prototype.update = function(time) {
@@ -138,8 +172,8 @@ ParticleEmitter.prototype.update = function(time) {
 };
 
 ParticleEmitter.prototype.cleanup = function(shader) {
-    if (this.positionBuffer != null) {
-        gl.deleteBuffer(this.positionBuffer);
+    if (this.offsetBuffer != null) {
+        gl.deleteBuffer(this.offsetBuffer);
     }
 
     if (this.colourBuffer != null) {
