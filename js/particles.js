@@ -62,39 +62,35 @@ function ParticleEmitter(args) {
 ParticleEmitter.prototype = Object.create(Entity);
 ParticleEmitter.prototype.constructor = ParticleEmitter;
 
-// use a separate shader than the rest of the drawing since we need some additional features
-// when drawing points or instances
-ParticleEmitter.shader = null;
+ParticleEmitter.prototype.draw = function() {
+    var shader = ParticleEmitter.getShader();
 
-ParticleEmitter.prototype.draw = function(shader) {
-    if (this.particleCount > 0 && ParticleEmitter.shader != null) {
-        ParticleEmitter.shader.bind();
+    if (this.particleCount > 0 && shader.linked) {
+        shader.bind();
 
         // super sketchy setup of camera
-        ParticleEmitter.shader.setCamera(level.mainCamera);
+        shader.setCamera(level.mainCamera);
 
         // set model matrix
-        ParticleEmitter.shader.setModelMatrix(this.transform.getLocalToWorldMatrix());
+        shader.setModelMatrix(this.transform.getLocalToWorldMatrix());
 
         // update particle properties
-        ParticleEmitter.shader.enableVertexAttribute("position", this.positionBuffer);
+        shader.enableVertexAttribute("position", this.positionBuffer);
         gl.bufferData(gl.ARRAY_BUFFER, this.positions.subarray(0, this.particleCount * 3), gl.STREAM_DRAW);
 
-        ParticleEmitter.shader.enableVertexAttribute("colour", this.colourBuffer, 4);
+        shader.enableVertexAttribute("colour", this.colourBuffer, 4);
         gl.bufferData(gl.ARRAY_BUFFER, this.colours.subarray(0, this.particleCount * 4), gl.STREAM_DRAW);
 
         gl.drawArrays(gl.POINTS, 0, this.particleCount);
 
-        ParticleEmitter.shader.disableVertexAttribute("position");
+        shader.disableVertexAttribute("position");
         gl.bindBuffer(gl.ARRAY_BUFFER, null);
 
-        ParticleEmitter.shader.release();
-
-        // rebind the normal shader so that other drawing still works
-        shader.bind();
+        shader.release();
     }
 
-    // we may want to consider recursing on children?
+    // draw a mesh (if one exists) and recurse
+    Entity.prototype.draw.call(this);
 };
 
 ParticleEmitter.prototype.update = function(time) {
@@ -222,6 +218,18 @@ ParticleEmitter.prototype.startEmitting = function() {
 
 ParticleEmitter.prototype.stopEmitting = function() {
     this.spawnEnd = 0;
+};
+
+// use a separate shader than the rest of the drawing since we need some additional features
+// when drawing points or instances
+ParticleEmitter.shader = null;
+
+ParticleEmitter.getShader = function() {
+    if (!ParticleEmitter.shader) {
+        ParticleEmitter.shader = Shader.getShader("particles");
+    }
+
+    return ParticleEmitter.shader;
 };
 
 function Particle() {
