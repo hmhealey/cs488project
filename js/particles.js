@@ -8,6 +8,7 @@ function ParticleEmitter(args) {
 
     this.colour = args['colour'] || vec4.fromValues(1, 1, 1, 1);
     //this.shape = args['shape'] || null; // TODO implement particles that aren't just points
+    this.pointSize = args['pointSize'] || 1;
 
     //this.spawnRadius = args['spawnRadius'] || 0; // TODO implement randomness in spawn location
 
@@ -73,6 +74,8 @@ ParticleEmitter.prototype.draw = function() {
 
         // set model matrix
         shader.setModelMatrix(this.transform.getLocalToWorldMatrix());
+
+        shader.setUniformFloat("pointSize", this.pointSize);
 
         // update particle properties
         shader.enableVertexAttribute("position", this.positionBuffer);

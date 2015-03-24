@@ -4,6 +4,8 @@ uniform mat4 modelView;
 uniform mat4 modelViewProjection;
 uniform mat3 normalMatrix;
 
+uniform mediump float pointSize;
+
 attribute vec3 position;
 attribute vec3 normal;
 attribute vec2 texCoord;
@@ -23,5 +25,5 @@ void main() {
 
     fColour = colour;
 
-    gl_PointSize = 10.0;
+    gl_PointSize = pointSize;
 }
