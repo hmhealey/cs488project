@@ -53,9 +53,6 @@ var initialize = function() {
 
     loadLevel("test");
 
-    ParticleEmitter.shader = new Shader("particles", gl.VERTEX_SHADER, "shaders/particles.vert",
-                                        gl.FRAGMENT_SHADER, "shaders/particles.frag");
-
     onFramerate = (function(framerateCounter) {
         return function(fps) {
             framerateCounter.innerText = fps;
