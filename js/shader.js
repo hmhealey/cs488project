@@ -171,15 +171,19 @@ Shader.prototype.setUniformMatrix4 = function(name, mat, transpose) {
     return this.setUniformMatrix(name, mat, transpose, gl.uniformMatrix4fv);
 };
 
-Shader.prototype.enableVertexAttribute = function(name, buffer, size, type) {
-    size = size || 3;
-    type = type || gl.FLOAT;
-
+Shader.prototype.getAttributeLocation = function(name) {
     if (!(name in this.locations)) {
         this.locations[name] = gl.getAttribLocation(this.program, name);
     }
 
-    var location = this.locations[name];
+    return this.locations[name];
+};
+
+Shader.prototype.enableVertexAttribute = function(name, buffer, size, type) {
+    size = size || 3;
+    type = type || gl.FLOAT;
+
+    var location = this.getAttributeLocation(name);
 
     if (location != -1) {
         gl.enableVertexAttribArray(location);
