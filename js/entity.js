@@ -11,17 +11,24 @@ function Entity(args) {
     this.controller = args['controller'] || null;
 };
 
-Entity.prototype.draw = function(shader) {
+Entity.prototype.draw = function() {
     var transform = this.transform.getLocalToWorldMatrix();
 
     if (this.mesh) {
-        this.material.applyTo(shader);
-        shader.setModelMatrix(transform);
-        this.mesh.draw(shader);
+        var shader = this.material.apply();
+        if (shader) {
+            // TODO come up with a better way to set/store the camera
+            //shader.setCamera(level.mainCamera);
+            //shader.setModelMatrix(transform);
+            shader.updateMatrices(level.mainCamera, transform);
+            this.mesh.draw(shader);
+
+            shader.release();
+        }
     }
 
     for (var i = 0; i < this.transform.children.length; i++) {
-        this.transform.children[i].entity.draw(shader);
+        this.transform.children[i].entity.draw();
     }
 };
 

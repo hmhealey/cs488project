@@ -1,25 +1,33 @@
 var root = new Entity({name: "root"});
 
+var phong = Shader.getShader("phong");
+var flat = Shader.getShader("flat");
+
 var grass = new Material({
     shininess: 0,
-    texture: Texture.fromColour(vec4.fromValues(0, 0x9f / 255, 0x50 / 255, 1))
+    texture: Texture.fromColour(vec4.fromValues(0, 0x9f / 255, 0x50 / 255, 1)),
+    shader: phong
 });
 var red = new Material({
     shininess: 128,
-    texture: Texture.fromColour(vec4.fromValues(1, 0, 0, 1))
+    texture: Texture.fromColour(vec4.fromValues(1, 0, 0, 1)),
+    shader: phong
 });
 var blue = new Material({
     shininess: 128,
-    texture: Texture.fromColour(vec4.fromValues(0, 0, 1, 1))
+    texture: Texture.fromColour(vec4.fromValues(0, 0, 1, 1)),
+    shader: phong
 });
 var yellow = new Material({
     ambient: vec4.fromValues(1, 1, 0, 1),
     shininess: 0,
-    texture: Texture.fromColour(vec4.fromValues(1, 1, 0, 1))
+    texture: Texture.fromColour(vec4.fromValues(1, 1, 0, 1)),
+    shader: flat
 });
 var ayreon = new Material({
     shininess: 10,
-    texture: Texture.fromImagePath("Ayreon_-_01011001.jpg")
+    texture: Texture.fromImagePath("Ayreon_-_01011001.jpg"),
+    shader: phong
 });
 
 // TODO come up with a way to construct this automatically?

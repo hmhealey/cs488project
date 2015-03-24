@@ -2,7 +2,6 @@
 
 var gl;
 
-var shader;
 var level;
 
 var paused = false;
@@ -54,9 +53,6 @@ var initialize = function() {
 
     loadLevel("test");
 
-    shader = new Shader(gl.VERTEX_SHADER, "shaders/phong.vert",
-                        gl.FRAGMENT_SHADER, "shaders/phong.frag");
-
     onFramerate = (function(framerateCounter) {
         return function(fps) {
             framerateCounter.innerText = fps;
@@ -69,20 +65,18 @@ var initialize = function() {
 var update = function() {
     var time = new Date().getTime();
 
-    if (shader.linked) {
-        gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-        gl.enable(gl.DEPTH_TEST);
-        gl.enable(gl.CULL_FACE);
-        gl.cullFace(gl.BACK);
+    gl.enable(gl.DEPTH_TEST);
+    gl.enable(gl.CULL_FACE);
+    gl.cullFace(gl.BACK);
 
-        if (level) {
-            level.draw(shader);
-        }
-
-        gl.disable(gl.CULL_FACE);
-        gl.disable(gl.DEPTH_TEST);
+    if (level) {
+        level.draw();
     }
+
+    gl.disable(gl.CULL_FACE);
+    gl.disable(gl.DEPTH_TEST);
 
     // update input state
     Input.update();
