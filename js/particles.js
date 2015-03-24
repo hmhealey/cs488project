@@ -10,8 +10,6 @@ function ParticleEmitter(args) {
     this.colour = args['colour'] || vec4.fromValues(1, 1, 1, 1);
     this.pointSize = args['pointSize'] || 1;
 
-    //this.spawnRadius = args['spawnRadius'] || 0; // TODO implement randomness in spawn location
-
     var time = getTime();
     this.spawnEnd = 'spawnDuration' in args ? time + args['spawnDuration'] : 0;
     this.lastSpawn = time;
