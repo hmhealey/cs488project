@@ -64,7 +64,7 @@ ParticleEmitter.prototype = Object.create(Entity);
 ParticleEmitter.prototype.constructor = ParticleEmitter;
 
 ParticleEmitter.prototype.draw = function() {
-    var shader = ParticleEmitter.getShader();
+    var shader = Shader.getShader("particles/point");
 
     if (this.particleCount > 0 && shader.linked) {
         shader.bind();
@@ -221,18 +221,6 @@ ParticleEmitter.prototype.startEmitting = function() {
 
 ParticleEmitter.prototype.stopEmitting = function() {
     this.spawnEnd = 0;
-};
-
-// use a separate shader than the rest of the drawing since we need some additional features
-// when drawing points or instances
-ParticleEmitter.shader = null;
-
-ParticleEmitter.getShader = function() {
-    if (!ParticleEmitter.shader) {
-        ParticleEmitter.shader = Shader.getShader("particles");
-    }
-
-    return ParticleEmitter.shader;
 };
 
 function Particle() {
