@@ -19,20 +19,11 @@ Level.prototype.cleanup = function() {
     // we're probably still leaking meshes here
 };
 
-Level.prototype.draw = function(shader) {
-    shader.bind();
-
-    // update camera matrices
-    if (this.mainCamera) {
-        shader.setCamera(this.mainCamera);
-    }
-
+Level.prototype.draw = function() {
     // draw the scene
     if (this.root) {
-        this.root.draw(shader, mat4.create());
+        this.root.draw();
     }
-
-    shader.release();
 };
 
 Level.prototype.update = function(time) {
