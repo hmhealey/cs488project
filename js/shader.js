@@ -1,4 +1,6 @@
-function Shader() {
+function Shader(name) {
+    this.name = name;
+
     this.shaders = [];
     this.program = gl.createProgram();
     this.linked = false;
@@ -8,16 +10,16 @@ function Shader() {
     this.camera = null;
     this.modelMatrix = mat4.create();
 
-    if (arguments.length > 0) {
+    if (arguments.length > 1) {
         var linkAfterLoading = (function(shader, numShaders) {
             return function(type) {
                 if (shader.shaders.length == numShaders) {
                     shader.link();
                 }
             }
-        })(this, arguments.length / 2);
+        })(this, (arguments.length - 1) / 2);
 
-        for (var i = 0; i < arguments.length; i += 2) {
+        for (var i = 1; i < arguments.length; i += 2) {
             this.loadShader(arguments[i], arguments[i + 1], linkAfterLoading);
         }
     }
@@ -83,12 +85,22 @@ Shader.prototype.link = function() {
     }
 };
 
+Shader.boundProgram = null;
+
 Shader.prototype.bind = function() {
-    gl.useProgram(this.program);
+    if (Shader.boundProgram != this.program) {
+        gl.useProgram(this.program);
+
+        Shader.boundProgram = this.program;
+    }
 };
 
 Shader.prototype.release = function() {
-    gl.useProgram(null);
+    if (Shader.boundProgram == this.program) {
+        gl.useProgram(null);
+
+        Shader.boundProgram = null;
+    }
 };
 
 Shader.prototype.setUniform = function(name, value, func) {
@@ -191,12 +203,16 @@ Shader.prototype.disableVertexAttribute = function(name) {
 Shader.prototype.updateMatrices = function(camera, modelMatrix) {
     var dirty = false;
 
-    if (camera && camera != this.camera) {
+    // TODO figure out a better way to do this since we're not recalculating the matrices
+    // when a camera's matrices are changed or when we rebind the same model matrix that
+    // has changed since the last time we've bound it
+
+    if (camera/* && camera != this.camera*/) {
         this.camera = camera;
         dirty = true;
     }
 
-    if (modelMatrix && modelMatrix != this.modelMatrix) {
+    if (modelMatrix/* && modelMatrix != this.modelMatrix*/) {
         this.modelMatrix = modelMatrix;
         dirty = true;
     }
@@ -221,4 +237,15 @@ Shader.prototype.setCamera = function(camera) {
 
 Shader.prototype.setModelMatrix = function(modelMatrix) {
     this.updateMatrices(null, modelMatrix);
+};
+
+Shader.shaders = {};
+
+Shader.getShader = function(name) {
+    if (!(name in Shader.shaders)) {
+        Shader.shaders[name] = new Shader(name, gl.VERTEX_SHADER, "shaders/" + name + ".vert",
+                                          gl.FRAGMENT_SHADER, "shaders/" + name + ".frag");
+    }
+
+    return Shader.shaders[name];
 };
