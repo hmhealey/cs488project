@@ -103,6 +103,14 @@ Shader.prototype.release = function() {
     }
 };
 
+Shader.prototype.getUniformLocation = function(name) {
+    if (!(name in this.locations)) {
+        this.locations[name] = gl.getUniformLocation(this.program, name);
+    }
+
+    return this.locations[name];
+};
+
 Shader.prototype.setUniform = function(name, value, func) {
     if (!(name in this.locations)) {
         this.locations[name] = gl.getUniformLocation(this.program, name);
