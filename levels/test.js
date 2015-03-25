@@ -35,7 +35,7 @@ var textures = [grass.texture, red.texture, blue.texture, yellow.texture, ayreon
 
 var ground = new Entity({
     name: "ground",
-    mesh: Mesh.makeSquare(20),
+    mesh: Mesh.makeRectangle(20, 40),
     material: grass,
     position: vec3.fromValues(0, 0, 0),
     rotation: vec3.fromValues(-90, 0, 0),
@@ -118,6 +118,43 @@ emitter = new ParticleEmitter({
         texture: Texture.fromColour(vec4.fromValues(0.5, 0, 1, 1))
     }),
     parent: cube3.transform
+});
+
+var n1 = new Entity({
+    name: "n1",
+    mesh: Mesh.makeCube(4),
+    material: new Material({
+        shininess: 20,
+        texture: Texture.fromImagePath("AlternatingBrick-ColorMap.png"),
+        normalMap: Texture.fromImagePath("AlternatingBrick-NormalMap.png"),
+        shader: Shader.getShader("normalMapped")
+    }),
+    position: vec3.fromValues(-6, 2, 4),
+    parent: root.transform
+});
+
+var n2 = new Entity({
+    name: "n2",
+    mesh: Mesh.makeCube(4),
+    material: new Material({
+        shininess: 20,
+        texture: Texture.fromImagePath("AlternatingBrick-ColorMap.png"),
+        shader: phong
+    }),
+    position: vec3.fromValues(-6, 2, 8),
+    parent: root.transform
+});
+
+var n3 = new Entity({
+    name: "n3",
+    mesh: Mesh.makeCube(4),
+    material: new Material({
+        shininess: 20,
+        texture: Texture.fromImagePath("AlternatingBrick-NormalMap.png"),
+        shader: phong
+    }),
+    position: vec3.fromValues(-6, 2, 12),
+    parent: root.transform
 });
 
 var camera = new Camera({

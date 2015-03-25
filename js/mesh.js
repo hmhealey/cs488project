@@ -3,6 +3,7 @@ function Mesh(type) {
 
     this.vertexBuffer = null;
     this.normalBuffer = null;
+    this.tangentBuffer = null;
     this.texCoordBuffer = null;
     this.numVertices = 0;
 
@@ -19,6 +20,11 @@ Mesh.prototype.cleanup = function() {
     if (this.normalBuffer) {
         gl.deleteBuffer(this.normalBuffer);
         this.normalBuffer = null;
+    }
+
+    if (this.tangentBuffer) {
+        gl.deleteBuffer(this.tangentBuffer);
+        this.tangentBuffer = null;
     }
 
     if (this.texCoordBuffer) {
@@ -52,6 +58,10 @@ Mesh.prototype.enableAttributes = function(shader) {
         shader.enableVertexAttribute("normal", this.normalBuffer);
     }
 
+    if (this.tangentBuffer) {
+        shader.enableVertexAttribute("tangent", this.tangentBuffer);
+    }
+
     if (this.texCoordBuffer) {
         shader.enableVertexAttribute("texCoord", this.texCoordBuffer, 2, gl.FLOAT);
     }
@@ -62,6 +72,7 @@ Mesh.prototype.disableAttributes = function(shader) {
 
     shader.disableVertexAttribute("texCoord");
     shader.disableVertexAttribute("normal");
+    shader.disableVertexAttribute("tangent");
     shader.disableVertexAttribute("position");
 };
 
@@ -84,6 +95,16 @@ Mesh.prototype.setNormals = function(normals) {
 
     gl.bindBuffer(gl.ARRAY_BUFFER, this.normalBuffer);
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(normals), gl.STATIC_DRAW);
+    gl.bindBuffer(gl.ARRAY_BUFFER, null);
+};
+
+Mesh.prototype.setTangents = function(tangents) {
+    if (!this.tangentBuffer) {
+        this.tangentBuffer = gl.createBuffer();
+    }
+
+    gl.bindBuffer(gl.ARRAY_BUFFER, this.tangentBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(tangents), gl.STATIC_DRAW);
     gl.bindBuffer(gl.ARRAY_BUFFER, null);
 };
 
@@ -128,6 +149,13 @@ Mesh.makeRectangle = function(width, height) {
         0, 0, 1,
         0, 0, 1,
         0, 0, 1
+    ]);
+
+    mesh.setTangents([
+        0, 1, 0,
+        0, 1, 0,
+        0, 1, 0,
+        0, 1, 0
     ]);
 
     mesh.setTexCoords([
@@ -180,6 +208,15 @@ Mesh.makeBox = function(width, height, depth) {
         1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0,
         0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1,
         0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1
+    ]);
+
+    mesh.setTangents([
+        0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1,
+        0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1,
+        0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0,
+        0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0,
+        0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0,
+        0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0
     ]);
 
     mesh.setTexCoords([
