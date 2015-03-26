@@ -166,8 +166,6 @@ Mesh.prototype.setTexCoords4 = function(texCoords4) {
 };
 
 Mesh.prototype.setTexWeights = function(texWeights) {
-    console.log(texWeights);
-
     if (!this.texWeightBuffer) {
         this.texWeightBuffer = gl.createBuffer();
     }
