@@ -57,6 +57,7 @@ Transform.prototype.setParent = function(parent) {
 
 Transform.prototype.setDirty = function() {
     this.dirty = true;
+    this.facingsDirty = true;
 
     this.setParentDirty();
 };
@@ -103,6 +104,10 @@ Transform.prototype.getWorldToLocalMatrix = function() {
     }
 
     return this.worldToLocal;
+};
+
+Transform.prototype.getWorldPosition = function() {
+    return vec3.transformMat4(vec3.create(), this.position, this.getLocalToWorldMatrix());
 };
 
 Transform.prototype.getPosition = function() {
@@ -197,16 +202,21 @@ Transform.prototype.setScale = function(scale) {
 };
 
 Transform.prototype.updateFacings = function() {
-    var matrix = this.getMatrix();
+    var matrix = this.getLocalToWorldMatrix();
 
-    vec3.set(this.forward, 0, 0, -1);
-    vec3.transformQuat(this.forward, this.forward, matrix);
+    var temp = vec4.create();
 
-    vec3.set(this.up, 0, 1, 0);
-    vec3.transformQuat(this.up, this.up, matrix);
+    vec4.set(temp, 0, 0, -1, 0);
+    vec4.transformMat4(temp, temp, matrix);
+    vec3.set(this.forward, temp[0], temp[1], temp[2]);
 
-    vec3.set(this.right, 1, 0, 0);
-    vec3.transformQuat(this.right, this.right, matrix);
+    vec4.set(temp, 0, 1, 0, 0);
+    vec4.transformMat4(temp, temp, matrix);
+    vec3.set(this.up, temp[0], temp[1], temp[2]);
+
+    vec4.set(temp, 1, 0, 0, 0);
+    vec4.transformMat4(temp, temp, matrix);
+    vec3.set(this.right, temp[0], temp[1], temp[2]);
 
     this.facingsDirty = false;
 };
