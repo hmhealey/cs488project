@@ -129,7 +129,7 @@ var n1 = new Entity({
         normalMap: Texture.fromImagePath("AlternatingBrick-NormalMap.png"),
         shader: Shader.getShader("normalMapped")
     }),
-    position: vec3.fromValues(-6, 2, 4),
+    position: vec3.fromValues(-10, 2, 4),
     parent: root.transform
 });
 
@@ -141,7 +141,7 @@ var n2 = new Entity({
         texture: Texture.fromImagePath("AlternatingBrick-ColorMap.png"),
         shader: phong
     }),
-    position: vec3.fromValues(-6, 2, 8),
+    position: vec3.fromValues(-10, 2, 8),
     parent: root.transform
 });
 
@@ -153,9 +153,39 @@ var n3 = new Entity({
         texture: Texture.fromImagePath("AlternatingBrick-NormalMap.png"),
         shader: phong
     }),
-    position: vec3.fromValues(-6, 2, 12),
+    position: vec3.fromValues(-10, 2, 12),
     parent: root.transform
 });
+
+b1 = new Entity({
+    name: "b1",
+    mesh: Mesh.makeCube(4),
+    material: new Material({
+        shininess: 20,
+        texture: Texture.fromColour(vec4.fromValues(1.0, 0.0, 0.0, 1.0)),
+        texture2: Texture.fromColour(vec4.fromValues(0.0, 1.0, 0.0, 1.0)),
+        texture3: Texture.fromColour(vec4.fromValues(0.0, 0.0, 1.0, 1.0)),
+        texture4: Texture.fromColour(vec4.fromValues(1.0, 1.0, 1.0, 1.0)),
+        shader: Shader.getShader("blend")
+    }),
+    position: vec3.fromValues(10, 2, 4),
+    parent: root.transform
+});
+
+b1.mesh.setTexWeights([
+    1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0,
+    0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0,
+    1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0,
+    0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0,
+    1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 1.0, 0.0, 0.0,
+    0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0,
+    0.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0,
+    0.0, 0.0, 1.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0,
+    0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0,
+    0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 1.0, 0.0, 0.0, 0.0,
+    0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0,
+    1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0
+]);
 
 var camera = new Camera({
     name: "camera",

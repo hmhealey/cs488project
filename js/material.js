@@ -7,6 +7,9 @@ function Material(args) {
     this.shininess = args["shininess"] || 0;
 
     this.texture = args["texture"] || null;
+    this.texture2 = args["texture2"] || null;
+    this.texture3 = args["texture3"] || null;
+    this.texture4 = args["texture4"] || null;
     this.normalMap = args["normalMap"] || null;
 
     this.shader = args["shader"] || null; //Material.getDefaultShader();
@@ -29,30 +32,29 @@ Material.prototype.apply = function(shader) {
         gl.uniform4fv(gl.getUniformLocation(shader.program, "materialSpecular"), this.specular);
         gl.uniform1f(gl.getUniformLocation(shader.program, "materialShininess"), this.shininess);
 
-        if (this.texture && this.texture.loaded) {
-            var location = shader.getUniformLocation("texture");
+        Material.bindTexture(this.texture, shader, "texture", 0);
+        Material.bindTexture(this.texture2, shader, "texture2", 1);
+        Material.bindTexture(this.texture3, shader, "texture3", 2);
+        Material.bindTexture(this.texture4, shader, "texture4", 3);
 
-            if (location != -1) {
-                gl.activeTexture(gl.TEXTURE0);
-                this.texture.bind();
-                gl.uniform1i(location, 0);
-            }
-        }
-
-        if (this.normalMap && this.normalMap.loaded) {
-            var location = shader.getUniformLocation("normalMap");
-
-            if (location != -1) {
-                gl.activeTexture(gl.TEXTURE1);
-                this.normalMap.bind();
-                gl.uniform1i(location, 1);
-            }
-        }
+        Material.bindTexture(this.normalMap, shader, "normalMap", 4);
 
         // return the shader so we can set up any other properties
         return shader;
     } else {
         return null;
+    }
+};
+
+Material.bindTexture = function(texture, shader, name, unit) {
+    if (texture && texture.loaded) {
+        var location = shader.getUniformLocation(name);
+
+        if (location != -1) {
+            gl.activeTexture(gl.TEXTURE0 + unit);
+            texture.bind();
+            gl.uniform1i(location, unit);
+        }
     }
 };
 

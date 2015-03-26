@@ -188,6 +188,8 @@ Shader.prototype.getAttributeLocation = function(name) {
 };
 
 Shader.prototype.enableVertexAttribute = function(name, buffer, size, type) {
+    if (!buffer) return;
+
     size = size || 3;
     type = type || gl.FLOAT;
 

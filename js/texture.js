@@ -18,7 +18,7 @@ Texture.prototype.setImageFromPath = function(path) {
 
     this.setImageOnLoad(image);
     this.loaded = false;
-    image.src = path;
+    image.src = "textures/" + path;
 };
 
 Texture.prototype.setImageOnLoad = function(image) {
