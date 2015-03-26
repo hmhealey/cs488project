@@ -157,7 +157,7 @@ var n3 = new Entity({
     parent: root.transform
 });
 
-b1 = new Entity({
+var b1 = new Entity({
     name: "b1",
     mesh: Mesh.makeCube(4),
     material: new Material({
@@ -186,6 +186,33 @@ b1.mesh.setTexWeights([
     0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0,
     1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0
 ]);
+
+var bm1 = new Entity({
+    name: "bm1",
+    mesh: Mesh.makeCube(4),
+    material: new Material({
+        shininess: 20,
+        texture: Texture.fromColour(vec4.fromValues(1.0, 0.0, 0.0, 1.0)),
+        texture2: Texture.fromColour(vec4.fromValues(0.0, 1.0, 0.0, 1.0)),
+        texture3: Texture.fromColour(vec4.fromValues(0.0, 0.0, 1.0, 1.0)),
+        blendMap: Texture.fromImagePath("blendMap.png"),
+        shader: Shader.getShader("blendMap")
+    }),
+    position: vec3.fromValues(10, 2, 12),
+    parent: root.transform
+});
+
+var bm2 = new Entity({
+    name: "bm2",
+    mesh: Mesh.makeCube(4),
+    material: new Material({
+        shininess: 20,
+        texture: Texture.fromImagePath("blendMap.png"),
+        shader: phong
+    }),
+    position: vec3.fromValues(10, 2, 18),
+    parent: root.transform
+});
 
 var camera = new Camera({
     name: "camera",

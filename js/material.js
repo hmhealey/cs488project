@@ -11,6 +11,7 @@ function Material(args) {
     this.texture3 = args["texture3"] || null;
     this.texture4 = args["texture4"] || null;
     this.normalMap = args["normalMap"] || null;
+    this.blendMap = args["blendMap"] || null;
 
     this.shader = args["shader"] || null; //Material.getDefaultShader();
 };
@@ -38,6 +39,7 @@ Material.prototype.apply = function(shader) {
         Material.bindTexture(this.texture4, shader, "texture4", 3);
 
         Material.bindTexture(this.normalMap, shader, "normalMap", 4);
+        Material.bindTexture(this.blendMap, shader, "blendMap", 5);
 
         // return the shader so we can set up any other properties
         return shader;
