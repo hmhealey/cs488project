@@ -296,6 +296,44 @@ Mesh.makeBox = function(width, height, depth) {
     return mesh;
 };
 
+Mesh.makeWireframeBox = function(width, height, depth) {
+    var mesh = new Mesh(gl.LINES);
+
+    mesh.setVertices([
+        // lines along x
+        -width / 2, -height / 2, -depth / 2,
+        width / 2, -height / 2, -depth / 2,
+        -width / 2, height / 2, -depth / 2,
+        width / 2, height / 2, -depth / 2,
+        -width / 2, -height / 2, depth / 2,
+        width / 2, -height / 2, depth / 2,
+        -width / 2, height / 2, depth / 2,
+        width / 2, height / 2, depth / 2,
+
+        // lines along y
+        -width / 2, -height / 2, -depth / 2,
+        -width / 2, height / 2, -depth / 2,
+        width / 2, -height / 2, -depth / 2,
+        width / 2, height / 2, -depth / 2,
+        -width / 2, -height / 2, depth / 2,
+        -width / 2, height / 2, depth / 2,
+        width / 2, -height / 2, depth / 2,
+        width / 2, height / 2, depth / 2,
+
+        // lines along z
+        -width / 2, -height / 2, -depth / 2,
+        -width / 2, -height / 2, depth / 2,
+        width / 2, -height / 2, -depth / 2,
+        width / 2, -height / 2, depth / 2,
+        -width / 2, height / 2, -depth / 2,
+        -width / 2, height / 2, depth / 2,
+        width / 2, height / 2, -depth / 2,
+        width / 2, height / 2, depth / 2,
+    ])
+
+    return mesh;
+};
+
 Mesh.makeUvSphere = function(radius, horizontalResolution, verticalResolution) {
     horizontalResolution = horizontalResolution || 10;
     verticalResolution = verticalResolution || 10;
