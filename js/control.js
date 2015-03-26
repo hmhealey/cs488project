@@ -24,8 +24,8 @@ PlayerController.prototype.update = function(entity) {
     }
 
     if (Input.Cursor.isLocked()) {
-        dpitch = Input.Cursor.deltaY * -0.06;
-        dyaw = Input.Cursor.deltaX * -0.06;
+        dpitch += Input.Cursor.deltaY * -0.06;
+        dyaw += Input.Cursor.deltaX * -0.06;
     }
 
     if (dpitch != 0) {
