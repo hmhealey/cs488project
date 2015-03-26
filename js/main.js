@@ -26,9 +26,13 @@ var onLoad = function(e) {
     if (gl) {
         // attach other events
         attachEvent(window, "keypress", onKeyPress);
+        attachEvent(window, "resize", onResize);
+
         attachEvent(window, "keydown", Input.onKeyDown);
         attachEvent(window, "keyup", Input.onKeyUp);
-        attachEvent(window, "resize", onResize);
+        attachEvent(window, "mousedown", Input.onMouseDown);
+        attachEvent(window, "mouseup", Input.onMouseUp);
+        attachEvent(window, "mousemove", Input.onMouseMove);
 
         // load required extensions
         if (!gl.getExtension("OES_element_index_uint")) console.log("Unable to load OES_element_index_uint");

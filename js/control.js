@@ -23,6 +23,11 @@ PlayerController.prototype.update = function(entity) {
         dyaw = -1;
     }
 
+    if (Input.Cursor.isLocked()) {
+        dpitch = Input.Cursor.deltaY * -0.06;
+        dyaw = Input.Cursor.deltaX * -0.06;
+    }
+
     if (dpitch != 0) {
         entity.transform.rotate('x', dpitch);
     }
