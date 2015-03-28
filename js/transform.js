@@ -106,8 +106,9 @@ Transform.prototype.getWorldToLocalMatrix = function() {
     return this.worldToLocal;
 };
 
-Transform.prototype.getWorldPosition = function() {
-    return vec3.transformMat4(vec3.create(), this.position, this.getLocalToWorldMatrix());
+Transform.prototype.getWorldPosition = function(worldPosition) {
+    worldPosition = worldPosition || vec3.create();
+    return vec3.transformMat4(worldPosition, worldPosition, this.getLocalToWorldMatrix());
 };
 
 Transform.prototype.getPosition = function() {
