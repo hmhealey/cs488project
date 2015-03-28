@@ -127,7 +127,7 @@ var n1 = new Entity({
         shininess: 20,
         texture: Texture.fromImagePath("AlternatingBrick-ColorMap.png"),
         normalMap: Texture.fromImagePath("AlternatingBrick-NormalMap.png"),
-        shader: Shader.getShader("normalMapped")
+        shader: Shader.getShader("normalMap")
     }),
     position: vec3.fromValues(-10, 2, 4),
     parent: root.transform
@@ -261,7 +261,7 @@ var bump3 = new Entity({
         shininess: 20,
         texture: Texture.fromImagePath("brickwork-texture.jpg"),
         normalMap: Texture.fromImagePath("brickwork-normal-map.jpg"),
-        shader: Shader.getShader("normalMapped")
+        shader: Shader.getShader("normalMap")
     }),
     position: vec3.fromValues(6, 2, 28),
     parent: root.transform
