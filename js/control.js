@@ -60,11 +60,14 @@ PlayerController.prototype.update = function(entity) {
         entity.transform.translate(dir);
     }
 
-    var hit = new RaycastHit();
+    if (Input.Mouse.getButtonDown(0)) {
+        var hit = new RaycastHit();
 
-    if (level.raycast(entity.transform.getWorldPosition(), entity.transform.getForward(), hit)) {
-        asdf.innerText = "looking at " + hit.collider.entity.name;
-    } else {
-        asdf.innerText = "";
+        if (level.raycast(entity.transform.getWorldPosition(), entity.transform.getForward(), hit)) {
+            console.log("bang! you hit " + hit.collider.entity.name);
+            hit.collider.entity.destroy();
+        } else {
+            console.log("bang! you missed");
+        }
     }
 };

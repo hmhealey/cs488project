@@ -56,6 +56,10 @@ Entity.prototype.update = function(time) {
 };
 
 Entity.prototype.cleanup = function() {
+    this.transform.setParent(null);
+
+    // we can't free any resources or anything since those might be being used by other entities
+
     for (var i = 0; i < this.transform.children.length; i++) {
         this.transform.children[i].entity.cleanup();
     }
@@ -96,4 +100,8 @@ Entity.prototype.getComponentsInChildren = function(type) {
     } else {
         return componentsInChildren;
     }
+};
+
+Entity.prototype.destroy = function() {
+    this.cleanup();
 };
