@@ -56,45 +56,6 @@ BoxCollider.prototype.raycast = function(point, direction, hit) {
     }
 
     return intersected;
-
-    /*var childHit = new RaycastHit();
-    var childIntersected = this.raycastChildren(point, direction, childHit);
-
-    if (intersected || childIntersected) {
-        if (intersected && childIntersected) {
-            if (vec3.distance(point, childHit.point) < vec3.distance(point, hit.point)) {
-                hit.setTo(childHit);
-            }
-        } else if (childIntersected) {
-            hit.setTo(childHit);
-        }
-
-        return true;
-    } else {
-        // the ray missed us and our children
-        return false;
-    }*/
-};
-
-BoxCollider.prototype.raycastChildren = function(point, direction, hit) {
-    // TODO remove me
-    var intersected = false;
-
-    var childHit = new RaycastHit();
-
-    var children = this.entity.getComponentsInChildren(BoxCollider);
-    for (var i = 0; i < children.length; i++) {
-        var child = children[i];
-
-        if (!this.children[i].raycast(point, direction, childHit)) {
-            if (!intersected || vec3.distance(point, childHit.point) < vec3.distance(point, hit.point)) {
-                hit.setTo(childHit);
-                intersected = true;
-            }
-        }
-    }
-
-    return intersected;
 };
 
 BoxCollider.prototype.contains = function(point) {
