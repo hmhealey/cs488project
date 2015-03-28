@@ -35,9 +35,9 @@ var textures = [grass.texture, red.texture, blue.texture, yellow.texture, ayreon
 
 var ground = new Entity({
     name: "ground",
-    mesh: Mesh.makeRectangle(20, 40),
+    mesh: Mesh.makeRectangle(40, 60),
     material: grass,
-    position: vec3.fromValues(0, 0, 0),
+    position: vec3.fromValues(0, 0, 20),
     rotation: vec3.fromValues(-90, 0, 0),
     parent: root.transform
 });
@@ -214,13 +214,66 @@ var bm2 = new Entity({
     parent: root.transform
 });
 
+var bump0 = new Entity({
+    name: "bump0",
+    mesh: Mesh.makeCube(4),
+    material: new Material({
+        shininess: 20,
+        texture: Texture.fromImagePath("brickwork-bump-map.jpg"),
+        shader: phong
+    }),
+    position: vec3.fromValues(-6, 2, 28),
+    parent: root.transform
+});
+
+var bump1 = new Entity({
+    name: "bump1",
+    mesh: Mesh.makeCube(4),
+    material: new Material({
+        shininess: 20,
+        texture: Texture.fromImagePath("brickwork-texture.jpg"),
+        shader: phong
+    }),
+    position: vec3.fromValues(-2, 2, 28),
+    parent: root.transform
+});
+
+var bump2 = new Entity({
+    name: "bump2",
+    mesh: Mesh.makeCube(4),
+    material: new Material({
+        shininess: 20,
+        texture: Texture.fromImagePath("brickwork-texture.jpg"),
+        bumpMap: Texture.fromImagePath("brickwork-bump-map.jpg"),
+        //texture: Texture.fromColour(vec4.fromValues(0.3, 0.7, 0.3, 1.0)),
+        //bumpMap: Texture.fromImagePath("bumps.png"),
+        //bumpMap: Texture.fromColour(vec4.fromValues(1.0, 1.0, 1.0, 1.0)),
+        shader: Shader.getShader("bumpMap")
+    }),
+    position: vec3.fromValues(2, 2, 28),
+    parent: root.transform
+});
+
+var bump3 = new Entity({
+    name: "bump3",
+    mesh: Mesh.makeCube(4),
+    material: new Material({
+        shininess: 20,
+        texture: Texture.fromImagePath("brickwork-texture.jpg"),
+        normalMap: Texture.fromImagePath("brickwork-normal-map.jpg"),
+        shader: Shader.getShader("normalMapped")
+    }),
+    position: vec3.fromValues(6, 2, 28),
+    parent: root.transform
+});
+
 var camera = new Camera({
     name: "camera",
     fov: 45,
     near: 0.1,
     far: 100,
     position: vec3.fromValues(0, 2, 10),
-    rotation: vec3.fromValues(0, 0, 0),
+    rotation: vec3.fromValues(0, 180, 0),
     parent: root.transform
 });
 camera.controller = new PlayerController({speed: 0.1, rotationSpeed: 5});
