@@ -110,7 +110,6 @@ var update = function() {
 };
 
 var cleanup = function() {
-    texture.cleanup();
 };
 
 var onUnload = function(e) {
