@@ -38,5 +38,72 @@ BoxCollider.prototype.draw = function() {
     }
 };
 
-BoxCollider.prototype.update = function(time) {
+BoxCollider.prototype.update = function(time) { };
+
+BoxCollider.prototype.raycast = function(point, direction, hit) {
+    var localPoint = vec3.create();
+    vec3.transformMat4(localPoint, point, this.entity.transform.getWorldToLocalMatrix());
+    var localDirection = vec3.create();
+    vec3.transformMat4AsVector(localDirection, direction, this.entity.transform.getWorldToLocalMatrix());
+
+    var intersected = Raycast.againstBox(-this.width / 2, this.width / 2, -this.height / 2, this.height / 2,
+                                         -this.depth / 2, this.depth / 2, localPoint, localDirection, hit);
+
+    if (intersected) {
+        hit.collider = this;
+        hit.transform(this.entity.transform.getLocalToWorldMatrix(),
+                      this.entity.transform.getWorldToLocalMatrix());
+    }
+
+    return intersected;
+
+    /*var childHit = new RaycastHit();
+    var childIntersected = this.raycastChildren(point, direction, childHit);
+
+    if (intersected || childIntersected) {
+        if (intersected && childIntersected) {
+            if (vec3.distance(point, childHit.point) < vec3.distance(point, hit.point)) {
+                hit.setTo(childHit);
+            }
+        } else if (childIntersected) {
+            hit.setTo(childHit);
+        }
+
+        return true;
+    } else {
+        // the ray missed us and our children
+        return false;
+    }*/
+};
+
+BoxCollider.prototype.raycastChildren = function(point, direction, hit) {
+    // TODO remove me
+    var intersected = false;
+
+    var childHit = new RaycastHit();
+
+    var children = this.entity.getComponentsInChildren(BoxCollider);
+    for (var i = 0; i < children.length; i++) {
+        var child = children[i];
+
+        if (!this.children[i].raycast(point, direction, childHit)) {
+            if (!intersected || vec3.distance(point, childHit.point) < vec3.distance(point, hit.point)) {
+                hit.setTo(childHit);
+                intersected = true;
+            }
+        }
+    }
+
+    return intersected;
+};
+
+BoxCollider.prototype.contains = function(point) {
+    return point[0] >= -this.width / 2 && point[0] < this.width / 2 &&
+           point[1] >= -this.height / 2 && point[1] < this.height / 2 &&
+           point[2] >= -this.depth / 2 && point[2] < this.depth / 2;
+};
+
+BoxCollider.prototype.containsWorld = function(point) {
+    var localPoint = vec3.transformMat4(vec3.create(), point, this.entity.transform.getWorldToLocalMatrix());
+    return this.contains(localPoint);
 };

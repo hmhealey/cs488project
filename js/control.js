@@ -59,4 +59,12 @@ PlayerController.prototype.update = function(entity) {
 
         entity.transform.translate(dir);
     }
+
+    var hit = new RaycastHit();
+
+    if (level.raycast(entity.transform.getWorldPosition(), entity.transform.getForward(), hit)) {
+        asdf.innerText = "looking at " + hit.collider.entity.name;
+    } else {
+        asdf.innerText = "";
+    }
 };

@@ -4,6 +4,10 @@ var Input = {
         65: false, // a
         83: false, // s
         68: false, // d
+        73: false, // i
+        74: false, // j
+        75: false, // k
+        76: false, // l       
         38: false, // up arrow
         37: false, // left arrow
         40: false, // down arrow

@@ -69,6 +69,31 @@ Entity.prototype.addComponent = function(component) {
     return component;
 };
 
-Entity.prototype.getComponents = function() {
+Entity.prototype.getComponent = function(type) {
+    for (var i = 0; i < this.components.length; i++) {
+        if (this.components[i] instanceof type) {
+            return this.components[i];
+        }
+    }
+
+    return null;
+};
+
+Entity.prototype.getComponents = function(type) {
     return this.components;
+};
+
+Entity.prototype.getComponentsInChildren = function(type) {
+    var component = this.getComponent(type);
+
+    var componentsInChildren = [];
+    for (var i = 0; i < this.transform.children.length; i++) {
+        componentsInChildren = componentsInChildren.concat(this.transform.children[i].entity.getComponentsInChildren(type));
+    }
+
+    if (component) {
+        return [component].concat(componentsInChildren);
+    } else {
+        return componentsInChildren;
+    }
 };

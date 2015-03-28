@@ -47,7 +47,10 @@ var cube1 = new Entity({
     mesh: Mesh.makeCube(4),
     material: red,
     position: vec3.fromValues(-4, 2, -6),
-    parent: root.transform
+    parent: root.transform,
+    components: [
+        new BoxCollider({width: 4, height: 4, depth: 4})
+    ]
 });
 
 var cube2 = new Entity({
@@ -55,7 +58,10 @@ var cube2 = new Entity({
     mesh: Mesh.makeCube(2),
     material: blue,
     position: vec3.fromValues(3, 1, -8),
-    parent: root.transform
+    parent: root.transform,
+    components: [
+        new BoxCollider({width: 2, height: 2, depth: 2})
+    ]
 });
 
 var cube2a = new Entity({
@@ -64,7 +70,10 @@ var cube2a = new Entity({
     material: blue,
     position: vec3.fromValues(0, 1.5, 0),
     scale: 0.5,
-    parent: cube2.transform
+    parent: cube2.transform,
+    components: [
+        new BoxCollider({width: 2, height: 2, depth: 2})
+    ]
 });
 
 var cube2b = new Entity({
@@ -73,7 +82,10 @@ var cube2b = new Entity({
     material: blue,
     position: vec3.fromValues(0, 1.5, 0),
     scale: 0.5,
-    parent: cube2a.transform
+    parent: cube2a.transform,
+    components: [
+        new BoxCollider({width: 2, height: 2, depth: 2})
+    ]
 });
 
 var sun = new Entity({
@@ -214,7 +226,46 @@ var bm2 = new Entity({
     parent: root.transform
 });
 
-var camera = new Camera({
+var mover = new Entity({
+    name: "mover",
+    mesh: Mesh.makeCube(1),
+    material: new Material({
+        texture: Texture.fromColour(vec4.fromValues(1.0, 1.0, 1.0, 1.0)),
+        shader: Shader.getShader("diffuse")
+    }),
+    position: vec3.fromValues(0, 0.5, 0),
+    components: [
+        new RigidBody(),
+        new BoxCollider({width: 1, height: 1, depth: 1})
+    ],
+    controller: {
+        update: function(entity) {
+            var rigidBody = entity.getComponent(RigidBody);
+
+            if (rigidBody != null) {
+                var dx = 0;
+                var dz = 0;
+
+                if (Input.isKeyDown(73) && !Input.isKeyDown(75)) {
+                    dz = -0.1;
+                } else if (Input.isKeyDown(75) && !Input.isKeyDown(73)) {
+                    dz = 0.1;
+                }
+
+                if (Input.isKeyDown(74) && !Input.isKeyDown(76)) {
+                    dx = -0.1;
+                } else if (Input.isKeyDown(76) && !Input.isKeyDown(74)) {
+                    dx = 0.1;
+                }
+
+                vec3.set(rigidBody.velocity, dx, 0, dz);
+            }
+        }
+    },
+    parent: root.transform
+});
+
+camera = new Camera({
     name: "camera",
     fov: 45,
     near: 0.1,

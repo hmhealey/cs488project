@@ -75,3 +75,14 @@ var removeFromArray = function(array, value) {
         array.splice(index, 1);
     }
 };
+
+// add some extra functions to gl-matrix that seem to be missing
+
+/** Transforms a vec3 by a mat4. The fourth vector component is implicitly 0 (unlike vec3.transformMat4). **/
+vec3.transformMat4AsVector = function(out, a, m) {
+    var x = a[0], y = a[1], z = a[2];
+    out[0] = m[0] * x + m[4] * y + m[8] * z;
+    out[1] = m[1] * x + m[5] * y + m[9] * z;
+    out[2] = m[2] * x + m[6] * y + m[10] * z;
+    return out;
+}
