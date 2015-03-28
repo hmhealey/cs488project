@@ -1,78 +1,91 @@
 var Raycast = { };
 
-Raycast.againstXYPlane = function(x1, x2, y1, y2, z, point, direction, hit) {
-    var t = (z - point[2]) / direction[2];
-
-    var x = point[0] + t * direction[0];
-    var y = point[1] + t * direction[1];
-
-    if (x >= x1 && x <= x2 && y >= y1 && y <= y2) {
-        return t;
-    } else {
-        return Infinity;
-    }
-};
-
-Raycast.againstXZPlane = function(x1, x2, y, z1, z2, point, direction) {
-    var t = (y - point[1]) / direction[1];
-
-    var x = point[0] + t * direction[0];
-    var z = point[2] + t * direction[2];
-
-    if (x >= x1 && x <= x2 && z >= z1 && z <= z2) {
-        return true;
-    } else {
-        return false;
-    }
-};
-
-Raycast.againstYZPlane = function(x, y1, y2, z1, z2, point, direction, hitPoint, hitNormal) {
-    var t = (x - point[0]) / direction[0];
-
-    var y = point[1] + t * direction[1];
-    var z = point[2] + t * direction[2];
-
-    if (y >= y1 && y <= y2 && z >= z1 && z <= z2) {
-        vec3.set(hit.point, x, y, z);
-
-        return true;
-    } else {
-        return false;
-    }
-};
-
-Raycast.againstBox = function(left, right, bottom, top, front, back, point, direction, result) {
+Raycast.againstBox = function(left, right, bottom, top, back, front, point, direction, result) {
     var t = Infinity;
 
     var hit = vec3.create();
     var normal = vec3.create();
     
-    // top
+    // bottom
     {
-        var tprime = (top - point[2]) / direction[2];
+        var tprime = (bottom - point[1]) / direction[1];
 
         var x = point[0] + tprime * direction[0];
-        var y = point[1] + tprime * direction[1];
+        var z = point[2] + tprime * direction[2];
 
-        if (x >= left && x <= right && y >= bottom && y <= top && tprime >= 0 && tprime < t) {
-            console.log('hit top!');
-            vec3.set(hit, x, y, top);
+        if (x >= left && x <= right && z >= back && z <= front && tprime >= 0 && tprime < t) {
+            vec3.set(hit, x, bottom, z);
+            vec3.set(normal, 0, -1, 0);
+            t = tprime;
+        }
+    }
+
+    // top
+    {
+        var tprime = (top - point[1]) / direction[1];
+
+        var x = point[0] + tprime * direction[0];
+        var z = point[2] + tprime * direction[2];
+
+        if (x >= left && x <= right && z >= back && z <= front && tprime >= 0 && tprime < t) {
+            vec3.set(hit, x, top, z);
             vec3.set(normal, 0, 1, 0);
             t = tprime;
         }
     }
 
-    // bottom
+    // left
     {
-        var tprime = (bottom - point[2]) / direction[2];
+        var tprime = (left - point[0]) / direction[0];
+
+        var y = point[1] + tprime * direction[1];
+        var z = point[2] + tprime * direction[2];
+
+        if (y >= bottom && y <= top && z >= back && z <= front && tprime >= 0 && tprime < t) {
+            vec3.set(hit, left, y, z);
+            vec3.set(normal, -1, 0, 0);
+            t = tprime;
+        }
+    }
+
+    // right
+    {
+        var tprime = (right - point[0]) / direction[0];
+
+        var y = point[1] + tprime * direction[1];
+        var z = point[2] + tprime * direction[2];
+
+        if (y >= bottom && y <= top && z >= back && z <= front && tprime >= 0 && tprime < t) {
+            vec3.set(hit, right, y, z);
+            vec3.set(normal, 1, 0, 0);
+            t = tprime;
+        }
+    }
+
+    // back
+    {
+        var tprime = (back - point[2]) / direction[2];
 
         var x = point[0] + tprime * direction[0];
         var y = point[1] + tprime * direction[1];
 
         if (x >= left && x <= right && y >= bottom && y <= top && tprime >= 0 && tprime < t) {
-            console.log('hit bottom!');
-            vec3.set(hit, x, y, bottom);
-            vec3.set(normal, 0, -1, 0);
+            vec3.set(hit, x, y, back);
+            vec3.set(normal, 0, 0, -1);
+            t = tprime;
+        }
+    }
+
+    // front
+    {
+        var tprime = (front - point[2]) / direction[2];
+
+        var x = point[0] + tprime * direction[0];
+        var y = point[1] + tprime * direction[1];
+
+        if (x >= left && x <= right && y >= bottom && y <= top && tprime >= 0 && tprime < t) {
+            vec3.set(hit, x, y, front);
+            vec3.set(normal, 0, 0, 1);
             t = tprime;
         }
     }
