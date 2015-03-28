@@ -38,6 +38,7 @@ var onLoad = function(e) {
         if (!gl.getExtension("OES_element_index_uint")) console.log("Unable to load OES_element_index_uint");
         if (!gl.getExtension("OES_texture_float")) console.log("Unable to load OES_texture_float");
         if (!gl.getExtension("OES_texture_float_linear")) console.log("Unable to load OES_texture_float_linear");
+        if (!gl.getExtension("OES_standard_derivatives")) console.log("Unable to load OES_standard_derivatives");
         ext = gl.getExtension("ANGLE_instanced_arrays");
         if (!ext) console.log("Unable to load ANGLE_instanced_arrays");
 
