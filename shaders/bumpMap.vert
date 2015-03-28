@@ -22,6 +22,6 @@ void main() {
     fPosition = vec3(modelView * vec4(position, 1.0));
     fNormal = normalize(normalMatrix * normal);
     fTangent = normalize(normalMatrix * tangent);
-    fBittangent = normalize(normalMatrix * cross(tangent, normal));
+    fBittangent = cross(fTangent, fNormal);
     fTexCoord = texCoord;
 }

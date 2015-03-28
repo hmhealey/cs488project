@@ -6,6 +6,7 @@ uniform vec4 materialAmbient;
 uniform vec4 materialDiffuse;
 uniform vec4 materialSpecular;
 uniform float materialShininess;
+
 uniform sampler2D texture;
 uniform sampler2D bumpMap;
 
@@ -16,15 +17,10 @@ varying vec3 fBittangent;
 varying vec2 fTexCoord;
 
 void main() {
-    /*// calculate the new normal using the normal map
-    mat3 tangentToImageSpace = mat3(fTangent, fBittangent, fNormal);
-    vec3 normal = normalize(fNormal + tangentToImageSpace * normalize(texture2D(normalMap, fTexCoord).rgb * 2.0 - 1.0));*/
-
     float delta = 1.0 / 512.0;
-    float bu = (texture2D(bumpMap, fTexCoord + vec2(0, delta)).x - texture2D(bumpMap, fTexCoord).x);
-    float bv = (texture2D(bumpMap, fTexCoord + vec2(delta, 0)).x - texture2D(bumpMap, fTexCoord).x);
-    //bv = -bv;
-    vec3 normal = fNormal + bu * fTangent - bv * fBittangent;
+    float bu = -2.0 * (texture2D(bumpMap, fTexCoord + vec2(delta, 0)).x - texture2D(bumpMap, fTexCoord).x);
+    float bv = 2.0 * (texture2D(bumpMap, fTexCoord + vec2(0, delta)).x - texture2D(bumpMap, fTexCoord).x);
+    vec3 normal = normalize(fNormal + bu * fTangent - bv * fBittangent);
 
     // TODO set the light components as uniforms r something
     vec4 ambient = materialAmbient * vec4(0.1, 0.1, 0.1, 1.0);
