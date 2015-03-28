@@ -32,7 +32,7 @@ Camera.prototype.getProjectionMatrix = function() {
 
 Camera.prototype.setVerticalFov = function(fov) {
     this.fov = fov;
-    this.updatePerspectiveMatrix();
+    this.updateProjectionMatrix();
 };
 
 Camera.prototype.setAspectRatio = function(aspect) {
@@ -59,5 +59,8 @@ Camera.prototype.updateProjectionMatrix = function() {
 };
 
 Camera.prototype.draw = function() {
-    // do nothing since cameras aren't visible in the world
+    // just recurse since cameras aren't visible in the world
+    for (var i = 0; i < this.transform.children.length; i++) {
+        this.transform.children[i].entity.draw();
+    }
 };

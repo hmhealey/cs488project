@@ -276,4 +276,12 @@ camera = new Camera({
 });
 camera.controller = new PlayerController({speed: 0.1, rotationSpeed: 5});
 
+var crosshair = new Entity({
+    name: "crosshair",
+    mesh: Mesh.makeRectangle(0.0005, 0.0005),
+    material: grass,
+    position: vec3.fromValues(0, 0, -0.101),
+    parent: camera.transform
+});
+
 return new Level({root: root, mainCamera: camera, textures: textures});
