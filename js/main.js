@@ -86,36 +86,10 @@ var update = function() {
     gl.disable(gl.CULL_FACE);
     gl.disable(gl.DEPTH_TEST);
 
-    // draw crosshair
-    var shader = Shader.getShader("flat");
-    if (shader && shader.linked) {
-        shader.bind();
-
-        var crosshair = Mesh.makeRectangle(0.05, 0.05);
-
-        var forward = vec3.fromValues(0, 0, -1);
-        vec3.transformQuat(forward, forward, level.mainCamera.transform.rotation);
-
-        var point = vec3.create();
-        vec3.copy(point, level.mainCamera.transform.getWorldPosition());
-        vec3.add(point, point, forward);
-
-        var matrix = mat4.create();
-        mat4.fromRotationTranslation(matrix, quat.create(), level.mainCamera.transform.getWorldPosition());
-        shader.setModelMatrix(matrix);
-
-        crosshair.draw(shader);
-
-        shader.release();
-
-        console.log(level.mainCamera.transform.getForward());
-    }
-
-    // update input state
-    Input.update();
-
     // update game logic
     while (time - lastTickTime > TICK_RATE) {
+        Input.updateMousePosition();
+
         // our internal representation of game time that only passses when the game isn't paused
         gameTime += TICK_RATE;
 
@@ -124,6 +98,8 @@ var update = function() {
         }
 
         lastTickTime += TICK_RATE;
+
+        Input.updateKeys();
     }
 
     onFrameRendered();

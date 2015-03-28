@@ -39,7 +39,14 @@ Input.initialize = function() {
     Input.previousKeys = deepCopy(Input.keys);
 };
 
-Input.update = function() {
+Input.updateMousePosition = function() {
+    Input.Mouse.deltaX = Input.Mouse.nextDeltaX;
+    Input.Mouse.deltaY = Input.Mouse.nextDeltaY;
+    Input.Mouse.nextDeltaX = 0;
+    Input.Mouse.nextDeltaY = 0;
+}
+
+Input.updateKeys = function() {
     for (var key in Input.keys) {
         Input.previousKeys[key] = Input.keys[key];
     }
@@ -47,11 +54,6 @@ Input.update = function() {
     for (var button in Input.Mouse.buttons) {
         Input.Mouse.previousButtons[button] = Input.Mouse.buttons[button];
     }
-
-    Input.Mouse.deltaX = Input.Mouse.nextDeltaX;
-    Input.Mouse.deltaY = Input.Mouse.nextDeltaY;
-    Input.Mouse.nextDeltaX = 0;
-    Input.Mouse.nextDeltaY = 0;
 };
 
 Input.onKeyDown = function(event) {
@@ -108,7 +110,7 @@ Input.Mouse.getButton = function(button) {
 };
 
 Input.Mouse.getButtonDown = function(button) {
-    return Input.Mouse.buttons[button] && !Input.Mouse.previousButtons[button] || false;
+    return (Input.Mouse.buttons[button] && !Input.Mouse.previousButtons[button]) || false;
 };
 
 Input.Mouse.getButtonUp = function(button) {
