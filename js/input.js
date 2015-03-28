@@ -1,4 +1,7 @@
 var Input = {
+    LEFT_MOUSE: 0,
+    MIDDLE_MOUSE: 1,
+    RIGHT_MOUSE: 2,
     keys: {
         87: false, // w
         65: false, // a
@@ -21,6 +24,9 @@ var Input = {
     },
     previousKeys: {}, // initialized in Input.initialize()
     Mouse: {
+        buttons: {},
+        previousButtons: {},
+
         // the change in position of the mouse over this tick and over the next tick
         deltaX: 0,
         deltaY: 0,
@@ -36,6 +42,10 @@ Input.initialize = function() {
 Input.update = function() {
     for (var key in Input.keys) {
         Input.previousKeys[key] = Input.keys[key];
+    }
+
+    for (var button in Input.Mouse.buttons) {
+        Input.Mouse.previousButtons[button] = Input.Mouse.buttons[button];
     }
 
     Input.Mouse.deltaX = Input.Mouse.nextDeltaX;
@@ -58,15 +68,20 @@ Input.onKeyUp = function(event) {
     }
 };
 
-Input.isKeyDown = function(keyCode) {
+Input.getKey = function(keyCode) {
     return Input.keys[keyCode] || false;
 };
 
-Input.wasKeyDown = function(keyCode) {
-    return Input.previousKeys[keyCode] || false;
+Input.getKeyDown = function(keyCode) {
+    return Input.keys[keyCode] && !Input.previousKeys[keyCode] || false;
+};
+
+Input.getKeyUp = function(keyCode) {
+    return !Input.keys[keyCode] && Input.previousKeys[keyCode] || false;
 };
 
 Input.onMouseDown = function(event) {
+    Input.Mouse.buttons[event.button] = true;
 };
 
 Input.onMouseMove = function(event) {
@@ -78,10 +93,24 @@ Input.onMouseUp = function(event) {
     if (!Input.Mouse.isLocked()) {
         canvas.requestPointerLock();
     }
+
+    Input.Mouse.buttons[event.button] = false;
 };
 
 Input.Mouse.isLocked = function() {
     return document.pointerLockElement === canvas ||
            document.mozPointerLockElement === canvas ||
            document.webkitPointerLockElement === canvas;
+};
+
+Input.Mouse.getButton = function(button) {
+    return Input.Mouse.buttons[button] || false;
+};
+
+Input.Mouse.getButtonDown = function(button) {
+    return Input.Mouse.buttons[button] && !Input.Mouse.previousButtons[button] || false;
+};
+
+Input.Mouse.getButtonUp = function(button) {
+    return !Input.Mouse.buttons[button] && Input.Mouse.previousButtons[button] || false;
 };

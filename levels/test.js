@@ -246,15 +246,15 @@ var mover = new Entity({
                 var dx = 0;
                 var dz = 0;
 
-                if (Input.isKeyDown(73) && !Input.isKeyDown(75)) {
+                if (Input.getKey(73) && !Input.getKey(75)) {
                     dz = -0.1;
-                } else if (Input.isKeyDown(75) && !Input.isKeyDown(73)) {
+                } else if (Input.getKey(75) && !Input.getKey(73)) {
                     dz = 0.1;
                 }
 
-                if (Input.isKeyDown(74) && !Input.isKeyDown(76)) {
+                if (Input.getKey(74) && !Input.getKey(76)) {
                     dx = -0.1;
-                } else if (Input.isKeyDown(76) && !Input.isKeyDown(74)) {
+                } else if (Input.getKey(76) && !Input.getKey(74)) {
                     dx = 0.1;
                 }
 
