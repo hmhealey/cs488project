@@ -20,7 +20,7 @@ var Input = {
         27: false, // escape
     },
     previousKeys: {}, // initialized in Input.initialize()
-    Cursor: {
+    Mouse: {
         // the change in position of the mouse over this tick and over the next tick
         deltaX: 0,
         deltaY: 0,
@@ -38,10 +38,10 @@ Input.update = function() {
         Input.previousKeys[key] = Input.keys[key];
     }
 
-    Input.Cursor.deltaX = Input.Cursor.nextDeltaX;
-    Input.Cursor.deltaY = Input.Cursor.nextDeltaY;
-    Input.Cursor.nextDeltaX = 0;
-    Input.Cursor.nextDeltaY = 0;
+    Input.Mouse.deltaX = Input.Mouse.nextDeltaX;
+    Input.Mouse.deltaY = Input.Mouse.nextDeltaY;
+    Input.Mouse.nextDeltaX = 0;
+    Input.Mouse.nextDeltaY = 0;
 };
 
 Input.onKeyDown = function(event) {
@@ -70,17 +70,17 @@ Input.onMouseDown = function(event) {
 };
 
 Input.onMouseMove = function(event) {
-    Input.Cursor.nextDeltaX += event.movementX;
-    Input.Cursor.nextDeltaY += event.movementY;
+    Input.Mouse.nextDeltaX += event.movementX;
+    Input.Mouse.nextDeltaY += event.movementY;
 };
 
 Input.onMouseUp = function(event) {
-    if (!Input.Cursor.isLocked()) {
+    if (!Input.Mouse.isLocked()) {
         canvas.requestPointerLock();
     }
 };
 
-Input.Cursor.isLocked = function() {
+Input.Mouse.isLocked = function() {
     return document.pointerLockElement === canvas ||
            document.mozPointerLockElement === canvas ||
            document.webkitPointerLockElement === canvas;
