@@ -32,7 +32,7 @@ Level.prototype.update = function(time) {
     }
 };
 
-Level.prototype.raycast = function(point, direction, hit) {
+Level.prototype.raycast = function(point, direction, hit, filter) {
     if (this.root) {
         var colliders = this.root.getComponentsInChildren(BoxCollider);
 
@@ -40,7 +40,7 @@ Level.prototype.raycast = function(point, direction, hit) {
         var intersected = false;
 
         for (var i = 0; i < colliders.length; i++) {
-            if (colliders[i].raycast(point, direction, childHit)) {
+            if (colliders[i].raycast(point, direction, childHit, filter)) {
                 if (!intersected || vec3.distance(point, childHit.point) < vec3.distance(point, hit.point)) {
                     hit.setTo(childHit);
                     intersected = true;

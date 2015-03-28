@@ -40,22 +40,26 @@ BoxCollider.prototype.draw = function() {
 
 BoxCollider.prototype.update = function(time) { };
 
-BoxCollider.prototype.raycast = function(point, direction, hit) {
-    var localPoint = vec3.create();
-    vec3.transformMat4(localPoint, point, this.entity.transform.getWorldToLocalMatrix());
-    var localDirection = vec3.create();
-    vec3.transformMat4AsVector(localDirection, direction, this.entity.transform.getWorldToLocalMatrix());
+BoxCollider.prototype.raycast = function(point, direction, hit, filter) {
+    if (!filter || filter(this)) {
+        var localPoint = vec3.create();
+        vec3.transformMat4(localPoint, point, this.entity.transform.getWorldToLocalMatrix());
+        var localDirection = vec3.create();
+        vec3.transformMat4AsVector(localDirection, direction, this.entity.transform.getWorldToLocalMatrix());
 
-    var intersected = Raycast.againstBox(-this.width / 2, this.width / 2, -this.height / 2, this.height / 2,
-                                         -this.depth / 2, this.depth / 2, localPoint, localDirection, hit);
+        var intersected = Raycast.againstBox(-this.width / 2, this.width / 2, -this.height / 2, this.height / 2,
+                                             -this.depth / 2, this.depth / 2, localPoint, localDirection, hit);
 
-    if (intersected) {
-        hit.collider = this;
-        hit.transform(this.entity.transform.getLocalToWorldMatrix(),
-                      this.entity.transform.getWorldToLocalMatrix());
+        if (intersected) {
+            hit.collider = this;
+            hit.transform(this.entity.transform.getLocalToWorldMatrix(),
+                          this.entity.transform.getWorldToLocalMatrix());
+        }
+
+        return intersected;
+    } else {
+        return false;
     }
-
-    return intersected;
 };
 
 BoxCollider.prototype.contains = function(point) {
