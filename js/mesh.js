@@ -428,12 +428,15 @@ Mesh.makeCircle = function(radius, resolution) {
 Mesh.makeCylinder = function(radius, height, resolution) {
     resolution = resolution || 10;
 
-    var numVertices = (resolution + 1) * 2;
+    var numVertices = (resolution + 1) * 4;
     var vertices = new Array(numVertices * 3);
     var normals = new Array(numVertices * 3);
     var texCoords = new Array(numVertices * 2);
 
-    for (var i = 0; i < numVertices; i += 2) {
+    // the following math is pretty ugly so I hope it works
+
+    // the vertices on the round surface of the cylinder
+    for (var i = 0; i < numVertices / 2; i += 2) {
         var x = Math.cos(2 * Math.PI * (i / 2) / resolution);
         var z = Math.sin(2 * Math.PI * (i / 2) / resolution);
 
@@ -468,7 +471,71 @@ Mesh.makeCylinder = function(radius, height, resolution) {
         texCoords[coord + 1] = 0;
     }
 
-    var mesh = new Mesh(gl.TRIANGLE_STRIP);
+    // the vertices on the bottom and top
+    for (var i = numVertices / 2; i < numVertices; i += 2) {
+        var edgeVertex = (i - numVertices / 2) * 3;
+
+        var x = vertices[edgeVertex];
+        var z = vertices[edgeVertex + 2];
+
+        var vertex = i * 3;
+
+        vertices[vertex] = x;
+        vertices[vertex + 1] = -height / 2;
+        vertices[vertex + 2] = z;
+
+        normals[vertex] = 0;
+        normals[vertex + 1] = -1;
+        normals[vertex + 2] = 0;
+
+        var coord = i * 2;
+        texCoords[coord] = (x + 1) / 2;
+        texCoords[coord + 1] = (1 - z) / 2;
+
+        vertex = (i + 1) * 3;
+
+        vertices[vertex] = x;
+        vertices[vertex + 1] = height / 2;
+        vertices[vertex + 2] = z;
+
+        normals[vertex] = 0;
+        normals[vertex + 1] = 1;
+        normals[vertex + 2] = 0;
+
+        coord = (i + 1) * 2;
+        texCoords[coord] = (x + 1) / 2;
+        texCoords[coord + 1] = (z + 1) / 2;
+    }
+
+    var numIndices = resolution * 6 + resolution * 3 + resolution * 3;
+    var indices = new Array(numIndices);
+
+    // outside wall
+    for (var i = 0; i < resolution; i++) {
+        indices[i * 6] = i * 2;
+        indices[i * 6 + 1] = i * 2 + 1;
+        indices[i * 6 + 2] = i * 2 + 2;
+        indices[i * 6 + 3] = i * 2 + 2;
+        indices[i * 6 + 4] = i * 2 + 1;
+        indices[i * 6 + 5] = i * 2 + 3;
+    }
+
+    // top and bottom
+    for (var i = 0; i < resolution; i++) {
+        var index = (i + resolution * 2) * 3;
+
+        indices[index] = numVertices / 2;
+        indices[index + 1] = numVertices / 2 + i * 2;
+        indices[index + 2] = numVertices / 2 + (i + 1) * 2;
+        
+        index = (i + resolution * 3) * 3;
+
+        indices[index] = numVertices / 2 + 1;
+        indices[index + 1] = numVertices / 2 + (i + 1) * 2 + 1;
+        indices[index + 2] = numVertices / 2 + i * 2 + 1;
+    }
+
+    var mesh = new Mesh(gl.TRIANGLES);
 
     mesh.setVertices(vertices);
     mesh.setNormals(normals);
@@ -476,6 +543,7 @@ Mesh.makeCylinder = function(radius, height, resolution) {
     mesh.setTexCoords2(texCoords);
     mesh.setTexCoords3(texCoords);
     mesh.setTexCoords4(texCoords);
+    mesh.setIndices(indices);
 
     return mesh;
 };

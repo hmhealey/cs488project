@@ -329,12 +329,12 @@ var circle = new Entity({
 var cylinder = new Entity({
     name: "cylinder",
     mesh: Mesh.makeCylinder(1, 2, 40),
-    /*material: new Material({
+    material: new Material({
+        shininess: 10,
         texture: Texture.fromImagePath("AlternatingBrick-ColorMap.png"),
         shader: phong
-    }),*/
-    material: ayreon,
-    position: vec3.fromValues(8, 1, -1),
+    }),
+    position: vec3.fromValues(8, 3, -1),
     parent: root.transform
 });
 
