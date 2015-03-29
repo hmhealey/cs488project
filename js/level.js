@@ -34,7 +34,7 @@ Level.prototype.update = function(time) {
 
 Level.prototype.raycast = function(point, direction, hit, filter) {
     if (this.root) {
-        var colliders = this.root.getComponentsInChildren(BoxCollider);
+        var colliders = this.root.getComponentsInChildren(Collider);
 
         var childHit = new RaycastHit();
         var intersected = false;

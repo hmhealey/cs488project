@@ -9,11 +9,11 @@ function RigidBody(args) {
 RigidBody.prototype.draw = function() { };
 
 RigidBody.prototype.update = function(time) {
-    var collider = this.entity.getComponent(BoxCollider);
+    var collider = this.entity.getComponent(Collider);
 
     if (collider) {
         // TODO figure out a better way to refer back to the base level
-        var colliders = level.root.getComponentsInChildren(BoxCollider);
+        var colliders = level.root.getComponentsInChildren(Collider);
 
         var transform = this.entity.transform;
 

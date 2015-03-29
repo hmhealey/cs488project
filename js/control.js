@@ -65,7 +65,7 @@ PlayerController.prototype.update = function(entity) {
 
         if (level.raycast(entity.transform.getWorldPosition(), entity.transform.getForward(), hit)) {
             console.log("bang! you hit " + hit.collider.entity.name);
-            hit.collider.entity.destroy();
+            //hit.collider.entity.destroy();
         } else {
             console.log("bang! you missed");
         }

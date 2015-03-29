@@ -1,3 +1,29 @@
+function Collider(args) {
+    args = args || {};
+
+    this.entity = args['entity'] || null;
+};
+
+Collider.draw = true;
+Collider.drawLineWidth = 2.0;
+
+Collider.prototype.draw = function() { };
+
+Collider.prototype.update = function() { };
+
+Collider.prototype.raycast = function(point, direction, hit, filter) {
+    return false;
+};
+
+Collider.prototype.containsLocal = function(localPoint) {
+    return false;
+};
+
+Collider.prototype.contains = function(point) {
+    var localPoint = vec3.transformMat4(vec3.create(), point, this.entity.transform.getWorldToLocalMatrix());
+    return this.contains(localPoint);
+};
+
 function BoxCollider(args) {
     args = args || {};
 
@@ -8,11 +34,11 @@ function BoxCollider(args) {
     this.depth = args['depth'] || 1;
 };
 
-BoxCollider.draw = true;
-BoxCollider.drawLineWidth = 2.0;
+BoxCollider.prototype = Object.create(Collider.prototype);
+BoxCollider.prototype.constructor = BoxCollider;
 
 BoxCollider.prototype.draw = function() {
-    if (BoxCollider.draw) {
+    if (Collider.draw) {
         var shader = Shader.getShader("wireframe");
 
         if (shader && shader.linked) {
@@ -26,7 +52,7 @@ BoxCollider.prototype.draw = function() {
             // this is a debug operation, so we're fine to constantly create new meshes
             var mesh = Mesh.makeWireframeBox(this.width, this.height, this.depth);
 
-            gl.lineWidth(BoxCollider.drawLineWidth);
+            gl.lineWidth(Collider.drawLineWidth);
             mesh.draw(shader);
 
             mesh.cleanup();
@@ -37,8 +63,6 @@ BoxCollider.prototype.draw = function() {
         }
     }
 };
-
-BoxCollider.prototype.update = function(time) { };
 
 BoxCollider.prototype.raycast = function(point, direction, hit, filter) {
     if (!filter || filter(this)) {
@@ -62,13 +86,8 @@ BoxCollider.prototype.raycast = function(point, direction, hit, filter) {
     }
 };
 
-BoxCollider.prototype.contains = function(point) {
+BoxCollider.prototype.containsLocal = function(point) {
     return point[0] >= -this.width / 2 && point[0] < this.width / 2 &&
            point[1] >= -this.height / 2 && point[1] < this.height / 2 &&
            point[2] >= -this.depth / 2 && point[2] < this.depth / 2;
-};
-
-BoxCollider.prototype.containsWorld = function(point) {
-    var localPoint = vec3.transformMat4(vec3.create(), point, this.entity.transform.getWorldToLocalMatrix());
-    return this.contains(localPoint);
 };
