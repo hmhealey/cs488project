@@ -47,7 +47,10 @@ var cube1 = new Entity({
     mesh: Mesh.makeCube(4),
     material: red,
     position: vec3.fromValues(-4, 2, -6),
-    parent: root.transform
+    parent: root.transform,
+    components: [
+        new BoxCollider({width: 4, height: 4, depth: 4})
+    ]
 });
 
 var cube2 = new Entity({
@@ -55,7 +58,10 @@ var cube2 = new Entity({
     mesh: Mesh.makeCube(2),
     material: blue,
     position: vec3.fromValues(3, 1, -8),
-    parent: root.transform
+    parent: root.transform,
+    components: [
+        new BoxCollider({width: 2, height: 2, depth: 2})
+    ]
 });
 
 var cube2a = new Entity({
@@ -64,7 +70,10 @@ var cube2a = new Entity({
     material: blue,
     position: vec3.fromValues(0, 1.5, 0),
     scale: 0.5,
-    parent: cube2.transform
+    parent: cube2.transform,
+    components: [
+        new BoxCollider({width: 2, height: 2, depth: 2})
+    ]
 });
 
 var cube2b = new Entity({
@@ -73,7 +82,10 @@ var cube2b = new Entity({
     material: blue,
     position: vec3.fromValues(0, 1.5, 0),
     scale: 0.5,
-    parent: cube2a.transform
+    parent: cube2a.transform,
+    components: [
+        new BoxCollider({width: 2, height: 2, depth: 2})
+    ]
 });
 
 var sun = new Entity({
@@ -267,15 +279,82 @@ var bump3 = new Entity({
     parent: root.transform
 });
 
+var mover = new Entity({
+    name: "mover",
+    mesh: Mesh.makeCube(1),
+    material: new Material({
+        texture: Texture.fromColour(vec4.fromValues(1.0, 1.0, 1.0, 1.0)),
+        shader: Shader.getShader("diffuse")
+    }),
+    position: vec3.fromValues(0, 0.5, 0),
+    components: [
+        new RigidBody(),
+        new BoxCollider({width: 1, height: 1, depth: 1})
+    ],
+    controller: {
+        update: function(entity) {
+            var rigidBody = entity.getComponent(RigidBody);
+
+            if (rigidBody != null) {
+                var dx = 0;
+                var dz = 0;
+
+                if (Input.getKey(73) && !Input.getKey(75)) {
+                    dz = -0.1;
+                } else if (Input.getKey(75) && !Input.getKey(73)) {
+                    dz = 0.1;
+                }
+
+                if (Input.getKey(74) && !Input.getKey(76)) {
+                    dx = -0.1;
+                } else if (Input.getKey(76) && !Input.getKey(74)) {
+                    dx = 0.1;
+                }
+
+                vec3.set(rigidBody.velocity, dx, 0, dz);
+            }
+        }
+    },
+    parent: root.transform
+});
+
+var circle = new Entity({
+    name: "circle",
+    mesh: Mesh.makeCircle(2, 20),
+    material: ayreon,
+    position: vec3.fromValues(0, 4, -10),
+    parent: root.transform
+});
+
+var cylinder = new Entity({
+    name: "cylinder",
+    mesh: Mesh.makeCylinder(1, 2, 40),
+    /*material: new Material({
+        texture: Texture.fromImagePath("AlternatingBrick-ColorMap.png"),
+        shader: phong
+    }),*/
+    material: ayreon,
+    position: vec3.fromValues(8, 1, -1),
+    parent: root.transform
+});
+
 var camera = new Camera({
     name: "camera",
     fov: 45,
     near: 0.1,
     far: 100,
     position: vec3.fromValues(0, 2, 10),
-    rotation: vec3.fromValues(0, 180, 0),
+    rotation: vec3.fromValues(0, 0, 0),
     parent: root.transform
 });
 camera.controller = new PlayerController({speed: 0.1, rotationSpeed: 5});
+
+var crosshair = new Entity({
+    name: "crosshair",
+    mesh: Mesh.makeCircle(0.0005, 10),
+    material: grass,
+    position: vec3.fromValues(0, 0, -0.101),
+    parent: camera.transform
+});
 
 return new Level({root: root, mainCamera: camera, textures: textures});

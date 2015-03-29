@@ -18,6 +18,7 @@ var TICK_RATE = 10;
 
 var onLoad = function(e) {
     var canvas = document.getElementById("canvas");
+    var asdf = document.getElementById("asdf");
 
     try {
         gl = canvas.getContext("webgl") || canvas.getContext("experimental-webgl");
@@ -85,11 +86,10 @@ var update = function() {
     gl.disable(gl.CULL_FACE);
     gl.disable(gl.DEPTH_TEST);
 
-    // update input state
-    Input.update();
-
     // update game logic
     while (time - lastTickTime > TICK_RATE) {
+        Input.updateMousePosition();
+
         // our internal representation of game time that only passses when the game isn't paused
         gameTime += TICK_RATE;
 
@@ -98,6 +98,8 @@ var update = function() {
         }
 
         lastTickTime += TICK_RATE;
+
+        Input.updateKeys();
     }
 
     onFrameRendered();
@@ -108,7 +110,6 @@ var update = function() {
 };
 
 var cleanup = function() {
-    texture.cleanup();
 };
 
 var onUnload = function(e) {

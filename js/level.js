@@ -32,6 +32,26 @@ Level.prototype.update = function(time) {
     }
 };
 
+Level.prototype.raycast = function(point, direction, hit, filter) {
+    if (this.root) {
+        var colliders = this.root.getComponentsInChildren(Collider);
+
+        var childHit = new RaycastHit();
+        var intersected = false;
+
+        for (var i = 0; i < colliders.length; i++) {
+            if (colliders[i].raycast(point, direction, childHit, filter)) {
+                if (!intersected || vec3.distance(point, childHit.point) < vec3.distance(point, hit.point)) {
+                    hit.setTo(childHit);
+                    intersected = true;
+                }
+            }
+        }
+
+        return intersected;
+    }
+};
+
 function loadLevel(path, root) {
     var doLoadLevel = (function(_root) {
         return function(levelScript) {

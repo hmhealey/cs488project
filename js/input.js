@@ -1,9 +1,16 @@
 var Input = {
+    LEFT_MOUSE: 0,
+    MIDDLE_MOUSE: 1,
+    RIGHT_MOUSE: 2,
     keys: {
         87: false, // w
         65: false, // a
         83: false, // s
         68: false, // d
+        73: false, // i
+        74: false, // j
+        75: false, // k
+        76: false, // l       
         38: false, // up arrow
         37: false, // left arrow
         40: false, // down arrow
@@ -16,7 +23,10 @@ var Input = {
         27: false, // escape
     },
     previousKeys: {}, // initialized in Input.initialize()
-    Cursor: {
+    Mouse: {
+        buttons: {},
+        previousButtons: {},
+
         // the change in position of the mouse over this tick and over the next tick
         deltaX: 0,
         deltaY: 0,
@@ -29,15 +39,21 @@ Input.initialize = function() {
     Input.previousKeys = deepCopy(Input.keys);
 };
 
-Input.update = function() {
+Input.updateMousePosition = function() {
+    Input.Mouse.deltaX = Input.Mouse.nextDeltaX;
+    Input.Mouse.deltaY = Input.Mouse.nextDeltaY;
+    Input.Mouse.nextDeltaX = 0;
+    Input.Mouse.nextDeltaY = 0;
+}
+
+Input.updateKeys = function() {
     for (var key in Input.keys) {
         Input.previousKeys[key] = Input.keys[key];
     }
 
-    Input.Cursor.deltaX = Input.Cursor.nextDeltaX;
-    Input.Cursor.deltaY = Input.Cursor.nextDeltaY;
-    Input.Cursor.nextDeltaX = 0;
-    Input.Cursor.nextDeltaY = 0;
+    for (var button in Input.Mouse.buttons) {
+        Input.Mouse.previousButtons[button] = Input.Mouse.buttons[button];
+    }
 };
 
 Input.onKeyDown = function(event) {
@@ -54,30 +70,49 @@ Input.onKeyUp = function(event) {
     }
 };
 
-Input.isKeyDown = function(keyCode) {
+Input.getKey = function(keyCode) {
     return Input.keys[keyCode] || false;
 };
 
-Input.wasKeyDown = function(keyCode) {
-    return Input.previousKeys[keyCode] || false;
+Input.getKeyDown = function(keyCode) {
+    return Input.keys[keyCode] && !Input.previousKeys[keyCode] || false;
+};
+
+Input.getKeyUp = function(keyCode) {
+    return !Input.keys[keyCode] && Input.previousKeys[keyCode] || false;
 };
 
 Input.onMouseDown = function(event) {
+    Input.Mouse.buttons[event.button] = true;
 };
 
 Input.onMouseMove = function(event) {
-    Input.Cursor.nextDeltaX += event.movementX;
-    Input.Cursor.nextDeltaY += event.movementY;
+    Input.Mouse.nextDeltaX += event.movementX;
+    Input.Mouse.nextDeltaY += event.movementY;
 };
 
 Input.onMouseUp = function(event) {
-    if (!Input.Cursor.isLocked()) {
+    if (!Input.Mouse.isLocked()) {
         canvas.requestPointerLock();
     }
+
+    Input.Mouse.buttons[event.button] = false;
 };
 
-Input.Cursor.isLocked = function() {
+Input.Mouse.isLocked = function() {
     return document.pointerLockElement === canvas ||
            document.mozPointerLockElement === canvas ||
            document.webkitPointerLockElement === canvas;
+};
+
+Input.Mouse.getButton = function(button) {
+    return Input.Mouse.buttons[button] || false;
+};
+
+Input.Mouse.getButtonDown = function(button) {
+    return (Input.Mouse.buttons[button] && !Input.Mouse.previousButtons[button]) || false;
+};
+
+Input.Mouse.getButtonUp = function(button) {
+    return !Input.Mouse.buttons[button] && Input.Mouse.previousButtons[button] || false;
 };

@@ -11,21 +11,21 @@ PlayerController.prototype.update = function(entity) {
     var dpitch = 0;
     var dyaw = 0;
 
-    if (Input.isKeyDown(38) && !Input.isKeyDown(40)) {
+    if (Input.getKey(38) && !Input.getKey(40)) {
         dpitch = 1;
-    } else if (Input.isKeyDown(40) && !Input.isKeyDown(38)) {
+    } else if (Input.getKey(40) && !Input.getKey(38)) {
         dpitch = -1;
     }
 
-    if (Input.isKeyDown(37) && !Input.isKeyDown(39)) {
+    if (Input.getKey(37) && !Input.getKey(39)) {
         dyaw = 1;
-    } else if (Input.isKeyDown(39) && !Input.isKeyDown(37)) {
+    } else if (Input.getKey(39) && !Input.getKey(37)) {
         dyaw = -1;
     }
 
-    if (Input.Cursor.isLocked()) {
-        dpitch += Input.Cursor.deltaY * -0.06;
-        dyaw += Input.Cursor.deltaX * -0.06;
+    if (Input.Mouse.isLocked()) {
+        dpitch += Input.Mouse.deltaY * -0.06;
+        dyaw += Input.Mouse.deltaX * -0.06;
     }
 
     if (dpitch != 0) {
@@ -39,15 +39,15 @@ PlayerController.prototype.update = function(entity) {
     var dy = 0;
     var dx = 0;
 
-    if (Input.isKeyDown(87) && !Input.isKeyDown(83)) {
+    if (Input.getKey(87) && !Input.getKey(83)) {
         dz = -1;
-    } else if (Input.isKeyDown(83) && !Input.isKeyDown(87)) {
+    } else if (Input.getKey(83) && !Input.getKey(87)) {
         dz = 1;
     }
     
-    if (Input.isKeyDown(65) && !Input.isKeyDown(68)) {
+    if (Input.getKey(65) && !Input.getKey(68)) {
         dx = -1;
-    } else if (Input.isKeyDown(68) && !Input.isKeyDown(65)) {
+    } else if (Input.getKey(68) && !Input.getKey(65)) {
         dx = 1;
     }
 
@@ -58,5 +58,16 @@ PlayerController.prototype.update = function(entity) {
         vec3.transformQuat(dir, dir, entity.transform.rotation);
 
         entity.transform.translate(dir);
+    }
+
+    if (Input.Mouse.getButtonDown(0)) {
+        var hit = new RaycastHit();
+
+        if (level.raycast(entity.transform.getWorldPosition(), entity.transform.getForward(), hit)) {
+            console.log("bang! you hit " + hit.collider.entity.name);
+            //hit.collider.entity.destroy();
+        } else {
+            console.log("bang! you missed");
+        }
     }
 };
