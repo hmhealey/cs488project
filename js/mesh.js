@@ -385,3 +385,97 @@ Mesh.makeUvSphere = function(radius, horizontalResolution, verticalResolution) {
 
     return mesh;
 };
+
+Mesh.makeCircle = function(radius, resolution) {
+    resolution = resolution || 10;
+
+    var numVertices = resolution + 1;
+    var vertices = new Array(numVertices * 3);
+    var normals = new Array(numVertices * 3);
+    var texCoords = new Array(numVertices * 2);
+
+    for (var i = 0; i < resolution + 1; i++) {
+        var x = Math.cos(2 * Math.PI * i / resolution);
+        var y = Math.sin(2 * Math.PI * i / resolution);
+
+        var vertex = i * 3;
+
+        vertices[vertex] = radius * x;
+        vertices[vertex + 1] = radius * y;
+        vertices[vertex + 2] = 0;
+
+        normals[vertex] = 0;
+        normals[vertex + 1] = 0;
+        normals[vertex + 2] = 1;
+
+        var coord = i * 2;
+        texCoords[coord] = (x + 1) / 2;
+        texCoords[coord + 1] = (1 - y) / 2;
+    }
+
+    var mesh = new Mesh(gl.TRIANGLE_FAN);
+
+    mesh.setVertices(vertices);
+    mesh.setNormals(normals);
+    mesh.setTexCoords(texCoords);
+    mesh.setTexCoords2(texCoords);
+    mesh.setTexCoords3(texCoords);
+    mesh.setTexCoords4(texCoords);
+
+    return mesh;
+};
+
+Mesh.makeCylinder = function(radius, height, resolution) {
+    resolution = resolution || 10;
+
+    var numVertices = (resolution + 1) * 2;
+    var vertices = new Array(numVertices * 3);
+    var normals = new Array(numVertices * 3);
+    var texCoords = new Array(numVertices * 2);
+
+    for (var i = 0; i < numVertices; i += 2) {
+        var x = Math.cos(2 * Math.PI * (i / 2) / resolution);
+        var z = Math.sin(2 * Math.PI * (i / 2) / resolution);
+
+        // the vertex at the bottom of the cylinder
+        var vertex = i * 3;
+
+        vertices[vertex] = radius * x;
+        vertices[vertex + 1] = -height / 2;
+        vertices[vertex + 2] = radius * z;
+
+        normals[vertex] = x;
+        normals[vertex + 1] = 0;
+        normals[vertex + 2] = z;
+
+        var coord = i * 2;
+        texCoords[coord] = 1 - (i / 2) / (resolution + 1);
+        texCoords[coord + 1] = 1;
+
+        // the vertex at the top of the cylinder
+        vertex = (i + 1) * 3;
+
+        vertices[vertex] = radius * x;
+        vertices[vertex + 1] = height / 2;
+        vertices[vertex + 2] = radius * z;
+
+        normals[vertex] = x;
+        normals[vertex + 1] = 0;
+        normals[vertex + 2] = z;
+
+        coord = (i + 1) * 2;
+        texCoords[coord] = 1 - (i / 2) / (resolution + 1);
+        texCoords[coord + 1] = 0;
+    }
+
+    var mesh = new Mesh(gl.TRIANGLE_STRIP);
+
+    mesh.setVertices(vertices);
+    mesh.setNormals(normals);
+    mesh.setTexCoords(texCoords);
+    mesh.setTexCoords2(texCoords);
+    mesh.setTexCoords3(texCoords);
+    mesh.setTexCoords4(texCoords);
+
+    return mesh;
+};

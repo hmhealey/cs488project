@@ -265,6 +265,26 @@ var mover = new Entity({
     parent: root.transform
 });
 
+var circle = new Entity({
+    name: "circle",
+    mesh: Mesh.makeCircle(2, 20),
+    material: ayreon,
+    position: vec3.fromValues(0, 4, -10),
+    parent: root.transform
+});
+
+var cylinder = new Entity({
+    name: "cylinder",
+    mesh: Mesh.makeCylinder(1, 2, 40),
+    /*material: new Material({
+        texture: Texture.fromImagePath("AlternatingBrick-ColorMap.png"),
+        shader: phong
+    }),*/
+    material: ayreon,
+    position: vec3.fromValues(8, 1, -1),
+    parent: root.transform
+});
+
 camera = new Camera({
     name: "camera",
     fov: 45,
@@ -278,7 +298,7 @@ camera.controller = new PlayerController({speed: 0.1, rotationSpeed: 5});
 
 var crosshair = new Entity({
     name: "crosshair",
-    mesh: Mesh.makeRectangle(0.0005, 0.0005),
+    mesh: Mesh.makeCircle(0.0005, 10),
     material: grass,
     position: vec3.fromValues(0, 0, -0.101),
     parent: camera.transform
