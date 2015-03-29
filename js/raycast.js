@@ -162,7 +162,8 @@ Raycast.againstCylinder = function(radius, height, point, direction, hit) {
                 }
             }
 
-            return false;
+            // we hit the top or bottom of the cylinder if t has changed
+            return t != t2;
         }
     } else {
         return false;
