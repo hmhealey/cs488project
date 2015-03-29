@@ -3,9 +3,10 @@ var Raycast = { };
 Raycast.againstBox = function(left, right, bottom, top, back, front, point, direction, result) {
     var t = Infinity;
 
+    // TODO we really could just use the ones in result instead of also creating these
     var hit = vec3.create();
     var normal = vec3.create();
-    
+
     // bottom
     {
         var tprime = (bottom - point[1]) / direction[1];
@@ -95,6 +96,74 @@ Raycast.againstBox = function(left, right, bottom, top, back, front, point, dire
         vec3.copy(result.normal, normal);
 
         return true;
+    } else {
+        return false;
+    }
+};
+
+Raycast.againstCylinder = function(radius, height, point, direction, hit) {
+    // cast first against the top-down profile (a circle) to find where we hit the wall of the cylinder
+    var a = direction[0] * direction[0] + direction[2] * direction[2];
+    var b = 2 * (point[0] * direction[0] + point[2] * direction[2]);
+    var c = point[0] * point[0] + point[2] * point[2] - radius * radius;
+
+    // a * t^2 + b * t + c = 0
+    var discriminant = b * b - 4 * a * c;
+
+    if (discriminant >= 0) {
+        // t1 will always be less than t2 since it's where we're subtracting sqrt(discriminant)
+        var t1 = (-b - Math.sqrt(discriminant)) / (2 * a);
+
+        var hitPoint = vec3.scaleAndAdd(vec3.create(), point, direction, t1);
+
+        if (hitPoint[1] >= -height / 2 && hitPoint[1] <= height / 2) {
+            // we've hit the wall of the cylinder first
+            vec3.copy(hit.point, hitPoint);
+            vec3.normalize(hit.normal, hit.point);
+
+            return true;
+        } else {
+            // we missed the wall of the cylinder, but we may still be hitting the top or bottom
+            var t2 = (-b + Math.sqrt(discriminant)) / (2 * a);
+
+            // now we have to find where the line formed by t1, t2 intersects the top or bottom (if it even does)
+            var t = t2;
+            var intersected = false;
+
+            // bottom
+            {
+                var tprime = ((-height / 2) - point[1]) / direction[1];
+
+                if (tprime >= t1 && tprime <= t) {
+                    var x = point[0] + tprime * direction[0];
+                    var z = point[2] + tprime * direction[2];
+
+                    vec3.set(hit.point, x, -height / 2, z);
+                    vec3.set(hit.normal, 0, -1, 0);
+
+                    t = tprime;
+                    intersected = true;
+                }
+            }
+
+            // top
+            {
+                var tprime = ((height / 2) - point[1]) / direction[1];
+
+                if (tprime >= t1 && tprime <= t) {
+                    var x = point[0] + tprime * direction[0];
+                    var z = point[2] + tprime * direction[2];
+
+                    vec3.set(hit.point, x, height / 2, z);
+                    vec3.set(hit.normal, 0, -1, 0);
+
+                    t = tprime;
+                    intersected = true;
+                }
+            }
+
+            return false;
+        }
     } else {
         return false;
     }

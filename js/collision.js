@@ -11,8 +11,30 @@ Collider.prototype.draw = function() { };
 
 Collider.prototype.update = function() { };
 
-Collider.prototype.raycast = function(point, direction, hit, filter) {
+Collider.prototype.raycastLocal = function(point, direction, hit) {
     return false;
+};
+
+Collider.prototype.raycast = function(point, direction, hit, filter) {
+    // only bother doing calculations if this object is overriding the default raycastLocal
+    if (this.raycastLocal != Collider.prototype.raycastLocal && (!filter || filter(this))) {
+        var localPoint = vec3.create();
+        vec3.transformMat4(localPoint, point, this.entity.transform.getWorldToLocalMatrix());
+        var localDirection = vec3.create();
+        vec3.transformMat4AsVector(localDirection, direction, this.entity.transform.getWorldToLocalMatrix());
+
+        var intersected = this.raycastLocal(localPoint, localDirection, hit);
+
+        if (intersected) {
+            hit.collider = this;
+            hit.transform(this.entity.transform.getLocalToWorldMatrix(),
+                          this.entity.transform.getWorldToLocalMatrix());
+        }
+
+        return intersected;
+    } else {
+        return false;
+    }
 };
 
 Collider.prototype.containsLocal = function(localPoint) {
@@ -27,7 +49,8 @@ Collider.prototype.contains = function(point) {
 function BoxCollider(args) {
     args = args || {};
 
-    this.entity = args['entity'] || null;
+    // call super constructor
+    Collider.call(this, args);
 
     this.width = args['width'] || 1;
     this.height = args['height'] || 1;
@@ -64,30 +87,47 @@ BoxCollider.prototype.draw = function() {
     }
 };
 
-BoxCollider.prototype.raycast = function(point, direction, hit, filter) {
-    if (!filter || filter(this)) {
-        var localPoint = vec3.create();
-        vec3.transformMat4(localPoint, point, this.entity.transform.getWorldToLocalMatrix());
-        var localDirection = vec3.create();
-        vec3.transformMat4AsVector(localDirection, direction, this.entity.transform.getWorldToLocalMatrix());
+BoxCollider.prototype.raycastLocal = function(point, direction, hit) {
+    var intersected = Raycast.againstBox(-this.width / 2, this.width / 2, -this.height / 2, this.height / 2,
+                                         -this.depth / 2, this.depth / 2, point, direction, hit);
 
-        var intersected = Raycast.againstBox(-this.width / 2, this.width / 2, -this.height / 2, this.height / 2,
-                                             -this.depth / 2, this.depth / 2, localPoint, localDirection, hit);
-
-        if (intersected) {
-            hit.collider = this;
-            hit.transform(this.entity.transform.getLocalToWorldMatrix(),
-                          this.entity.transform.getWorldToLocalMatrix());
-        }
-
-        return intersected;
-    } else {
-        return false;
+    if (intersected) {
+        hit.collider = this;
     }
+
+    return intersected;
 };
 
 BoxCollider.prototype.containsLocal = function(point) {
     return point[0] >= -this.width / 2 && point[0] < this.width / 2 &&
            point[1] >= -this.height / 2 && point[1] < this.height / 2 &&
            point[2] >= -this.depth / 2 && point[2] < this.depth / 2;
+};
+
+function CylinderCollider(args) {
+    args = args || {};
+
+    // call super constructor
+    Collider.call(this, args);
+
+    this.radius = args['radius'] || 1;
+    this.height = args['height'] || 1;
+};
+
+CylinderCollider.prototype = Object.create(Collider.prototype);
+CylinderCollider.prototype.constructor = BoxCollider;
+
+CylinderCollider.prototype.raycastLocal = function(point, direction, hit) {
+    var intersected = Raycast.againstCylinder(this.radius, this.height, point, direction, hit);
+
+    if (intersected) {
+        hit.collider = this;
+    }
+
+    return intersected;
+};
+
+CylinderCollider.prototype.containsLocal = function(point) {
+    return point[1] <= -this.height / 2 && point[1] < this.height / 2 &&
+           point[0] * point[0] + point[2] * point[2] <= radius * radius;
 };
