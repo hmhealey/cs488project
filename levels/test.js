@@ -1,11 +1,12 @@
 var root = new Entity({name: "root"});
 
 var phong = Shader.getShader("phong");
+var diffuse = Shader.getShader("diffuse");
 var flat = Shader.getShader("flat");
 
 var grass = new Material({
     texture: Texture.fromColour(vec4.fromValues(0, 0x9f / 255, 0x50 / 255, 1)),
-    shader: flat
+    shader: diffuse
 });
 var red = new Material({
     shininess: 128,
@@ -283,7 +284,7 @@ var mover = new Entity({
     mesh: Mesh.makeCube(1),
     material: new Material({
         texture: Texture.fromColour(vec4.fromValues(1.0, 1.0, 1.0, 1.0)),
-        shader: Shader.getShader("diffuse")
+        shader: diffuse
     }),
     position: vec3.fromValues(0, 0.5, 0),
     components: [
@@ -363,7 +364,7 @@ var crosshair = new Entity({
 
 var light = new Entity({
     name: "light",
-    position: vec3.fromValues(0, 0, 4),
+    position: vec3.fromValues(0, 2, 4),
     components: [
         new Light()
     ],

@@ -2,6 +2,11 @@
 
 precision mediump float;
 
+uniform vec3 lightPosition;
+uniform vec4 lightAmbient;
+uniform vec4 lightDiffuse;
+uniform vec4 lightSpecular;
+
 uniform vec4 materialAmbient;
 uniform vec4 materialDiffuse;
 uniform vec4 materialSpecular;
@@ -17,20 +22,18 @@ varying vec3 fBittangent;
 varying vec2 fTexCoord;
 
 void main() {
+    // calculate the modified normal
     float delta = 1.0 / 512.0;
     float bu = -2.0 * (texture2D(bumpMap, fTexCoord + vec2(delta, 0)).x - texture2D(bumpMap, fTexCoord).x);
     float bv = 2.0 * (texture2D(bumpMap, fTexCoord + vec2(0, delta)).x - texture2D(bumpMap, fTexCoord).x);
     vec3 normal = normalize(fNormal + bu * fTangent - bv * fBittangent);
 
-    // TODO set the light components as uniforms r something
-    vec4 ambient = materialAmbient * vec4(0.1, 0.1, 0.1, 1.0);
-    //vec4 diffuse = materialDiffuse * vec4(0.8, 0.8, 0.8, 1.0);
-    vec4 diffuse = materialDiffuse * texture2D(texture, fTexCoord) * vec4(0.8, 0.8, 0.8, 1.0);
-    vec4 specular = materialSpecular * vec4(0.4, 0.4, 0.4, 1.0);
+    vec4 ambient = materialAmbient * lightAmbient;
+    vec4 diffuse = materialDiffuse * texture2D(texture, fTexCoord) * lightDiffuse;
+    vec4 specular = materialSpecular * lightSpecular;
     float shininess = materialShininess;
 
-    // for simplicity, the light is just located at the eyepoint
-    vec3 L = normalize(vec3(0, 0, 4) - fPosition);
+    vec3 L = normalize(lightPosition - fPosition);
     vec3 E = normalize(-fPosition);
     vec3 R = normalize(-reflect(L, normal));
 
