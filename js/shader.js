@@ -45,7 +45,7 @@ Shader.prototype.attachShader = function(type, source) {
 
     var message = gl.getShaderInfoLog(shader);
     if (message != "") {
-        console.log("Shader.addShader - Unable to compile and attach shader - " + message);
+        console.log("Shader.addShader - Unable to compile and attach shader " + this.name + " - " + message);
     }
 };
 
