@@ -4,9 +4,8 @@ var phong = Shader.getShader("phong");
 var flat = Shader.getShader("flat");
 
 var grass = new Material({
-    shininess: 0,
     texture: Texture.fromColour(vec4.fromValues(0, 0x9f / 255, 0x50 / 255, 1)),
-    shader: phong
+    shader: flat
 });
 var red = new Material({
     shininess: 128,
@@ -19,8 +18,6 @@ var blue = new Material({
     shader: phong
 });
 var yellow = new Material({
-    ambient: vec4.fromValues(1, 1, 0, 1),
-    shininess: 0,
     texture: Texture.fromColour(vec4.fromValues(1, 1, 0, 1)),
     shader: flat
 });
