@@ -21,13 +21,9 @@ Level.prototype.cleanup = function() {
 
 Level.prototype.draw = function() {
     if (this.root) {
-        var renderers = this.root.getComponentsInChildren(Renderer);
-
-        for (var i = 0; i < renderers.length; i++) {
-            var renderer = renderers[i];
-
+        this.root.forEachComponent(Renderer, function(renderer) {
             renderer.draw();
-        }
+        });
     }
 };
 

@@ -82,6 +82,18 @@ Entity.prototype.getComponentsInChildren = function(type) {
     }
 };
 
+Entity.prototype.forEachComponent = function(type, func) {
+    var component = this.getComponent(type);
+
+    if (component) {
+        func(component);
+    }
+
+    for (var i = 0; i < this.transform.children.length; i++) {
+        this.transform.children[i].entity.forEachComponent(type, func);
+    }
+};
+
 Entity.prototype.destroy = function() {
     this.cleanup();
 };
