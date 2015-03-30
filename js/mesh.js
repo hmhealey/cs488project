@@ -1,6 +1,23 @@
 function Mesh(type) {
     this.type = type || gl.TRIANGLES;
 
+    this.vertices = null;
+    this.vertexBuffer = null;
+
+    this.normals = null;
+    this.normalBuffer = null;
+    this.tangents = null;
+    this.tangentBuffer = null;
+
+    this.texCoords = null;
+    this.texCoords2 = null;
+    this.texCoords3 = null;
+    this.texCoords4 = null;
+    this.texCoordBuffer = null;
+    this.texCoordBuffer2 = null;
+    this.texCoordBuffer3 = null;
+    this.texCoordBuffer4 = null;
+
     this.vertexBuffer = null;
     this.normalBuffer = null;
     this.tangentBuffer = null;
@@ -8,10 +25,11 @@ function Mesh(type) {
     this.texCoordBuffer2 = null;
     this.texCoordBuffer3 = null;
     this.texCoordBuffer4 = null;
-    this.numVertices = 0;
 
-    this.indexBuffer = null
-    this.numIndices = 0;
+    this.indices = null;
+    this.indexBuffer = null;
+
+    this.dirty = false;
 };
 
 Mesh.prototype.cleanup = function() {
@@ -55,11 +73,11 @@ Mesh.prototype.draw = function(shader) {
     this.enableAttributes(shader);
 
     if (!this.indexBuffer) {
-        gl.drawArrays(this.type, 0, this.numVertices);
+        gl.drawArrays(this.type, 0, this.vertices.length / 3);
     } else {
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
 
-        gl.drawElements(this.type, this.numIndices, gl.UNSIGNED_INT, 0);
+        gl.drawElements(this.type, this.indices.length, gl.UNSIGNED_INT, 0);
 
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
     }
@@ -68,6 +86,10 @@ Mesh.prototype.draw = function(shader) {
 };
 
 Mesh.prototype.enableAttributes = function(shader) {
+    if (this.dirty) {
+        this.updateBuffers();
+    }
+
     shader.enableVertexAttribute("position", this.vertexBuffer);
     shader.enableVertexAttribute("normal", this.normalBuffer);
     shader.enableVertexAttribute("tangent", this.tangentBuffer);
@@ -94,97 +116,90 @@ Mesh.prototype.disableAttributes = function(shader) {
 };
 
 Mesh.prototype.setVertices = function(vertices) {
-    if (!this.vertexBuffer) {
-        this.vertexBuffer = gl.createBuffer();
-    }
-
-    gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
-    gl.bindBuffer(gl.ARRAY_BUFFER, null);
-
+    this.vertices = new Float32Array(vertices);
     this.numVertices = vertices.length / 3;
+
+    this.dirty = true;
 };
 
 Mesh.prototype.setNormals = function(normals) {
-    if (!this.normalBuffer) {
-        this.normalBuffer = gl.createBuffer();
-    }
+    this.normals = new Float32Array(normals);
 
-    gl.bindBuffer(gl.ARRAY_BUFFER, this.normalBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(normals), gl.STATIC_DRAW);
-    gl.bindBuffer(gl.ARRAY_BUFFER, null);
+    this.dirty = true;
 };
 
 Mesh.prototype.setTangents = function(tangents) {
-    if (!this.tangentBuffer) {
-        this.tangentBuffer = gl.createBuffer();
-    }
+    this.tangents = new Float32Array(tangents);
 
-    gl.bindBuffer(gl.ARRAY_BUFFER, this.tangentBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(tangents), gl.STATIC_DRAW);
-    gl.bindBuffer(gl.ARRAY_BUFFER, null);
+    this.dirty = true;
 };
 
 Mesh.prototype.setTexCoords = function(texCoords) {
-    if (!this.texCoordBuffer) {
-        this.texCoordBuffer = gl.createBuffer();
-    }
+    this.texCoords = new Float32Array(texCoords);
 
-    gl.bindBuffer(gl.ARRAY_BUFFER, this.texCoordBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(texCoords), gl.STATIC_DRAW);
-    gl.bindBuffer(gl.ARRAY_BUFFER, null);
+    this.dirty = true;
 };
 
 Mesh.prototype.setTexCoords2 = function(texCoords2) {
-    if (!this.texCoordBuffer2) {
-        this.texCoordBuffer2 = gl.createBuffer();
-    }
+    this.texCoords2 = new Float32Array(texCoords2);
 
-    gl.bindBuffer(gl.ARRAY_BUFFER, this.texCoordBuffer2);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(texCoords2), gl.STATIC_DRAW);
-    gl.bindBuffer(gl.ARRAY_BUFFER, null);
+    this.dirty = true;
 };
 
 Mesh.prototype.setTexCoords3 = function(texCoords3) {
-    if (!this.texCoordBuffer3) {
-        this.texCoordBuffer3 = gl.createBuffer();
-    }
+    this.texCoords3 = new Float32Array(texCoords3);
 
-    gl.bindBuffer(gl.ARRAY_BUFFER, this.texCoordBuffer3);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(texCoords3), gl.STATIC_DRAW);
-    gl.bindBuffer(gl.ARRAY_BUFFER, null);
+    this.dirty = true;
 };
 
 Mesh.prototype.setTexCoords4 = function(texCoords4) {
-    if (!this.texCoordBuffer4) {
-        this.texCoordBuffer4 = gl.createBuffer();
-    }
+    this.texCoords4 = new Float32Array(texCoords4);
 
-    gl.bindBuffer(gl.ARRAY_BUFFER, this.texCoordBuffer4);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(texCoords4), gl.STATIC_DRAW);
-    gl.bindBuffer(gl.ARRAY_BUFFER, null);
+    this.dirty = true;
 };
 
 Mesh.prototype.setTexWeights = function(texWeights) {
-    if (!this.texWeightBuffer) {
-        this.texWeightBuffer = gl.createBuffer();
-    }
+    this.texWeights = new Float32Array(texWeights);
 
-    gl.bindBuffer(gl.ARRAY_BUFFER, this.texWeightBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(texWeights), gl.STATIC_DRAW);
-    gl.bindBuffer(gl.ARRAY_BUFFER, null);
+    this.dirty = true;
 };
 
 Mesh.prototype.setIndices = function(indices) {
-    if (!this.indexBuffer) {
-        this.indexBuffer = gl.createBuffer();
+    this.indices = new Uint32Array(indices);
+    this.numIndices = indices.length;
+
+    this.dirty = true;
+};
+
+Mesh.prototype.updateBuffers = function() {
+    this.vertexBuffer = this.updateBuffer(gl.ARRAY_BUFFER, this.vertexBuffer, this.vertices, gl.STATIC_DRAW);
+
+    this.normalBuffer = this.updateBuffer(gl.ARRAY_BUFFER, this.normalBuffer, this.normals, gl.STATIC_DRAW);
+    this.tangentBuffer = this.updateBuffer(gl.ARRAY_BUFFER, this.tangentBuffer, this.tangents, gl.STATIC_DRAW);
+
+    this.texCoordBuffer = this.updateBuffer(gl.ARRAY_BUFFER, this.texCoordBuffer, this.texCoords, gl.STATIC_DRAW);
+    this.texCoordBuffer2 = this.updateBuffer(gl.ARRAY_BUFFER, this.texCoordBuffer2, this.texCoords2, gl.STATIC_DRAW);
+    this.texCoordBuffer3 = this.updateBuffer(gl.ARRAY_BUFFER, this.texCoordBuffer3, this.texCoords3, gl.STATIC_DRAW);
+    this.texCoordBuffer4 = this.updateBuffer(gl.ARRAY_BUFFER, this.texCoordBuffer4, this.texCoords4, gl.STATIC_DRAW);
+    this.texWeightBuffer = this.updateBuffer(gl.ARRAY_BUFFER, this.texWeightBuffer, this.texWeights, gl.STATIC_DRAW);
+
+    this.indexBuffer = this.updateBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer, this.indices, gl.STATIC_DRAW);
+
+    this.dirty = false;
+};
+
+Mesh.prototype.updateBuffer = function(type, buffer, data, usage) {
+    if (data != null) {
+        if (!buffer) {
+            buffer = gl.createBuffer();
+        }
+
+        gl.bindBuffer(type, buffer);
+        gl.bufferData(type, data, usage);
+        gl.bindBuffer(type, null);
     }
 
-    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
-    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint32Array(indices), gl.STATIC_DRAW);
-    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
-
-    this.numIndices = indices.length;
+    return buffer;
 };
 
 Mesh.makeSquare = function(size) {
