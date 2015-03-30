@@ -21,8 +21,10 @@ Level.prototype.cleanup = function() {
 
 Level.prototype.draw = function() {
     if (this.root) {
+        var lights = this.root.getComponentsInChildren(Light);
+
         this.root.forEachComponent(Renderer, function(renderer) {
-            renderer.draw();
+            renderer.draw(lights[0]);
         });
     }
 };

@@ -4,7 +4,7 @@ function Renderer(args) {
     this.entity = args['entity'] || null;
 };
 
-Renderer.prototype.draw = function() { };
+Renderer.prototype.draw = function(light) { };
 
 Renderer.prototype.update = function() { };
 
@@ -17,7 +17,7 @@ function MeshRenderer(args) {
 MeshRenderer.prototype = Object.create(Renderer.prototype);
 MeshRenderer.prototype.constructor = MeshRenderer;
 
-MeshRenderer.prototype.draw = function() {
+MeshRenderer.prototype.draw = function(light) {
     var shader = this.entity.material.apply();
 
     if (shader) {
@@ -25,6 +25,13 @@ MeshRenderer.prototype.draw = function() {
         //shader.setCamera(level.mainCamera);
         //shader.setModelMatrix(transform);
         shader.updateMatrices(level.mainCamera, this.entity.transform.getLocalToWorldMatrix());
+
+        if (light) {
+            light.apply(shader);
+        } else {
+            Light.applyNoLight(shader);
+        }
+
         this.entity.mesh.draw(shader);
 
         shader.release();

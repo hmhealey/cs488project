@@ -361,4 +361,14 @@ var crosshair = new Entity({
     parent: camera.transform
 });
 
+var light = new Entity({
+    name: "light",
+    position: vec3.fromValues(0, 0, 4),
+    components: [
+        new Light()
+    ],
+    //parent: camera.transform
+    parent: root.transform
+});
+
 return new Level({root: root, mainCamera: camera, textures: textures});
