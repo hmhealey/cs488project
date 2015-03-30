@@ -113,24 +113,26 @@ BoxCollider.prototype.collidesWith = function(other, delta) {
     var worldPosition = this.entity.transform.getWorldPosition();
     var otherWorldPosition = other.entity.transform.getWorldPosition();
 
-    if (other instanceof BoxCollider) {
-        var left = worldPosition[0] + dx - this.width / 2;
-        var right = worldPosition[0] + dx + this.width / 2;
-        var bottom = worldPosition[0] + dy - this.height / 2;
-        var top = worldPosition[1] + dy + this.height / 2;
-        var back = worldPosition[2] + dz - this.depth / 2;
-        var front = worldPosition[2] + dz + this.depth / 2;
+    var left = worldPosition[0] + dx - this.width / 2;
+    var right = worldPosition[0] + dx + this.width / 2;
+    var bottom = worldPosition[1] + dy - this.height / 2;
+    var top = worldPosition[1] + dy + this.height / 2;
+    var back = worldPosition[2] + dz - this.depth / 2;
+    var front = worldPosition[2] + dz + this.depth / 2;
 
+    if (other instanceof BoxCollider) {
         var otherLeft = otherWorldPosition[0] - other.width / 2;
         var otherRight = otherWorldPosition[0] + other.width / 2;
-        var otherBottom = otherWorldPosition[0] - other.height / 2;
+        var otherBottom = otherWorldPosition[1] - other.height / 2;
         var otherTop = otherWorldPosition[1] + other.height / 2;
         var otherBack = otherWorldPosition[2] - other.depth / 2;
         var otherFront = otherWorldPosition[2] + other.depth / 2;
 
         return right >= otherLeft && left <= otherRight && top >= otherBottom && bottom <= otherTop && front >= otherBack && back <= otherFront;
+    } else if (other instanceof CylinderCollider) {
+        
     } else {
-        console.log(this.entity.name + " is unable to collide with " + other.entity.name + " because its Collider is not a BoxCollider");
+        console.log(this.entity.name + " is unable to collide with " + other.entity.name);
         return false;
     }
 };
