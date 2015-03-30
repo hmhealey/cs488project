@@ -4,7 +4,7 @@ function Collider(args) {
     this.entity = args['entity'] || null;
 };
 
-Collider.draw = true;
+Collider.draw = false;
 Collider.drawLineWidth = 2.0;
 
 Collider.prototype.draw = function() { };
@@ -128,7 +128,7 @@ BoxCollider.prototype.collidesWith = function(other, delta) {
         var otherBack = otherWorldPosition[2] - other.depth / 2;
         var otherFront = otherWorldPosition[2] + other.depth / 2;
 
-        return right >= otherLeft && left <= otherRight && top >= otherBottom && bottom <= otherTop && front >= otherBack && back <= otherFront;
+        return right > otherLeft && left < otherRight && top > otherBottom && bottom < otherTop && front > otherBack && back < otherFront;
     } else if (other instanceof CylinderCollider) {
         
     } else {
