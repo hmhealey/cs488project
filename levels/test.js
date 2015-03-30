@@ -281,6 +281,8 @@ var bump3 = new Entity({
 
 var mover = new Entity({
     name: "mover",
+    //mesh: Mesh.makeUvSphere(0.5),
+    //mesh: Mesh.makeCylinder(0.5, 1),
     mesh: Mesh.makeCube(1),
     material: new Material({
         texture: Texture.fromColour(vec4.fromValues(1.0, 1.0, 1.0, 1.0)),
@@ -289,6 +291,8 @@ var mover = new Entity({
     position: vec3.fromValues(0, 0.5, 0),
     components: [
         new RigidBody(),
+        //new SphereCollider({radius: 0.5}),
+        //new CylinderCollider({radius: 0.5, height: 1})
         new BoxCollider({width: 1, height: 1, depth: 1})
     ],
     controller: {

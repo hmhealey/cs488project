@@ -9,39 +9,40 @@ function RigidBody(args) {
 RigidBody.prototype.draw = function() { };
 
 RigidBody.prototype.update = function(time) {
-    var collider = this.entity.getComponent(Collider);
+    if (vec3.squaredLength(this.velocity) != 0) {
+        // keep the velocity independent of the tick rate
+        var velocity = vec3.scale(vec3.create(), this.velocity, 1 / TICK_RATE);
 
-    if (collider) {
-        // TODO figure out a better way to refer back to the base level
-        var colliders = level.root.getComponentsInChildren(Collider);
+        var collider = this.entity.getComponent(Collider);
 
-        var transform = this.entity.transform;
+        if (collider) {
+            // TODO figure out a better way to refer back to the base level
+            var colliders = level.root.getComponentsInChildren(Collider);
 
-        var position = transform.getWorldPosition();
+            // TODO holy crap this is awful, but I guess it works thanks to our high tick rate
+            for (var dir = 0; dir < 3; dir++) {
+                var delta = [
+                    dir == 0 ? velocity[0] : 0,
+                    dir == 1 ? velocity[1] : 0,
+                    dir == 2 ? velocity[2] : 0
+                ];
 
-        var left = transform.position[0] - collider.width / 2;
-        var right = transform.position[0] + collider.width / 2;
+                var collided = false;
 
-        var dx = this.velocity[0];
-        var dy = this.velocity[1];
-        var dz = this.velocity[2];
+                for (var i = 0; i < colliders.length; i++) {
+                    var other = colliders[i];
+                    if (collider != other && collider.collidesWith(other, delta)) {
+                        collided = true;
+                        break;
+                    }
+                }
 
-        var newx = transform.position[0] + dx;
-        var newy = transform.position[1] + dy;
-        var newz = transform.position[2] + dz;
-
-        /*for (var i = 0; i < colliders.length; i++) {
-            var other = colliders[i];
-
-            var otherx = other.entity.transform.position[0];
-            var othery = other.entity.transform.position[1];
-            var otherz = other.entity.transform.position[2];
-
-            if (other != collider) {
-                //if (newx - collider.width / 2 < otherx - other.width / 2 && newx - collider.width / 2 >= otherx + other.width / 2) {
+                if (!collided) {
+                    this.entity.transform.translate(delta);
+                }
             }
-        }*/
-    } else {
-        this.entity.transform.translate(this.velocity);
+        } else {
+            this.entity.transform.translate(this.velocity);
+        }
     }
 };

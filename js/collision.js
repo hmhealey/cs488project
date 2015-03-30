@@ -104,18 +104,50 @@ BoxCollider.prototype.containsLocal = function(point) {
            point[2] >= -this.depth / 2 && point[2] < this.depth / 2;
 };
 
+BoxCollider.prototype.collidesWith = function(other, delta) {
+    // assumes that boxes are axis-aligned and unscaled
+    var dx = delta[0] || 0;
+    var dy = delta[1] || 0;
+    var dz = delta[2] || 0;
+
+    var worldPosition = this.entity.transform.getWorldPosition();
+    var otherWorldPosition = other.entity.transform.getWorldPosition();
+
+    if (other instanceof BoxCollider) {
+        var left = worldPosition[0] + dx - this.width / 2;
+        var right = worldPosition[0] + dx + this.width / 2;
+        var bottom = worldPosition[0] + dy - this.height / 2;
+        var top = worldPosition[1] + dy + this.height / 2;
+        var back = worldPosition[2] + dz - this.depth / 2;
+        var front = worldPosition[2] + dz + this.depth / 2;
+
+        var otherLeft = otherWorldPosition[0] - other.width / 2;
+        var otherRight = otherWorldPosition[0] + other.width / 2;
+        var otherBottom = otherWorldPosition[0] - other.height / 2;
+        var otherTop = otherWorldPosition[1] + other.height / 2;
+        var otherBack = otherWorldPosition[2] - other.depth / 2;
+        var otherFront = otherWorldPosition[2] + other.depth / 2;
+
+        return right >= otherLeft && left <= otherRight && top >= otherBottom && bottom <= otherTop && front >= otherBack && back <= otherFront;
+    } else {
+        console.log(this.entity.name + " is unable to collide with " + other.entity.name + " because its Collider is not a BoxCollider");
+        return false;
+    }
+};
+
 function CylinderCollider(args) {
     args = args || {};
 
     // call super constructor
     Collider.call(this, args);
 
+    this.center = vec3.create(); // not actually used other than to make me feel better during hard calculations
     this.radius = args['radius'] || 1;
     this.height = args['height'] || 1;
 };
 
 CylinderCollider.prototype = Object.create(Collider.prototype);
-CylinderCollider.prototype.constructor = BoxCollider;
+CylinderCollider.prototype.constructor = CylinderCollider;
 
 CylinderCollider.prototype.raycastLocal = function(point, direction, hit) {
     var intersected = Raycast.againstCylinder(this.radius, this.height, point, direction, hit);
@@ -130,4 +162,45 @@ CylinderCollider.prototype.raycastLocal = function(point, direction, hit) {
 CylinderCollider.prototype.containsLocal = function(point) {
     return point[1] <= -this.height / 2 && point[1] < this.height / 2 &&
            point[0] * point[0] + point[2] * point[2] <= radius * radius;
+};
+
+CylinderCollider.prototype.collidesWith = function(other, delta) {
+    console.log("Collision is not supported for CylinderColliders.");
+    return false;
+};
+
+function SphereCollider(args) {
+    args = args || {};
+
+    // call super constructor
+    Collider.call(this, args);
+
+    this.center = args['center'] || vec3.create();
+    this.radius = args['radius'] || 1;
+};
+
+SphereCollider.prototype = Object.create(Collider.prototype);
+SphereCollider.prototype.constructor = SphereCollider;
+
+SphereCollider.prototype.raycastLocal = function(point, direction, hit) {
+    var intersected = Raycast.againstSphere(this.center, this.radius, point, direction, hit);
+
+    if (intersected) {
+        hit.collider = this;
+    }
+
+    return intersected;
+};
+
+SphereCollider.prototype.containsLocal = function(localPoint) {
+    var dx = localPoint[0] - this.center[0];
+    var dy = localPoint[1] - this.center[1];
+    var dz = localPoint[2] - this.center[2];
+
+    return dx * dx + dy * dy + dz * dz <= this.radius * this.radius;
+};
+
+SphereCollider.prototype.collidesWith = function(other, delta) {
+    console.log("Collision is not supported for SphereColliders.");
+    return false;
 };
