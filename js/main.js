@@ -59,7 +59,7 @@ var onLoad = function(e) {
 var initialize = function() {
     gl.clearColor(0.6, 0.6, 0.6, 1.0);
 
-    loadLevel("test");
+    loadLevel(getParameterByName("level") || "test");
 
     onFramerate = (function(framerateCounter) {
         return function(fps) {

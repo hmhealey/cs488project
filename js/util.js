@@ -76,6 +76,14 @@ var removeFromArray = function(array, value) {
     }
 };
 
+/** Returns the value of a query parameter from the URL.
+ * http://stackoverflow.com/questions/901115/how-can-i-get-query-string-values-in-javascript **/
+function getParameterByName(name) {
+    name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+    var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"), results = regex.exec(location.search);
+    return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+}
+
 // add some extra functions to gl-matrix that seem to be missing
 
 /** Transforms a vec3 by a mat4. The fourth vector component is implicitly 0 (unlike vec3.transformMat4). **/
