@@ -171,6 +171,10 @@ Mesh.prototype.setIndices = function(indices) {
     this.dirty = true;
 };
 
+Mesh.prototype.setDirty = function() {
+    this.dirty = true;
+};
+
 Mesh.prototype.updateBuffers = function() {
     this.vertexBuffer = this.updateBuffer(gl.ARRAY_BUFFER, this.vertexBuffer, this.vertices, gl.STATIC_DRAW);
 
