@@ -21,16 +21,6 @@ function Entity(args) {
     }
 };
 
-Entity.prototype.draw = function() {
-    for (var i = 0; i < this.components.length; i++) {
-        this.components[i].draw();
-    }
-
-    for (var i = 0; i < this.transform.children.length; i++) {
-        this.transform.children[i].entity.draw();
-    }
-};
-
 Entity.prototype.update = function(time) {
     if (this.controller) {
         this.controller.update(this);

@@ -20,9 +20,14 @@ Level.prototype.cleanup = function() {
 };
 
 Level.prototype.draw = function() {
-    // draw the scene
     if (this.root) {
-        this.root.draw();
+        var renderers = this.root.getComponentsInChildren(Renderer);
+
+        for (var i = 0; i < renderers.length; i++) {
+            var renderer = renderers[i];
+
+            renderer.draw();
+        }
     }
 };
 
