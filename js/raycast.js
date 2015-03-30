@@ -94,6 +94,7 @@ Raycast.againstBox = function(left, right, bottom, top, back, front, point, dire
     if (t != Infinity) {
         vec3.copy(result.point, point);
         vec3.copy(result.normal, normal);
+        result.t = t;
 
         return true;
     } else {
@@ -120,6 +121,7 @@ Raycast.againstCylinder = function(radius, height, point, direction, hit) {
             // we've hit the wall of the cylinder first
             vec3.copy(hit.point, hitPoint);
             vec3.normalize(hit.normal, hit.point);
+            hit.t = t1;
 
             return true;
         } else {
@@ -140,6 +142,7 @@ Raycast.againstCylinder = function(radius, height, point, direction, hit) {
 
                     vec3.set(hit.point, x, -height / 2, z);
                     vec3.set(hit.normal, 0, -1, 0);
+                    hit.t = tprime;
 
                     t = tprime;
                     intersected = true;
@@ -156,6 +159,7 @@ Raycast.againstCylinder = function(radius, height, point, direction, hit) {
 
                     vec3.set(hit.point, x, height / 2, z);
                     vec3.set(hit.normal, 0, -1, 0);
+                    hit.t = tprime;
 
                     t = tprime;
                     intersected = true;
@@ -165,6 +169,33 @@ Raycast.againstCylinder = function(radius, height, point, direction, hit) {
             // we hit the top or bottom of the cylinder if t has changed
             return t != t2;
         }
+    } else {
+        return false;
+    }
+};
+
+Raycast.againstSphere = function(center, radius, point, direction, hit) {
+    var dx = point[0] - center[0];
+    var dy = point[1] - center[1];
+    var dz = point[2] - center[2];
+
+    var a = vec3.dot(direction, direction);
+    var b = 2 * (dx * direction[0] + dy * direction[1] + dz * direction[2]);
+    var c = dx * dx + dy * dy + dz * dy - radius * radius;
+
+    var discriminant = b * b - 4 * a * c;
+
+    if (discriminant >= 0) {
+        var t = (-b - Math.sqrt(discriminant)) / (2 * a);
+
+        vec3.scaleAndAdd(hit.point, point, direction, t);
+
+        vec3.subtract(hit.normal, hit.point, center);
+        vec3.normalize(hit.normal, hit.normal);
+
+        hit.t = t;
+
+        return true;
     } else {
         return false;
     }
