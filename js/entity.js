@@ -11,27 +11,17 @@ function Entity(args) {
     this.controller = args['controller'] || null;
 
     this.components = args['components'] || [];
+
+    if (this.mesh && !this.getComponent(MeshRenderer)) {
+        this.components.push(new MeshRenderer());
+    }
+
     for (var i = 0; i < this.components.length; i++) {
         this.components[i].entity = this;
     }
 };
 
 Entity.prototype.draw = function() {
-    var transform = this.transform.getLocalToWorldMatrix();
-
-    if (this.mesh) {
-        var shader = this.material.apply();
-        if (shader) {
-            // TODO come up with a better way to set/store the camera
-            //shader.setCamera(level.mainCamera);
-            //shader.setModelMatrix(transform);
-            shader.updateMatrices(level.mainCamera, transform);
-            this.mesh.draw(shader);
-
-            shader.release();
-        }
-    }
-
     for (var i = 0; i < this.components.length; i++) {
         this.components[i].draw();
     }

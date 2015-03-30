@@ -57,10 +57,3 @@ Camera.prototype.updateScreenSize = function(screenWidth, screenHeight) {
 Camera.prototype.updateProjectionMatrix = function() {
     mat4.perspective(this.projection, this.fov * Math.PI / 180, this.aspect, this.near, this.far);
 };
-
-Camera.prototype.draw = function() {
-    // just recurse since cameras aren't visible in the world
-    for (var i = 0; i < this.transform.children.length; i++) {
-        this.transform.children[i].entity.draw();
-    }
-};
