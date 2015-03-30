@@ -21,7 +21,7 @@ var onLoad = function(e) {
     var asdf = document.getElementById("asdf");
 
     try {
-        gl = canvas.getContext("webgl") || canvas.getContext("experimental-webgl");
+        gl = canvas.getContext("webgl", {stencil: true}) || canvas.getContext("experimental-webgl", {stencil: true});
     } catch (e) { }
 
     if (gl) {
@@ -73,18 +73,9 @@ var initialize = function() {
 var update = function() {
     var time = new Date().getTime();
 
-    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-
-    gl.enable(gl.DEPTH_TEST);
-    gl.enable(gl.CULL_FACE);
-    gl.cullFace(gl.BACK);
-
     if (level) {
         level.draw();
     }
-
-    gl.disable(gl.CULL_FACE);
-    gl.disable(gl.DEPTH_TEST);
 
     // update game logic
     while (time - lastTickTime > TICK_RATE) {

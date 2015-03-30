@@ -17,7 +17,7 @@ function MeshRenderer(args) {
 MeshRenderer.prototype = Object.create(Renderer.prototype);
 MeshRenderer.prototype.constructor = MeshRenderer;
 
-MeshRenderer.prototype.draw = function(light) {
+MeshRenderer.prototype.draw = function(light, ambient) {
     var shader = this.entity.material.apply();
 
     if (shader) {
@@ -27,9 +27,9 @@ MeshRenderer.prototype.draw = function(light) {
         shader.updateMatrices(level.mainCamera, this.entity.transform.getLocalToWorldMatrix());
 
         if (light) {
-            light.apply(shader);
+            light.apply(shader, ambient);
         } else {
-            Light.applyNoLight(shader);
+            Light.applyNoLight(shader, ambient);
         }
 
         this.entity.mesh.draw(shader);
