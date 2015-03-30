@@ -85,4 +85,4 @@ vec3.transformMat4AsVector = function(out, a, m) {
     out[1] = m[1] * x + m[5] * y + m[9] * z;
     out[2] = m[2] * x + m[6] * y + m[10] * z;
     return out;
-}
+};
