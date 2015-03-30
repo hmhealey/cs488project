@@ -21,6 +21,8 @@ RigidBody.prototype.update = function(time) {
 
             // TODO holy crap this is awful, but I guess it works thanks to our high tick rate
             for (var dir = 0; dir < 3; dir++) {
+                if (velocity[dir] == 0) continue;
+
                 var delta = [
                     dir == 0 ? velocity[0] : 0,
                     dir == 1 ? velocity[1] : 0,
