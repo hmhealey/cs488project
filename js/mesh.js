@@ -29,6 +29,8 @@ function Mesh(type) {
     this.indices = null;
     this.indexBuffer = null;
 
+    this.triangles = null;
+
     this.dirty = false;
 };
 
@@ -261,56 +263,85 @@ Mesh.makeBox = function(width, height, depth) {
     var mesh = new Mesh();
 
     mesh.setVertices([
-        -width / 2, height / 2, -depth / 2, -width / 2, height / 2, depth / 2,
-        width / 2, height / 2, -depth / 2, width / 2, height / 2, -depth / 2,
-        -width / 2, height / 2, depth / 2, width / 2, height / 2, depth / 2,
-        width / 2, -height / 2, depth / 2, -width / 2, -height / 2, depth / 2,
-        width / 2, -height / 2, -depth / 2, width / 2, -height / 2, -depth / 2,
-        -width / 2, -height / 2, depth / 2, -width / 2, -height / 2, -depth / 2,
-        -width / 2, height / 2, -depth / 2, -width / 2, -height / 2, -depth / 2,
-        -width / 2, height / 2, depth / 2, -width / 2, height / 2, depth / 2,
-        -width / 2, -height / 2, -depth / 2, -width / 2, -height / 2, depth / 2,
-        width / 2, height / 2, depth / 2, width / 2, -height / 2, depth / 2,
-        width / 2, height / 2, -depth / 2, width / 2, height / 2, -depth / 2,
-        width / 2, -height / 2, depth / 2, width / 2, -height / 2, -depth / 2,
-        -width / 2, height / 2, depth / 2, -width / 2, -height / 2, depth / 2,
-        width / 2, height / 2, depth / 2, width / 2, height / 2, depth / 2,
-        -width / 2, -height / 2, depth / 2, width / 2, -height / 2, depth / 2,
-        width / 2, height / 2, -depth / 2, width / 2, -height / 2, -depth / 2,
-        -width / 2, height / 2, -depth / 2, -width / 2, height / 2, -depth / 2,
-        width / 2, -height / 2, -depth / 2, -width / 2, -height / 2, -depth / 2
+        -width / 2, height / 2, -depth / 2,
+        -width / 2, height / 2, depth / 2,
+        width / 2, height / 2, -depth / 2,
+        width / 2, height / 2, depth / 2,
+
+        width / 2, -height / 2, depth / 2,
+        -width / 2, -height / 2, depth / 2,
+        width / 2, -height / 2, -depth / 2,
+        -width / 2, -height / 2, -depth / 2,
+
+        -width / 2, height / 2, -depth / 2,
+        -width / 2, -height / 2, -depth / 2,
+        -width / 2, height / 2, depth / 2,
+        -width / 2, -height / 2, depth / 2,
+
+        width / 2, height / 2, depth / 2,
+        width / 2, -height / 2, depth / 2,
+        width / 2, height / 2, -depth / 2,
+        width / 2, -height / 2, -depth / 2,
+
+        -width / 2, height / 2, depth / 2,
+        -width / 2, -height / 2, depth / 2,
+        width / 2, height / 2, depth / 2,
+        width / 2, -height / 2, depth / 2,
+
+        width / 2, height / 2, -depth / 2,
+        width / 2, -height / 2, -depth / 2,
+        -width / 2, height / 2, -depth / 2,
+        -width / 2, -height / 2, -depth / 2
     ]);
 
     mesh.setNormals([
-        0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0,
-        0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0,
-        -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0,
-        1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0,
-        0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1,
-        0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1
+        0, 1, 0,
+        0, 1, 0,
+        0, 1, 0,
+        0, 1, 0,
+        0, -1, 0,
+        0, -1, 0,
+        0, -1, 0,
+        0, -1, 0,
+        -1, 0, 0,
+        -1, 0, 0,
+        -1, 0, 0,
+        -1, 0, 0,
+        1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0,
+        0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1,
+        0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1
     ]);
 
     mesh.setTangents([
-        1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0,
-        1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0,
-        0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0,
-        0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1,
-        1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0,
-        -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0
+        1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0,
+        1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0,
+        0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1,
+        0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1,
+        1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0,
+        -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0
     ]);
 
     var texCoords = [
-        0, 0, 0, 1, 1, 0, 1, 0, 0, 1, 1, 1,
-        1, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 1,
-        0, 0, 0, 1, 1, 0, 1, 0, 0, 1, 1, 1,
-        0, 0, 0, 1, 1, 0, 1, 0, 0, 1, 1, 1,
-        0, 0, 0, 1, 1, 0, 1, 0, 0, 1, 1, 1,
-        0, 0, 0, 1, 1, 0, 1, 0, 0, 1, 1, 1
+        0, 0, 0, 1, 1, 0, 1, 1,
+        1, 0, 0, 0, 1, 1, 0, 1,
+        0, 0, 0, 1, 1, 0, 1, 1,
+        0, 0, 0, 1, 1, 0, 1, 1,
+        0, 0, 0, 1, 1, 0, 1, 1,
+        0, 0, 0, 1, 1, 0, 1, 1
     ];
     mesh.setTexCoords(texCoords);
     mesh.setTexCoords2(texCoords);
     mesh.setTexCoords3(texCoords);
     mesh.setTexCoords4(texCoords);
+
+    mesh.setIndices([
+        0, 1, 2, 2, 1, 3,
+        4, 5, 6, 6, 5, 7,
+        8, 9, 10, 10, 9, 11,
+        12, 13, 14, 14, 13, 15,
+        16, 17, 18, 18, 17, 19,
+        20, 21, 22, 22, 21, 23,
+    ]);
 
     return mesh;
 };
@@ -385,14 +416,19 @@ Mesh.makeUvSphere = function(radius, horizontalResolution, verticalResolution) {
         }
     }
 
-    var numIndices = horizontalResolution * verticalResolution * 2;
+    var numIndices = horizontalResolution * verticalResolution * 6;
     var indices = new Array(numIndices);
-    for (var i = 0; i < numIndices / 2; i++) {
-        indices[2 * i] = i;
-        indices[2 * i + 1] = i + horizontalResolution;
+    for (var i = 0; i < numIndices; i += 6) {
+        var vertex = i / 6;
+        indices[i] = vertex;
+        indices[i + 1] = vertex + horizontalResolution;
+        indices[i + 2] = vertex + 1;
+        indices[i + 3] = vertex + 1;
+        indices[i + 4] = vertex + horizontalResolution;
+        indices[i + 5] = (vertex + horizontalResolution + 1) % numVertices;
     }
 
-    var mesh = new Mesh(gl.TRIANGLE_STRIP);
+    var mesh = new Mesh(gl.TRIANGLES);
 
     mesh.setVertices(vertices);
     mesh.setTexCoords(texCoords);
@@ -432,7 +468,16 @@ Mesh.makeCircle = function(radius, resolution) {
         texCoords[coord + 1] = (1 - y) / 2;
     }
 
-    var mesh = new Mesh(gl.TRIANGLE_FAN);
+    var numIndices = (resolution - 2) * 3;
+    var indices = new Array(numIndices);
+
+    for (var i = 0; i < resolution - 2; i++) {
+        indices[i * 3] = i + 2;
+        indices[i * 3 + 1] = 0;
+        indices[i * 3 + 2] = i + 1;
+    }
+
+    var mesh = new Mesh(gl.TRIANGLES);
 
     mesh.setVertices(vertices);
     mesh.setNormals(normals);
@@ -440,6 +485,7 @@ Mesh.makeCircle = function(radius, resolution) {
     mesh.setTexCoords2(texCoords);
     mesh.setTexCoords3(texCoords);
     mesh.setTexCoords4(texCoords);
+    mesh.setIndices(indices);
 
     return mesh;
 };
