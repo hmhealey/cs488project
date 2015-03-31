@@ -1,10 +1,13 @@
 function RigidBody(args) {
     args = args || {};
 
-    this.entity = args['entity'] || null;
+    Component.call(this, args);
 
     this.velocity = args['velocity'] || vec3.create();
 };
+
+RigidBody.prototype = Object.create(Component.prototype);
+RigidBody.prototype.constructor = RigidBody;
 
 RigidBody.prototype.draw = function() { };
 
