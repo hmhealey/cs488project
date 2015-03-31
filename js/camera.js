@@ -55,5 +55,9 @@ Camera.prototype.updateScreenSize = function(screenWidth, screenHeight) {
 };
 
 Camera.prototype.updateProjectionMatrix = function() {
-    mat4.perspective(this.projection, this.fov * Math.PI / 180, this.aspect, this.near, this.far);
+    if (this.far != Infinity) {
+        mat4.perspective(this.projection, this.fov * Math.PI / 180, this.aspect, this.near, this.far);
+    } else {
+        mat4.infinitePerspective(this.projection, this.fov * Math.PI / 180, this.aspect, this.near);
+    }
 };

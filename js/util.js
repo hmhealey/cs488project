@@ -94,3 +94,49 @@ vec3.transformMat4AsVector = function(out, a, m) {
     out[2] = m[2] * x + m[6] * y + m[10] * z;
     return out;
 };
+
+/** Sets a matrix's components to those that are provided in row-major ordering. **/
+mat4.set = function(out, a1, a2, a3, a4, b1, b2, b3, b4, c1, c2, c3, c4, d1, d2, d3, d4) {
+    out[0] = a1;
+    out[1] = b1;
+    out[2] = c1;
+    out[3] = d1;
+    out[4] = a2;
+    out[5] = b2;
+    out[6] = c2;
+    out[7] = d2;
+    out[8] = a3;
+    out[9] = b3;
+    out[10] = c3;
+    out[11] = d3;
+    out[12] = a4;
+    out[13] = b4;
+    out[14] = c4;
+    out[15] = d4;
+
+    return out;
+};
+
+/** Generated a perspective projection matrix with the far plane at infinity. **/
+mat4.infinitePerspective = function(out, fovy, aspect, near) {
+    var f = 1.0 / Math.tan(fovy / 2);
+
+    out[0] = f / aspect;
+    out[1] = 0;
+    out[2] = 0;
+    out[3] = 0;
+    out[4] = 0;
+    out[5] = f;
+    out[6] = 0;
+    out[7] = 0;
+    out[8] = 0;
+    out[9] = 0;
+    out[10] = -1;
+    out[11] = -1;
+    out[12] = 0;
+    out[13] = 0;
+    out[14] = -2 * near;
+    out[15] = 0;
+
+    return out;
+};
