@@ -31,6 +31,7 @@ function Mesh(type) {
 
     this.triangles = null;
 
+    this.trianglesDirty = false;
     this.dirty = false;
 };
 
@@ -121,12 +122,14 @@ Mesh.prototype.setVertices = function(vertices) {
     this.vertices = new Float32Array(vertices);
     this.numVertices = vertices.length / 3;
 
+    this.trianglesDirty = true;
     this.dirty = true;
 };
 
 Mesh.prototype.setNormals = function(normals) {
     this.normals = new Float32Array(normals);
 
+    this.trianglesDirty = true;
     this.dirty = true;
 };
 
@@ -170,10 +173,12 @@ Mesh.prototype.setIndices = function(indices) {
     this.indices = new Uint32Array(indices);
     this.numIndices = indices.length;
 
+    this.trianglesDirty = true;
     this.dirty = true;
 };
 
 Mesh.prototype.setDirty = function() {
+    this.trianglesDirty = true;
     this.dirty = true;
 };
 
@@ -206,6 +211,47 @@ Mesh.prototype.updateBuffer = function(type, buffer, data, usage) {
     }
 
     return buffer;
+};
+
+Mesh.prototype.getTriangles = function() {
+    if (this.trianglesDirty) {
+        if (this.type == gl.TRIANGLES && this.indices) {
+            var numTriangles = this.indices.length / 3;
+
+            // hopefully we shouldn't be regenerating this too often
+            this.triangles = new Array(numTriangles);
+
+            for (var i = 0; i < numTriangles; i++) {
+                this.triangles[i] = new Triangle(this, this.indices[i * 3], this.indices[i * 3 + 1], this.indices[i * 3 + 2]);
+            }
+
+            this.trianglesDirty = false;
+        } else if (this.type == gl.TRIANGLES) {
+            console.log("Mesh.getTriangles - Unable to generate triangles for a mesh that doesn't use indexed drawing.");
+        } else {
+            console.log("Mesh.getTriangles - Unable to generate triangles for a mesh that isn't of type gl.TRIANGLES.");
+        }
+
+        for (var i = 0; i < numTriangles; i++) {
+            var triangle = this.triangles[i];
+            var adjacent = triangle.getAdjacent();
+
+            var a = triangle.indices[0];
+            var b = triangle.indices[1];
+            var c = triangle.indices[2];
+
+            console.log("triangle " + i + ": " + triangle);
+            console.log("center: " + vec3.str(triangle.getCenter()));
+            console.log("indices: " + a + " " + b + " " + c);
+            console.log("vertices: (" + this.vertices[3 * a] + ", " + this.vertices[3 * a + 1] + ", " + this.vertices[3 * a + 2] +
+                        ") (" + this.vertices[3 * b] + ", " + this.vertices[3 * b + 1] + ", " + this.vertices[3 * b + 2] +
+                        ") (" + this.vertices[3 * c] + ", " + this.vertices[3 * c + 1] + ", " + this.vertices[3 * c + 2] + ")");
+            console.log("normal: " + vec3.str(triangle.getNormal()));
+            console.log("adjacent: (" + adjacent[0] + ") (" + adjacent[1] + ") (" + adjacent[2] + ")");
+        }
+    }
+
+    return this.triangles;
 };
 
 Mesh.makeSquare = function(size) {
@@ -380,6 +426,61 @@ Mesh.makeWireframeBox = function(width, height, depth) {
         width / 2, height / 2, -depth / 2,
         width / 2, height / 2, depth / 2,
     ])
+
+    return mesh;
+};
+
+Mesh.makeShadowBox = function(width, height, depth) {
+    var mesh = new Mesh();
+
+    mesh.setVertices([
+        -width / 2, -height / 2, -depth / 2,
+        -width / 2, -height / 2, depth / 2,
+        -width / 2, height / 2, -depth / 2,
+        -width / 2, height / 2, depth / 2,
+        width / 2, -height / 2, -depth / 2,
+        width / 2, -height / 2, depth / 2,
+        width / 2, height / 2, -depth / 2,
+        width / 2, height / 2, depth / 2,
+    ]);
+
+    mesh.setIndices([
+        2, 3, 6, 6, 3, 7,
+        /*-width / 2, height / 2, -depth / 2,
+        -width / 2, height / 2, depth / 2,
+        width / 2, height / 2, -depth / 2,
+        width / 2, height / 2, depth / 2,*/
+
+        5, 1, 4, 4, 1, 0,
+        /*width / 2, -height / 2, depth / 2,
+        -width / 2, -height / 2, depth / 2,
+        width / 2, -height / 2, -depth / 2,
+        -width / 2, -height / 2, -depth / 2,*/
+
+        2, 0, 3, 3, 0, 1,
+        /*-width / 2, height / 2, -depth / 2,
+        -width / 2, -height / 2, -depth / 2,
+        -width / 2, height / 2, depth / 2,
+        -width / 2, -height / 2, depth / 2,*/
+
+        7, 5, 6, 6, 5, 4,
+        /*width / 2, height / 2, depth / 2,
+        width / 2, -height / 2, depth / 2,
+        width / 2, height / 2, -depth / 2,
+        width / 2, -height / 2, -depth / 2,*/
+
+        3, 1, 7, 7, 1, 5,
+        /*-width / 2, height / 2, depth / 2,
+        -width / 2, -height / 2, depth / 2,
+        width / 2, height / 2, depth / 2,
+        width / 2, -height / 2, depth / 2,*/
+
+        6, 4, 2, 2, 4, 0
+        /*width / 2, height / 2, -depth / 2,
+        width / 2, -height / 2, -depth / 2,
+        -width / 2, height / 2, -depth / 2,
+        -width / 2, -height / 2, -depth / 2*/
+    ]);
 
     return mesh;
 };
@@ -611,4 +712,94 @@ Mesh.makeCylinder = function(radius, height, resolution) {
     mesh.setIndices(indices);
 
     return mesh;
+};
+
+function Triangle(mesh, a, b, c) {
+    this.mesh = mesh;
+
+    this.indices = [a, b, c];
+
+    this.center = null;
+    this.point = null;
+    this.normal = null;
+
+    this.adjacent = null;
+};
+
+Triangle.prototype.getCenter = function() {
+    if (!this.center) {
+        this.center = vec3.fromValues((this.mesh.vertices[3 * this.indices[0]] + this.mesh.vertices[3 * this.indices[1]] + this.mesh.vertices[3 * this.indices[2]]) / 3,
+                                      (this.mesh.vertices[3 * this.indices[0] + 1] + this.mesh.vertices[3 * this.indices[1] + 1] + this.mesh.vertices[3 * this.indices[2] + 1]) / 3,
+                                      (this.mesh.vertices[3 * this.indices[0] + 2] + this.mesh.vertices[3 * this.indices[1] + 2] + this.mesh.vertices[3 * this.indices[2] + 2]) / 3);
+    }
+
+    return this.center;
+};
+
+Triangle.prototype.getNormal = function() {
+    if (!this.normal) {
+        var a = 3 * this.indices[0];
+        var b = 3 * this.indices[1];
+        var c = 3 * this.indices[2];
+
+        var ab = vec3.fromValues(this.mesh.vertices[a] - this.mesh.vertices[b],
+                                 this.mesh.vertices[a + 1] - this.mesh.vertices[b + 1],
+                                 this.mesh.vertices[a + 2] - this.mesh.vertices[b + 2]);
+        var bc = vec3.fromValues(this.mesh.vertices[b] - this.mesh.vertices[c],
+                                 this.mesh.vertices[b + 1] - this.mesh.vertices[c + 1],
+                                 this.mesh.vertices[b + 2] - this.mesh.vertices[c + 2]);
+        /*var cb = vec3.fromValues(this.mesh.vertices[c] - this.mesh.vertices[b],
+                                 this.mesh.vertices[c + 1] - this.mesh.vertices[b + 1],
+                                 this.mesh.vertices[c + 2] - this.mesh.vertices[b + 2]);*/
+
+        this.normal = vec3.create();
+        //vec3.cross(this.normal, ab, ac);
+        vec3.cross(this.normal, ab, bc);
+        vec3.normalize(this.normal, this.normal);
+
+        if (this.normal[0] == 0 && this.normal[1] == 0 && this.normal[2] == 0) {
+            console.log(this);
+            console.log(a + " " + b + " " + c);
+            console.log(this.mesh.vertices.subarray(a, a + 3));
+            console.log(this.mesh.vertices.subarray(b, b + 3));
+            console.log(this.mesh.vertices.subarray(c, c + 3));
+            console.log(ab);
+            console.log(cb);
+        }
+    }
+
+    return this.normal;
+};
+
+Triangle.prototype.getAdjacent = function() {
+    if (!this.adjacent) {
+        this.adjacent = new Array(3);
+
+        // this should already be generated since we're calling this from a triangle
+        var triangles = this.mesh.getTriangles();
+        var numTriangles = triangles.length;
+
+        for (var i = 0; i < numTriangles; i++) {
+            var other = triangles[i];
+            if (other != this) {
+                for (var j = 0; j < 3; j++) {
+                    var hasA = this.indices[j] == other.indices[0] || this.indices[j] == other.indices[1] ||
+                               this.indices[j] == other.indices[2];
+                    var hasB = this.indices[(j + 1) % 3] == other.indices[0] ||
+                               this.indices[(j + 1) % 3] == other.indices[1] ||
+                               this.indices[(j + 1) % 3] == other.indices[2];
+
+                    if (hasA && hasB) {
+                        this.adjacent[j] = other;
+                    }
+                }
+            }
+        }
+    }
+
+    return this.adjacent;
+};
+
+Triangle.prototype.toString = function() {
+    return this.indices[0] + " " + this.indices[1] + " " + this.indices[2];
 };
