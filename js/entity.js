@@ -27,7 +27,9 @@ Entity.prototype.update = function(time) {
     }
 
     for (var i = 0; i < this.components.length; i++) {
-        this.components[i].update(time);
+        if (this.components[i].enabled) {
+            this.components[i].update(time);
+        }
     }
 
     for (var i = 0; i < this.transform.children.length; i++) {

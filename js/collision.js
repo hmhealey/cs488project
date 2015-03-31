@@ -1,8 +1,11 @@
 function Collider(args) {
     args = args || {};
 
-    this.entity = args['entity'] || null;
+    Component.call(this, args);
 };
+
+Collider.prototype = Object.create(Component.prototype);
+Collider.prototype.constructor = Collider;
 
 Collider.draw = false;
 Collider.drawLineWidth = 2.0;

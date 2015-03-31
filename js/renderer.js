@@ -1,8 +1,11 @@
 function Renderer(args) {
     args = args || {};
 
-    this.entity = args['entity'] || null;
+    Component.call(this, args);
 };
+
+Renderer.prototype = Object.create(Component.prototype);
+Renderer.prototype.constructor = Renderer;
 
 Renderer.prototype.draw = function(light) { };
 
@@ -12,6 +15,8 @@ function MeshRenderer(args) {
     args = args || {};
 
     Renderer.call(this, args);
+
+    this.castsShadows = args['castsShadows'] || false;
 };
 
 MeshRenderer.prototype = Object.create(Renderer.prototype);
