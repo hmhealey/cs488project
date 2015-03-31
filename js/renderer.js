@@ -16,6 +16,7 @@ function MeshRenderer(args) {
 
     Renderer.call(this, args);
 
+    this.visible = 'visible' in args ? args['visible'] : true;
     this.castsShadows = args['castsShadows'] || false;
 };
 
@@ -27,9 +28,9 @@ MeshRenderer.prototype.draw = function(light, ambient) {
 
     if (shader) {
         // TODO come up with a better way to set/store the camera
-        //shader.setCamera(level.mainCamera);
-        //shader.setModelMatrix(transform);
-        shader.updateMatrices(level.mainCamera, this.entity.transform.getLocalToWorldMatrix());
+        shader.setModelMatrix(this.entity.transform.getLocalToWorldMatrix());
+        shader.setCamera(level.mainCamera);
+        shader.updateMatrices();
 
         if (light) {
             light.apply(shader, ambient);

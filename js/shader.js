@@ -7,8 +7,11 @@ function Shader(name) {
 
     this.locations = {};
 
-    this.camera = null;
-    this.modelMatrix = mat4.create();
+    this.dirty = true;
+
+    this.model = mat4.create();
+    this.view = mat4.create();
+    this.perspective = mat4.create();
 
     if (arguments.length > 1) {
         var linkAfterLoading = (function(shader, numShaders) {
@@ -230,26 +233,32 @@ Shader.prototype.disableVertexAttribute = function(name) {
     }
 };
 
-Shader.prototype.updateMatrices = function(camera, modelMatrix) {
-    var dirty = false;
+Shader.prototype.setModelMatrix = function(model) {
+    this.model = model;
 
-    // TODO figure out a better way to do this since we're not recalculating the matrices
-    // when a camera's matrices are changed or when we rebind the same model matrix that
-    // has changed since the last time we've bound it
+    this.dirty = true;
+};
 
-    if (camera/* && camera != this.camera*/) {
-        this.camera = camera;
-        dirty = true;
-    }
+Shader.prototype.setViewMatrix = function(model) {
+    this.view = view;
+    this.dirty = true;
+};
 
-    if (modelMatrix/* && modelMatrix != this.modelMatrix*/) {
-        this.modelMatrix = modelMatrix;
-        dirty = true;
-    }
+Shader.prototype.setProjectionMatrix = function(projection) {
+    this.projection = projection;
+    this.dirty = true;
+};
 
-    if (dirty && this.camera != null) {
-        var modelView = mat4.multiply(mat4.create(), this.camera.getViewMatrix(), this.modelMatrix);
-        var modelViewProjection = mat4.multiply(mat4.create(), this.camera.getProjectionMatrix(), modelView);
+Shader.prototype.setCamera = function(camera) {
+    this.view = camera.getViewMatrix();
+    this.projection = camera.getProjectionMatrix();
+    this.dirty = true;
+};
+
+Shader.prototype.updateMatrices = function() {
+    if (this.dirty) {
+        var modelView = mat4.multiply(mat4.create(), this.view, this.model);
+        var modelViewProjection = mat4.multiply(mat4.create(), this.projection, modelView);
 
         var normalMatrix = mat3.fromMat4(mat3.create(), modelView);
         mat3.invert(normalMatrix, normalMatrix);
@@ -259,14 +268,6 @@ Shader.prototype.updateMatrices = function(camera, modelMatrix) {
         this.setUniformMatrix4("modelViewProjection", modelViewProjection);
         this.setUniformMatrix3("normalMatrix", normalMatrix);
     }
-};
-
-Shader.prototype.setCamera = function(camera) {
-    this.updateMatrices(camera, null);
-};
-
-Shader.prototype.setModelMatrix = function(modelMatrix) {
-    this.updateMatrices(null, modelMatrix);
 };
 
 Shader.shaders = {};

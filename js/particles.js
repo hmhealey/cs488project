@@ -78,6 +78,8 @@ ParticleEmitter.prototype.draw = function() {
         // set model matrix
         shader.setModelMatrix(this.transform.getLocalToWorldMatrix());
 
+        shader.updateMatrices();
+
         // update particle properties
         shader.enableVertexAttribute("offset", this.offsetBuffer);
         gl.bufferData(gl.ARRAY_BUFFER, this.positions.subarray(0, this.particleCount * 3), gl.STREAM_DRAW);
