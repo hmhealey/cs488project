@@ -41,13 +41,14 @@ var ground = new Entity({
     parent: root.transform
 });
 
-shadowCube = new Entity({
+var shadowCube = new Entity({
     name: "shadowCube",
     //mesh: Mesh.makeCube(1),
     //mesh: Mesh.makeUvSphere(2, 8, 8),
     mesh: Mesh.makeShadowBox(1, 1, 1),
     material: red,
-    position: vec3.fromValues(0, 0.5, -5),
+    position: vec3.fromValues(0, 1, -5),
+    scale: vec3.fromValues(1, 2, 0.5),
     components: [
         new MeshRenderer({castsShadows: true})
     ],
@@ -58,7 +59,7 @@ var box1 = new Entity({
     name: "box1",
     mesh: Mesh.makeCube(2),
     material: blue,
-    position: vec3.fromValues(6, 1, -6),
+    position: vec3.fromValues(8, 1, -6),
     parent: root.transform
 });
 
@@ -103,7 +104,15 @@ var light = new Entity({
     components: [
         new Light()
     ],
-    //parent: camera.transform
+    parent: root.transform
+});
+
+var light2 = new Entity({
+    name: "light2",
+    position: vec3.fromValues(5, 0.5, -5),
+    components: [
+        new Light()
+    ],
     parent: root.transform
 });
 

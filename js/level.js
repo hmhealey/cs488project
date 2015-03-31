@@ -31,15 +31,6 @@ Level.prototype.draw = function() {
         var renderers = this.root.getComponentsInChildren(Renderer);
         var numRenderers = renderers.length;
 
-        // old rendering code
-        /*gl.enable(gl.DEPTH_TEST);
-        gl.enable(gl.CULL_FACE);
-        for (var i = 0; i < numRenderers; i++) {
-            renderers[i].draw(lights[0], this.ambient);
-        }
-
-        return;*/
-
         // shader to draw shadow volumes with
         var shader = Shader.getShader("shadowVolumes");
 
@@ -49,51 +40,11 @@ Level.prototype.draw = function() {
         }
 
         shader.bind();
-
-        var camera = this.mainCamera;
-        shader.setCamera(camera);
+        shader.setCamera(this.mainCamera);
         shader.updateMatrices();
 
         // temporary buffers to draw shadow volume quads with
         var quad = gl.createBuffer();
-
-        // HARRISON shader tests to make sure it's working
-        //gl.enable(gl.DEPTH_TEST);
-        /*gl.enable(gl.CULL_FACE);
-
-        shader.bind();
-        shader.setCamera(level.mainCamera);
-        gl.bindBuffer(gl.ARRAY_BUFFER, quad);
-        shader.enableVertexAttribute("position", quad, 4);
-        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
-            -1, 1, 0, 0,
-            -1, -1, 0, 0,
-            1, 1, 0, 0,
-            1, -1, 0, 0
-        ]), gl.STREAM_DRAW);
-        //gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, 1, 0, -1, -1, 0, 1, 1, 0, 1, -1, 0]), gl.STREAM_DRAW);
-
-        gl.drawArrays(gl.TRIANGLES, 0, 3);
-        //gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);*/
-
-        //gl.enable(gl.DEPTH_TEST);
-        /*gl.enable(gl.CULL_FACE);
-        gl.cullFace(gl.BACK);
-
-        for (var i = 0; i < numRenderers; i++) {
-            if (renderers[i].visible) {
-                renderers[i].draw(lights[0], this.ambient);
-                //renderers[i].draw(null, this.ambient);
-                if (renderers[i].castsShadows) {
-                    renderers[i].entity.mesh.getTriangles();
-                }
-            }
-        }
-
-        gl.disable(gl.CULL_FACE);
-        //gl.disable(gl.DEPTH_TEST);
-
-        return;*/
 
         // 4
         gl.enable(gl.DEPTH_TEST);
@@ -102,9 +53,9 @@ Level.prototype.draw = function() {
         gl.enable(gl.CULL_FACE);
         gl.cullFace(gl.BACK);
 
+        // draw the entire unlit scene
         for (var i = 0; i < numRenderers; i++) {
             if (renderers[i].visible) {
-                //renderers[i].draw(lights[0], this.ambient);
                 renderers[i].draw(null, this.ambient);
             }
         }
@@ -115,6 +66,7 @@ Level.prototype.draw = function() {
         gl.blendFunc(gl.ONE, gl.ONE);
 
         // 6
+        // for each light
         for (var i = 0; i < numLights; i++) {
             var light = lights[i];
             var lightPosition = light.entity.transform.getWorldPosition();
@@ -133,6 +85,7 @@ Level.prototype.draw = function() {
             gl.stencilMask(~0);
 
             // C
+            // for each occluder
             for (var j = 0; j < numRenderers; j++) {
                 if (renderers[j].castsShadows && renderers[j].entity.mesh) {
                     var occluder = renderers[j];
@@ -155,26 +108,25 @@ Level.prototype.draw = function() {
                     shader.updateMatrices();
 
                     // a
+                    // determine if each triangle faces toward or from the light
                     for (var k = 0; k < numTriangles; k++) {
                         var triangle = triangles[k];
 
-                        //console.log(triangle);
                         var normal = triangle.getNormal();
-                        //console.log(normal);
                         var surfaceToLight = vec3.subtract(vec3.create(), lightPositionLocal, triangle.getCenter());
-                        //var surfaceToLight = vec3.subtract(vec3.create(), triangle.getCenter(), lightPositionLocal);
-                        //console.log(vec3.dot(surfaceToLight, normal));
                         facings[triangle] = vec3.dot(surfaceToLight, normal) > 0;
                     }
-
-                    //console.log(facings);
 
                     // b
                     gl.cullFace(gl.FRONT);
                     gl.stencilOp(gl.KEEP, gl.INCR, gl.KEEP);
 
+                    // draws the shadow volumes
+                    // this is stored in a function since f is repeating this step (with some different parameters set)
                     function cd() {
                         // c
+                        // look for silhouette edges (those between a frontfacing and backfacing face) since those will make up
+                        // the outside of the shadow volume when projected to infinity
                         for (var k = 0; k < numTriangles; k++) {
                             var triangle = triangles[k];
 
@@ -200,16 +152,14 @@ Level.prototype.draw = function() {
                                         ]), gl.STREAM_DRAW);
 
                                         gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
-
-                                        //console.log("found sihlouette edge between " + triangle.toString() + " with facing " + facings[triangle] +
-                                        //            " and " + adjacent[l].toString() + " with facing " + facings[adjacent[l]]);
-                                        //console.log("found sihlouette edge at " + " " + b);
                                     }
                                 }
                             }
                         }
 
                         // d
+                        // now draw the frontfacing faces of the occluder as the front of the shadow volume
+                        // and project the backfacing faces to infinity to serve as the back of it
                         for (var k = 0; k < numTriangles; k++) {
                             var triangle = triangles[k];
 
@@ -218,6 +168,7 @@ Level.prototype.draw = function() {
                             var c = triangle.indices[2];
 
                             if (!facings[triangle]) {
+                                // this face is backwards, so project it to infinity
                                 gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
                                     mesh.vertices[3 * a] - lightPositionLocal[0],
                                     mesh.vertices[3 * a + 1] - lightPositionLocal[1],
@@ -232,17 +183,16 @@ Level.prototype.draw = function() {
                                     mesh.vertices[3 * c + 2] - lightPositionLocal[2],
                                     0.0
                                 ]), gl.STREAM_DRAW);
-
-                                gl.drawArrays(gl.TRIANGLES, 0, 3);
                             } else {
+                                // this face is forwards so render it as is
                                 gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
                                     mesh.vertices[3 * a], mesh.vertices[3 * a + 1], mesh.vertices[3 * a + 2], 1.0,
                                     mesh.vertices[3 * b], mesh.vertices[3 * b + 1], mesh.vertices[3 * b + 2], 1.0,
                                     mesh.vertices[3 * c], mesh.vertices[3 * c + 1], mesh.vertices[3 * c + 2], 1.0
                                 ]), gl.STREAM_DRAW);
-
-                                gl.drawArrays(gl.TRIANGLES, 0, 3);
                             }
+
+                            gl.drawArrays(gl.TRIANGLES, 0, 3);
                         }
                     };
 
@@ -267,34 +217,12 @@ Level.prototype.draw = function() {
             gl.colorMask(1, 1, 1, 1);
 
             // F
+            // draw the scene lit by this light, but only in the areas defined by the stencil buffer
             for (var j = 0; j < numRenderers; j++) {
                 if (renderers[j].visible) {
                     renderers[j].draw(lights[i], null);
                 }
             }
-
-            continue;
-
-            gl.depthFunc(gl.LESS);
-            var shader1 = Shader.getShader("flat");
-            shader1.bind();
-            shader1.updateMatrices(level.mainCamera, occluder.entity.transform.getLocalToWorldMatrix());
-
-            var material = new Material({
-                texture: Texture.fromColour(vec4.fromValues(1.0, 0.0, 0.0, 1.0))
-            });
-            material.apply(shader1);
-
-            gl.bindBuffer(gl.ARRAY_BUFFER, quad);
-            gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
-                -1000, 1000, 0,
-                -1000, -1000, 0,
-                1000, 1000, 0,
-                1000, -1000, 0
-            ]), gl.STREAM_DRAW);
-            shader1.enableVertexAttribute("position", quad);
-
-            gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
 
             // G
             gl.depthFunc(gl.LESS);
