@@ -102,20 +102,12 @@ Level.prototype.draw = function() {
 
                     var triangles = mesh.getTriangles();
                     var numTriangles = triangles.length;
-                    var facings = {};
 
                     shader.setModelMatrix(occluder.entity.transform.getLocalToWorldMatrix());
                     shader.updateMatrices();
 
                     // a
-                    // determine if each triangle faces toward or from the light
-                    for (var k = 0; k < numTriangles; k++) {
-                        var triangle = triangles[k];
-
-                        var normal = triangle.getNormal();
-                        var surfaceToLight = vec3.subtract(vec3.create(), lightPositionLocal, triangle.getCenter());
-                        facings[triangle] = vec3.dot(surfaceToLight, normal) > 0;
-                    }
+                    var facings = light.getFacingsFor(occluder);
 
                     // b
                     gl.cullFace(gl.FRONT);
