@@ -24,7 +24,7 @@ Light.prototype.apply = function(shader, ambient) {
         shader.setUniformVector3("lightPosition", position);
 
         shader.setUniformVector4("lightDiffuse", this.diffuse);
-        shader.setUniformVector4("lightAmbient", ambient || vec4.create());
+        shader.setUniformVector4("lightAmbient", ambient || vec4.fromValues(0, 0, 0, 1));
         shader.setUniformVector4("lightSpecular", this.specular);
 
         shader.setUniformVector3("lightFalloff", this.falloff);
@@ -93,7 +93,7 @@ Light.prototype.getSilhouetteEdgesFor = function(renderer) {
 Light.applyNoLight = function(shader, ambient) {
     if (shader && shader.linked) {
         shader.setUniformVector4("lightDiffuse", vec4.fromValues(0.0, 0.0, 0.0, 1.0));
-        shader.setUniformVector4("lightAmbient", ambient || vec4.create());
+        shader.setUniformVector4("lightAmbient", ambient || vec4.fromValues(0.0, 0.0, 0.0, 1.0));
         shader.setUniformVector4("lightSpecular", vec4.fromValues(0.0, 0.0, 0.0, 1.0));
 
         shader.setUniformVector3("lightFalloff", vec3.create());
