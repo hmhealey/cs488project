@@ -32,12 +32,15 @@ var ayreon = new Material({
 // TODO come up with a way to construct this automatically?
 var textures = [grass.texture, red.texture, blue.texture, yellow.texture, ayreon.texture];
 
-var ground = new Entity({
+ground = new Entity({
     name: "ground",
-    mesh: Mesh.makeRectangle(60, 60),
+    mesh: Mesh.makeBox(50, 1, 60),
     material: grass,
-    position: vec3.fromValues(0, 0, 0),
-    rotation: vec3.fromValues(-90, 0, 0),
+    position: vec3.fromValues(0, -0.5, 0),
+    components: [
+        new MeshRenderer(),
+        new BoxCollider({width: 50, height: 1, depth: 60})
+    ],
     parent: root.transform
 });
 
@@ -46,7 +49,7 @@ shadowCube = new Entity({
     //mesh: Mesh.makeCube(1),
     //mesh: Mesh.makeUvSphere(2, 8, 8),
     //mesh: Mesh.makeShadowBox(1, 1, 1),
-    mesh: Mesh.fromObjPath("cube.obj"),
+    mesh: Mesh.fromObjPath("cow.obj"),
     material: red,
     position: vec3.fromValues(0, 1, -5),
     scale: vec3.fromValues(0.3, 0.3, 0.3),
@@ -60,7 +63,7 @@ var box1 = new Entity({
     name: "box1",
     mesh: Mesh.makeCube(2),
     material: blue,
-    position: vec3.fromValues(8, 1, -6),
+    position: vec3.fromValues(2, 1, -14),
     parent: root.transform
 });
 
@@ -80,16 +83,25 @@ var box3 = new Entity({
     parent: root.transform
 });
 
-var camera = new Camera({
+player = new Entity({
+    name: "player",
+    position: vec3.fromValues(0, 1, 10),
+    components: [
+        new RigidBody({useGravity: true}),
+        new BoxCollider({width: 0.7, height: 1.8, depth: 0.7})
+    ],
+    controller: new PlayerController({speed: 1, rotationSpeed: 5, jumpSpeed: 2}),
+    parent: root.transform
+});
+
+camera = new Camera({
     name: "camera",
     fov: 45,
     near: 0.1,
     far: Infinity,
-    position: vec3.fromValues(0, 2, 10),
-    rotation: vec3.fromValues(0, 0, 0),
-    parent: root.transform
+    position: vec3.fromValues(0, 0.5, 0),
+    parent: player.transform
 });
-camera.controller = new PlayerController({speed: 0.1, rotationSpeed: 5});
 
 var crosshair = new Entity({
     name: "crosshair",
@@ -103,16 +115,20 @@ var light = new Entity({
     name: "light",
     position: vec3.fromValues(0, 0.5, 0),
     components: [
-        new Light()
+        new Light({
+            falloff: vec3.fromValues(0.5, 0.5, 0)
+        })
     ],
     parent: root.transform
 });
 
 var light2 = new Entity({
     name: "light2",
-    position: vec3.fromValues(5, 0.5, -5),
+    position: vec3.fromValues(5, 8.5, -5),
     components: [
-        new Light()
+        new Light({
+            falloff: vec3.fromValues(0.5, 0.5, 0)
+        })
     ],
     parent: root.transform
 });
