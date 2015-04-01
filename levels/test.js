@@ -19,8 +19,9 @@ var blue = new Material({
     shader: phong
 });
 var yellow = new Material({
+    shininess: 128,
     texture: Texture.fromColour(vec4.fromValues(1, 1, 0, 1)),
-    shader: flat
+    shader: phong
 });
 var ayreon = new Material({
     shininess: 10,
@@ -368,8 +369,8 @@ var light = new Entity({
     components: [
         new Light()
     ],
-    //parent: camera.transform
-    parent: root.transform
+    parent: camera.transform
+    //parent: root.transform
 });
 
 return new Level({root: root, mainCamera: camera, textures: textures});

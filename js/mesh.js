@@ -233,24 +233,6 @@ Mesh.prototype.getTriangles = function() {
         } else {
             console.log("Mesh.getTriangles - Unable to generate triangles for a mesh that isn't of type gl.TRIANGLES.");
         }
-
-        /*for (var i = 0; i < numTriangles; i++) {
-            var triangle = this.triangles[i];
-            var adjacent = triangle.getAdjacent();
-
-            var a = triangle.indices[0];
-            var b = triangle.indices[1];
-            var c = triangle.indices[2];
-
-            console.log("triangle " + i + ": " + triangle);
-            console.log("center: " + vec3.str(triangle.getCenter()));
-            console.log("indices: " + a + " " + b + " " + c);
-            console.log("vertices: (" + this.vertices[3 * a] + ", " + this.vertices[3 * a + 1] + ", " + this.vertices[3 * a + 2] +
-                        ") (" + this.vertices[3 * b] + ", " + this.vertices[3 * b + 1] + ", " + this.vertices[3 * b + 2] +
-                        ") (" + this.vertices[3 * c] + ", " + this.vertices[3 * c + 1] + ", " + this.vertices[3 * c + 2] + ")");
-            console.log("normal: " + vec3.str(triangle.getNormal()));
-            console.log("adjacent: (" + adjacent[0] + ") (" + adjacent[1] + ") (" + adjacent[2] + ")");
-        }*/
     }
 
     return this.triangles;
@@ -269,8 +251,8 @@ Mesh.prototype.calculateNormals = function() {
 
         for (var j = 0; j < 3; j++) {
             normals[3 * triangle.indices[j]] = (normals[3 * triangle.indices[j]] || 0) + normal[0];
-            normals[3 * triangle.indices[j] + 1] = (normals[3 * triangle.indices[j] + 1] || 0) + normal[0];
-            normals[3 * triangle.indices[j] + 2] = (normals[3 * triangle.indices[j] + 2] || 0) + normal[0];
+            normals[3 * triangle.indices[j] + 1] = (normals[3 * triangle.indices[j] + 1] || 0) + normal[1];
+            normals[3 * triangle.indices[j] + 2] = (normals[3 * triangle.indices[j] + 2] || 0) + normal[2];
         }
     }
 
@@ -487,40 +469,11 @@ Mesh.makeShadowBox = function(width, height, depth) {
 
     mesh.setIndices([
         2, 3, 6, 6, 3, 7,
-        /*-width / 2, height / 2, -depth / 2,
-        -width / 2, height / 2, depth / 2,
-        width / 2, height / 2, -depth / 2,
-        width / 2, height / 2, depth / 2,*/
-
         5, 1, 4, 4, 1, 0,
-        /*width / 2, -height / 2, depth / 2,
-        -width / 2, -height / 2, depth / 2,
-        width / 2, -height / 2, -depth / 2,
-        -width / 2, -height / 2, -depth / 2,*/
-
         2, 0, 3, 3, 0, 1,
-        /*-width / 2, height / 2, -depth / 2,
-        -width / 2, -height / 2, -depth / 2,
-        -width / 2, height / 2, depth / 2,
-        -width / 2, -height / 2, depth / 2,*/
-
         7, 5, 6, 6, 5, 4,
-        /*width / 2, height / 2, depth / 2,
-        width / 2, -height / 2, depth / 2,
-        width / 2, height / 2, -depth / 2,
-        width / 2, -height / 2, -depth / 2,*/
-
         3, 1, 7, 7, 1, 5,
-        /*-width / 2, height / 2, depth / 2,
-        -width / 2, -height / 2, depth / 2,
-        width / 2, height / 2, depth / 2,
-        width / 2, -height / 2, depth / 2,*/
-
         6, 4, 2, 2, 4, 0
-        /*width / 2, height / 2, -depth / 2,
-        width / 2, -height / 2, -depth / 2,
-        -width / 2, height / 2, -depth / 2,
-        -width / 2, -height / 2, -depth / 2*/
     ]);
 
     return mesh;
@@ -879,24 +832,10 @@ Triangle.prototype.getNormal = function() {
         var bc = vec3.fromValues(this.mesh.vertices[b] - this.mesh.vertices[c],
                                  this.mesh.vertices[b + 1] - this.mesh.vertices[c + 1],
                                  this.mesh.vertices[b + 2] - this.mesh.vertices[c + 2]);
-        /*var cb = vec3.fromValues(this.mesh.vertices[c] - this.mesh.vertices[b],
-                                 this.mesh.vertices[c + 1] - this.mesh.vertices[b + 1],
-                                 this.mesh.vertices[c + 2] - this.mesh.vertices[b + 2]);*/
 
         this.normal = vec3.create();
-        //vec3.cross(this.normal, ab, ac);
         vec3.cross(this.normal, ab, bc);
         vec3.normalize(this.normal, this.normal);
-
-        if (this.normal[0] == 0 && this.normal[1] == 0 && this.normal[2] == 0) {
-            console.log(this);
-            console.log(a + " " + b + " " + c);
-            console.log(this.mesh.vertices.subarray(a, a + 3));
-            console.log(this.mesh.vertices.subarray(b, b + 3));
-            console.log(this.mesh.vertices.subarray(c, c + 3));
-            console.log(ab);
-            console.log(cb);
-        }
     }
 
     return this.normal;
