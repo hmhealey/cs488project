@@ -1,0 +1,331 @@
+sum is: /usr/bin/sum
+
+
+2015-04-01 19:55  Checksum for A5 for hmhealey on ubuntu1204-004  Page 1
+
+
+A5:
+total 372
+78315090 drwxrwx---  8 hmhealey cs488      4096 Apr  1 19:54 ./
+89356890 -rw-r--r--  1 hmhealey hmhealey   4185 Apr  1 19:54 README
+89356891 -rw-r--r--  1 hmhealey hmhealey  88722 Apr  1 19:54 screenshot01.png
+17962617 drwxrwxr-x  2 hmhealey hmhealey   4096 Apr  1 19:31 textures/
+17962614 -rw-r--r--  1 hmhealey hmhealey 233261 Apr  1 19:31 support.png
+17962613 -rw-r--r--  1 hmhealey hmhealey    294 Apr  1 19:31 style.css
+17962602 drwxrwxr-x  2 hmhealey hmhealey   4096 Apr  1 19:31 sounds/
+ 9774726 drwxrwxr-x  4 hmhealey hmhealey   4096 Apr  1 19:31 shaders/
+51718998 drwxrwxr-x  2 hmhealey hmhealey   4096 Apr  1 19:31 meshes/
+51718990 drwxrwxr-x  2 hmhealey hmhealey   4096 Apr  1 19:31 levels/
+19165157 drwxrwxr-x  3 hmhealey hmhealey   4096 Apr  1 19:31 js/
+19165156 -rw-r--r--  1 hmhealey hmhealey   1357 Apr  1 19:31 index.html
+21710136 -rw-r--r--  1 hmhealey hmhealey     52 Apr  1 19:31 .gitignore
+87224868 drwxrwx--- 15 hmhealey cs488      4096 Mar  5 15:05 ../
+
+A5/textures:
+total 836
+78315090 drwxrwx--- 8 hmhealey cs488      4096 Apr  1 19:54 ../
+90750937 -rw-r--r-- 1 hmhealey hmhealey 155023 Apr  1 19:31 brickwork-texture.jpg
+17962617 drwxrwxr-x 2 hmhealey hmhealey   4096 Apr  1 19:31 ./
+90750936 -rw-r--r-- 1 hmhealey hmhealey 183138 Apr  1 19:31 brickwork-normal-map.jpg
+90750935 -rw-r--r-- 1 hmhealey hmhealey  97286 Apr  1 19:31 brickwork-bump-map.jpg
+90750934 -rw-r--r-- 1 hmhealey hmhealey   5035 Apr  1 19:31 blendMap.png
+90750933 -rw-r--r-- 1 hmhealey hmhealey  34876 Apr  1 19:31 Balloons21.jpg
+17962621 -rw-r--r-- 1 hmhealey hmhealey  69515 Apr  1 19:31 Ayreon_-_01011001.jpg
+17962619 -rwxr-xr-x 1 hmhealey hmhealey 132372 Apr  1 19:31 AlternatingBrick-NormalMap.png*
+17962618 -rwxr-xr-x 1 hmhealey hmhealey 128824 Apr  1 19:31 AlternatingBrick-ColorMap.png*
+
+A5/sounds:
+total 56
+78315090 drwxrwx--- 8 hmhealey cs488     4096 Apr  1 19:54 ../
+17962610 -rwxr-xr-x 1 hmhealey hmhealey  2948 Apr  1 19:31 step4.wav*
+17962602 drwxrwxr-x 2 hmhealey hmhealey  4096 Apr  1 19:31 ./
+17962609 -rwxr-xr-x 1 hmhealey hmhealey  2344 Apr  1 19:31 step3.wav*
+17962608 -rwxr-xr-x 1 hmhealey hmhealey  2556 Apr  1 19:31 step2.wav*
+17962607 -rwxr-xr-x 1 hmhealey hmhealey  3064 Apr  1 19:31 step1.wav*
+17962606 -rwxr-xr-x 1 hmhealey hmhealey  8694 Apr  1 19:31 shotgn2.wav*
+17962605 -rwxr-xr-x 1 hmhealey hmhealey 10838 Apr  1 19:31 ric2.wav*
+17962604 -rwxr-xr-x 1 hmhealey hmhealey  3888 Apr  1 19:31 plyrjmp8.wav*
+17962603 -rwxr-xr-x 1 hmhealey hmhealey  2434 Apr  1 19:31 land.wav*
+
+A5/shaders:
+total 88
+78315090 drwxrwx--- 8 hmhealey cs488    4096 Apr  1 19:54 ../
+96117749 -rw-r--r-- 1 hmhealey hmhealey  152 Apr  1 19:31 wireframe.vert
+ 9774726 drwxrwxr-x 4 hmhealey hmhealey 4096 Apr  1 19:31 ./
+96117748 -rw-r--r-- 1 hmhealey hmhealey  105 Apr  1 19:31 wireframe.frag
+96117739 drwxrwxr-x 2 hmhealey hmhealey 4096 Apr  1 19:31 util/
+96117738 -rw-r--r-- 1 hmhealey hmhealey  141 Apr  1 19:31 shadowVolumes.vert
+96117737 -rw-r--r-- 1 hmhealey hmhealey   75 Apr  1 19:31 shadowVolumes.frag
+96117736 -rw-r--r-- 1 hmhealey hmhealey  452 Apr  1 19:31 phong.vert
+96117735 -rw-r--r-- 1 hmhealey hmhealey 1513 Apr  1 19:31 phong.frag
+ 9774739 drwxrwxr-x 2 hmhealey hmhealey 4096 Apr  1 19:31 particles/
+ 9774738 -rw-r--r-- 1 hmhealey hmhealey  619 Apr  1 19:31 normalMap.vert
+
+
+
+
+
+
+
+2015-04-01 19:55  Checksum for A5 for hmhealey on ubuntu1204-004  Page 2
+
+
+ 9774737 -rw-r--r-- 1 hmhealey hmhealey 1815 Apr  1 19:31 normalMap.frag
+ 9774736 -rw-r--r-- 1 hmhealey hmhealey  229 Apr  1 19:31 flat.vert
+ 9774735 -rw-r--r-- 1 hmhealey hmhealey  207 Apr  1 19:31 flat.frag
+ 9774734 -rw-r--r-- 1 hmhealey hmhealey  452 Apr  1 19:31 diffuse.vert
+ 9774733 -rw-r--r-- 1 hmhealey hmhealey 1086 Apr  1 19:31 diffuse.frag
+ 9774732 -rw-r--r-- 1 hmhealey hmhealey  646 Apr  1 19:31 bumpMap.vert
+ 9774731 -rw-r--r-- 1 hmhealey hmhealey 1945 Apr  1 19:31 bumpMap.frag
+ 9774730 -rw-r--r-- 1 hmhealey hmhealey  690 Apr  1 19:31 blendMap.vert
+ 9774729 -rw-r--r-- 1 hmhealey hmhealey 2054 Apr  1 19:31 blendMap.frag
+ 9774728 -rw-r--r-- 1 hmhealey hmhealey  784 Apr  1 19:31 blend.vert
+ 9774727 -rw-r--r-- 1 hmhealey hmhealey 1904 Apr  1 19:31 blend.frag
+
+A5/shaders/util:
+total 40
+ 9774726 drwxrwxr-x 4 hmhealey hmhealey 4096 Apr  1 19:31 ../
+96117747 -rw-r--r-- 1 hmhealey hmhealey  358 Apr  1 19:31 texWeights.vert
+96117739 drwxrwxr-x 2 hmhealey hmhealey 4096 Apr  1 19:31 ./
+96117746 -rw-r--r-- 1 hmhealey hmhealey  130 Apr  1 19:31 texWeights.frag
+96117745 -rw-r--r-- 1 hmhealey hmhealey  229 Apr  1 19:31 texCoords.vert
+96117744 -rw-r--r-- 1 hmhealey hmhealey  127 Apr  1 19:31 texCoords.frag
+96117743 -rw-r--r-- 1 hmhealey hmhealey  278 Apr  1 19:31 tangents.vert
+96117742 -rw-r--r-- 1 hmhealey hmhealey  150 Apr  1 19:31 tangents.frag
+96117741 -rw-r--r-- 1 hmhealey hmhealey  274 Apr  1 19:31 normals.vert
+96117740 -rw-r--r-- 1 hmhealey hmhealey  118 Apr  1 19:31 normals.frag
+
+A5/shaders/particles:
+total 32
+9774726 drwxrwxr-x 4 hmhealey hmhealey 4096 Apr  1 19:31 ../
+5850649 -rw-r--r-- 1 hmhealey hmhealey  282 Apr  1 19:31 point.vert
+9774739 drwxrwxr-x 2 hmhealey hmhealey 4096 Apr  1 19:31 ./
+5850647 -rw-r--r-- 1 hmhealey hmhealey  107 Apr  1 19:31 point.frag
+5850646 -rw-r--r-- 1 hmhealey hmhealey  493 Apr  1 19:31 phong.vert
+5850645 -rw-r--r-- 1 hmhealey hmhealey 1513 Apr  1 19:31 phong.frag
+5850644 -rw-r--r-- 1 hmhealey hmhealey  493 Apr  1 19:31 diffuse.vert
+2474343 -rw-r--r-- 1 hmhealey hmhealey 1085 Apr  1 19:31 diffuse.frag
+
+A5/meshes:
+total 292
+78315090 drwxrwx--- 8 hmhealey cs488      4096 Apr  1 19:54 ../
+ 7533716 -rw-r--r-- 1 hmhealey hmhealey  23300 Apr  1 19:31 uvsphere.obj
+51718998 drwxrwxr-x 2 hmhealey hmhealey   4096 Apr  1 19:31 ./
+ 7533715 -rw-r--r-- 1 hmhealey hmhealey  27542 Apr  1 19:31 torus.obj
+51719004 -rw-r--r-- 1 hmhealey hmhealey  23840 Apr  1 19:31 monkey.obj
+51719003 -rw-r--r-- 1 hmhealey hmhealey   2225 Apr  1 19:31 icosphere.obj
+51719002 -rw-r--r-- 1 hmhealey hmhealey   2688 Apr  1 19:31 cylinder.obj
+51719001 -rw-r--r-- 1 hmhealey hmhealey    409 Apr  1 19:31 cube.obj
+51719000 -rw-r--r-- 1 hmhealey hmhealey 180010 Apr  1 19:31 cow.obj
+51718999 -rw-r--r-- 1 hmhealey hmhealey   1550 Apr  1 19:31 cone.obj
+
+A5/levels:
+total 48
+78315090 drwxrwx--- 8 hmhealey cs488     4096 Apr  1 19:54 ../
+51718997 -rw-r--r-- 1 hmhealey hmhealey 12245 Apr  1 19:31 test.js
+51718990 drwxrwxr-x 2 hmhealey hmhealey  4096 Apr  1 19:31 ./
+51718996 -rw-r--r-- 1 hmhealey hmhealey  3436 Apr  1 19:31 shadows.js
+51718994 -rw-r--r-- 1 hmhealey hmhealey 10030 Apr  1 19:31 level00.js
+
+
+
+
+
+
+
+2015-04-01 19:55  Checksum for A5 for hmhealey on ubuntu1204-004  Page 3
+
+
+51718992 -rw-r--r-- 1 hmhealey hmhealey   342 Apr  1 19:31 empty.js
+51718991 -rw-r--r-- 1 hmhealey hmhealey  4106 Apr  1 19:31 collision.js
+
+A5/js:
+total 172
+78315090 drwxrwx--- 8 hmhealey cs488     4096 Apr  1 19:54 ../
+25834255 -rw-r--r-- 1 hmhealey hmhealey  4977 Apr  1 19:31 util.js
+19165157 drwxrwxr-x 3 hmhealey hmhealey  4096 Apr  1 19:31 ./
+95816678 -rw-r--r-- 1 hmhealey hmhealey  6434 Apr  1 19:31 transform.js
+95816677 -rw-r--r-- 1 hmhealey hmhealey  2360 Apr  1 19:31 texture.js
+95816676 -rw-r--r-- 1 hmhealey hmhealey  8153 Apr  1 19:31 shader.js
+95816675 -rw-r--r-- 1 hmhealey hmhealey  2121 Apr  1 19:31 rigidbody.js
+95816674 -rw-r--r-- 1 hmhealey hmhealey  1208 Apr  1 19:31 renderer.js
+95816673 -rw-r--r-- 1 hmhealey hmhealey  6749 Apr  1 19:31 raycast.js
+95816672 -rw-r--r-- 1 hmhealey hmhealey 11407 Apr  1 19:31 particles.js
+95816671 -rw-r--r-- 1 hmhealey hmhealey 26747 Apr  1 19:31 mesh.js
+95816670 -rw-r--r-- 1 hmhealey hmhealey  2578 Apr  1 19:31 material.js
+95816669 -rw-r--r-- 1 hmhealey hmhealey  3965 Apr  1 19:31 main.js
+95816668 -rw-r--r-- 1 hmhealey hmhealey  9575 Apr  1 19:31 light.js
+95816667 -rw-r--r-- 1 hmhealey hmhealey  7614 Apr  1 19:31 level.js
+95816666 -rw-r--r-- 1 hmhealey hmhealey   229 Apr  1 19:31 interactable.js
+95816665 -rw-r--r-- 1 hmhealey hmhealey  3052 Apr  1 19:31 input.js
+95816662 drwxrwxr-x 2 hmhealey hmhealey  4096 Apr  1 19:31 gl-matrix/
+95816661 -rw-r--r-- 1 hmhealey hmhealey   479 Apr  1 19:31 geometry.js
+95816660 -rw-r--r-- 1 hmhealey hmhealey   580 Apr  1 19:31 framerate.js
+95816659 -rw-r--r-- 1 hmhealey hmhealey  3310 Apr  1 19:31 entity.js
+95816658 -rw-r--r-- 1 hmhealey hmhealey  6830 Apr  1 19:31 control.js
+19165165 -rw-r--r-- 1 hmhealey hmhealey   441 Apr  1 19:31 component.js
+19165163 -rw-r--r-- 1 hmhealey hmhealey  6931 Apr  1 19:31 collision.js
+19165162 -rw-r--r-- 1 hmhealey hmhealey  1716 Apr  1 19:31 camera.js
+
+A5/js/gl-matrix:
+total 128
+19165157 drwxrwxr-x 3 hmhealey hmhealey   4096 Apr  1 19:31 ../
+95816664 -rwxr-xr-x 1 hmhealey hmhealey 111812 Apr  1 19:31 gl-matrix.js*
+95816662 drwxrwxr-x 2 hmhealey hmhealey   4096 Apr  1 19:31 ./
+95816663 -rwxr-xr-x 1 hmhealey hmhealey   1078 Apr  1 19:31 LICENSE.md*
+
+A5                                      
+A5/.gitignore                           32352     1
+A5/index.html                           02863     2
+A5/js                                   
+A5/js/camera.js                         39208     2
+A5/js/collision.js                      49638     7
+A5/js/component.js                      38257     1
+A5/js/control.js                        44880     7
+A5/js/entity.js                         02173     4
+A5/js/framerate.js                      45300     1
+A5/js/geometry.js                       01554     1
+A5/js/gl-matrix                         
+A5/js/gl-matrix/gl-matrix.js            55401   110
+A5/js/gl-matrix/LICENSE.md              64322     2
+A5/js/input.js                          35487     3
+A5/js/interactable.js                   55427     1
+A5/js/level.js                          24508     8
+A5/js/light.js                          12187    10
+
+
+
+
+
+
+
+2015-04-01 19:55  Checksum for A5 for hmhealey on ubuntu1204-004  Page 4
+
+
+A5/js/main.js                           09847     4
+A5/js/material.js                       41219     3
+A5/js/mesh.js                           25712    27
+A5/js/particles.js                      04491    12
+A5/js/raycast.js                        65438     7
+A5/js/renderer.js                       25945     2
+A5/js/rigidbody.js                      42554     3
+A5/js/shader.js                         05143     8
+A5/js/texture.js                        13572     3
+A5/js/transform.js                      19461     7
+A5/js/util.js                           31840     5
+A5/levels                               
+A5/levels/collision.js                  18875     5
+A5/levels/empty.js                      05889     1
+A5/levels/level00.js                    52680    10
+A5/levels/shadows.js                    49159     4
+A5/levels/test.js                       31905    12
+A5/meshes                               
+A5/meshes/cone.obj                      18564     2
+A5/meshes/cow.obj                       57991   176
+A5/meshes/cube.obj                      58818     1
+A5/meshes/cylinder.obj                  31380     3
+A5/meshes/icosphere.obj                 03868     3
+A5/meshes/monkey.obj                    11261    24
+A5/meshes/torus.obj                     63808    27
+A5/meshes/uvsphere.obj                  36047    23
+A5/README                               48803     5
+A5/screenshot01.png                     64264    87
+A5/shaders                              
+A5/shaders/blend.frag                   64510     2
+A5/shaders/blendMap.frag                51510     3
+A5/shaders/blendMap.vert                49228     1
+A5/shaders/blend.vert                   15511     1
+A5/shaders/bumpMap.frag                 22806     2
+A5/shaders/bumpMap.vert                 38465     1
+A5/shaders/diffuse.frag                 08962     2
+A5/shaders/diffuse.vert                 30284     1
+A5/shaders/flat.frag                    17057     1
+A5/shaders/flat.vert                    32549     1
+A5/shaders/normalMap.frag               33341     2
+A5/shaders/normalMap.vert               65474     1
+A5/shaders/particles                    
+A5/shaders/particles/diffuse.frag       44296     2
+A5/shaders/particles/diffuse.vert       46217     1
+A5/shaders/particles/phong.frag         50337     2
+A5/shaders/particles/phong.vert         46217     1
+A5/shaders/particles/point.frag         03787     1
+A5/shaders/particles/point.vert         01166     1
+A5/shaders/phong.frag                   50337     2
+A5/shaders/phong.vert                   30284     1
+A5/shaders/shadowVolumes.frag           43954     1
+A5/shaders/shadowVolumes.vert           47294     1
+A5/shaders/util                         
+A5/shaders/util/normals.frag            07752     1
+A5/shaders/util/normals.vert            07902     1
+A5/shaders/util/tangents.frag           52016     1
+
+
+
+
+
+
+
+2015-04-01 19:55  Checksum for A5 for hmhealey on ubuntu1204-004  Page 5
+
+
+A5/shaders/util/tangents.vert           50383     1
+A5/shaders/util/texCoords.frag          64849     1
+A5/shaders/util/texCoords.vert          32549     1
+A5/shaders/util/texWeights.frag         25324     1
+A5/shaders/util/texWeights.vert         35522     1
+A5/shaders/wireframe.frag               22168     1
+A5/shaders/wireframe.vert               43657     1
+A5/sounds                               
+A5/sounds/land.wav                      59303     3
+A5/sounds/plyrjmp8.wav                  25831     4
+A5/sounds/ric2.wav                      56367    11
+A5/sounds/shotgn2.wav                   36401     9
+A5/sounds/step1.wav                     24712     3
+A5/sounds/step2.wav                     43070     3
+A5/sounds/step3.wav                     29595     3
+A5/sounds/step4.wav                     12309     3
+A5/style.css                            22071     1
+A5/support.png                          08890   228
+A5/textures                             
+A5/textures/AlternatingBrick-ColorMap.png29949   126
+A5/textures/AlternatingBrick-NormalMap.png42804   130
+A5/textures/Ayreon_-_01011001.jpg       01769    68
+A5/textures/Balloons21.jpg              41652    35
+A5/textures/blendMap.png                28715     5
+A5/textures/brickwork-bump-map.jpg      26261    96
+A5/textures/brickwork-normal-map.jpg    07152   179
+A5/textures/brickwork-texture.jpg       08454   152
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
