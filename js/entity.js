@@ -66,7 +66,20 @@ Entity.prototype.getComponent = function(type) {
 };
 
 Entity.prototype.getComponents = function(type) {
-    return this.components;
+    if (type) {
+        var componentsOfType = [];
+
+        var numComponents = this.components.length;
+        for (var i = 0; i < numComponents; i++) {
+            if (this.components[i] instanceof type) {
+                componentsOfType.push(this.components[i]);
+            }
+        }
+
+        return componentsOfType;
+    } else {
+        return this.components;
+    }
 };
 
 Entity.prototype.getComponentsInChildren = function(type) {
