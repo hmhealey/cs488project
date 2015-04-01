@@ -41,14 +41,15 @@ var ground = new Entity({
     parent: root.transform
 });
 
-var shadowCube = new Entity({
+shadowCube = new Entity({
     name: "shadowCube",
     //mesh: Mesh.makeCube(1),
     //mesh: Mesh.makeUvSphere(2, 8, 8),
-    mesh: Mesh.makeShadowBox(1, 1, 1),
+    //mesh: Mesh.makeShadowBox(1, 1, 1),
+    mesh: Mesh.fromObjPath("cube.obj"),
     material: red,
     position: vec3.fromValues(0, 1, -5),
-    scale: vec3.fromValues(1, 2, 0.5),
+    scale: vec3.fromValues(0.3, 0.3, 0.3),
     components: [
         new MeshRenderer({castsShadows: true})
     ],

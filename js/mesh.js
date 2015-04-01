@@ -756,6 +756,7 @@ Mesh.makeCylinder = function(radius, height, resolution) {
 };
 
 Mesh.fromObjPath = function(path) {
+
     var mesh = new Mesh();
     mesh.loaded = false;
 
@@ -798,11 +799,11 @@ Mesh.fromObjPath = function(path) {
                         var c = parseInt(elements[3]) - 1;
                         var d = parseInt(elements[4]) - 1;
 
+                        indices.push(b);
+                        indices.push(c);
                         indices.push(a);
-                        indices.push(b);
+                        indices.push(a);
                         indices.push(c);
-                        indices.push(c);
-                        indices.push(b);
                         indices.push(d);
                     } else {
                         console.log("Mesh.fromObjPath - Mesh contains face with " + (elements.length - 1) + " indices");
