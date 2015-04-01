@@ -8,6 +8,7 @@ function PlayerController(args) {
 };
 
 PlayerController.prototype.update = function(entity) {
+    // keyboard/mouse rotation
     var dpitch = 0;
     var dyaw = 0;
 
@@ -35,7 +36,8 @@ PlayerController.prototype.update = function(entity) {
         entity.transform.rotate('y', dyaw, 'world');
     }
 
-    var speed
+    // keyboard movement
+    var rigidBody = entity.getComponent(RigidBody);
 
     var dz = 0;
     var dy = 0;
@@ -53,24 +55,35 @@ PlayerController.prototype.update = function(entity) {
         dx = 1;
     }
 
-    var rigidBody = entity.getComponent(RigidBody);
-
-    if (dx != 0 || dy != 0 || dz != 0) {
-        var velocity = vec3.fromValues(dx, dy, dz);
-        vec3.normalize(velocity, velocity);
-        vec3.scale(velocity, velocity, this.speed);
+    if (dx != 0 || dz != 0) {
+        var velocity = vec3.fromValues(dx, 0, dz);
         vec3.transformQuat(velocity, velocity, entity.transform.rotation);
 
-        rigidBody.velocity = velocity;
+        if (rigidBody.useGravity) {
+            velocity[1] = 0;
+        }
+
+        vec3.normalize(velocity, velocity);
+        vec3.scale(velocity, velocity, this.speed);
+
+        rigidBody.velocity[0] = velocity[0];
+        rigidBody.velocity[2] = velocity[2];
     } else {
-        vec3.set(rigidBody.velocity, 0, 0, 0);
+        rigidBody.velocity[0] = 0;
+        rigidBody.velocity[2] = 0;
     }
 
+    // jumping
+    if (rigidBody.useGravity && rigidBody.velocity[1] == 0 && Input.getKey(32)) {
+        rigidBody.velocity[1] = 2;
+    }
+
+    // interaction
     if (Input.Mouse.getButtonDown(0)) {
         var hit = new RaycastHit();
 
         var filter = function(collider) {
-            return collider.entity != entity;
+            return collider.entity != entity && collider.entity.name != "groundCollider";
         };
 
         if (level.raycast(entity.transform.getWorldPosition(), entity.transform.getForward(), hit, filter)) {

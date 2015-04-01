@@ -4,14 +4,24 @@ function RigidBody(args) {
     Component.call(this, args);
 
     this.velocity = args['velocity'] || vec3.create();
+
+    this.useGravity = 'useGravity' in args ? args['useGravity'] : true;
+    this.gravity = args['gravity'] || null;
 };
 
 RigidBody.prototype = Object.create(Component.prototype);
 RigidBody.prototype.constructor = RigidBody;
 
+RigidBody.gravity = vec3.fromValues(0, -0.981, 0);
+
 RigidBody.prototype.draw = function() { };
 
 RigidBody.prototype.update = function(time) {
+    if (this.useGravity) {
+        var gravity = this.gravity || RigidBody.gravity;
+        vec3.scaleAndAdd(this.velocity, this.velocity, gravity, 1 / TICK_RATE);
+    }
+
     if (vec3.squaredLength(this.velocity) != 0) {
         // keep the velocity independent of the tick rate
         var velocity = vec3.scale(vec3.create(), this.velocity, 1 / TICK_RATE);
@@ -44,6 +54,8 @@ RigidBody.prototype.update = function(time) {
 
                 if (!collided) {
                     this.entity.transform.translate(delta);
+                } else {
+                    this.velocity[dir] = 0;
                 }
             }
         } else {

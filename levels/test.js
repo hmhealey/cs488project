@@ -41,6 +41,15 @@ var ground = new Entity({
     parent: root.transform
 });
 
+var groundCollider = new Entity({
+    name: "groundCollider",
+    position: vec3.fromValues(0, -0.5, 0),
+    components: [
+        new BoxCollider({width: 40, height: 1, depth: 60})
+    ],
+    parent: root.transform
+});
+
 var cube1 = new Entity({
     name: "cube1",
     mesh: Mesh.makeCube(4),
@@ -283,7 +292,7 @@ var bump3 = new Entity({
     parent: root.transform
 });
 
-var mover = new Entity({
+mover = new Entity({
     name: "mover",
     //mesh: Mesh.makeUvSphere(0.5),
     //mesh: Mesh.makeCylinder(0.5, 1),
@@ -292,7 +301,7 @@ var mover = new Entity({
         texture: Texture.fromColour(vec4.fromValues(1.0, 1.0, 1.0, 1.0)),
         shader: diffuse
     }),
-    position: vec3.fromValues(0, 0.5, 0),
+    position: vec3.fromValues(0, 1, 0),
     components: [
         new RigidBody(),
         //new SphereCollider({radius: 0.5}),
@@ -319,7 +328,14 @@ var mover = new Entity({
                     dx = 0.1;
                 }
 
-                vec3.set(rigidBody.velocity, dx, 0, dz);
+                rigidBody.velocity[0] = dx;
+                rigidBody.velocity[2] = dz;
+
+                if (Input.getKey(32)) {
+                    if (rigidBody.velocity[1] == 0) {
+                        rigidBody.velocity[1] = 2;
+                    }
+                }
             }
         }
     },
@@ -349,7 +365,7 @@ var cylinder = new Entity({
     parent: root.transform
 });
 
-var camera = new Camera({
+camera = new Camera({
     name: "camera",
     fov: 45,
     near: 0.1,
@@ -357,7 +373,7 @@ var camera = new Camera({
     position: vec3.fromValues(0, 2, 10),
     rotation: vec3.fromValues(0, 0, 0),
     components: [
-        new RigidBody(),
+        new RigidBody({useGravity: true}),
         new BoxCollider({width: 0.7, height: 2, depth: 0.7})
     ],
     parent: root.transform
