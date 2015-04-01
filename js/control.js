@@ -184,7 +184,7 @@ PlayerController.prototype.update = function(entity) {
         var hit = new RaycastHit();
 
         var filter = function(collider) {
-            return collider.entity != entity && collider.entity.name != "ground" && collider.entity.name != "groundCollider";
+            return collider.entity != entity;
         };
 
         this.shootSound.currentTime = 0;
