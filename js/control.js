@@ -215,6 +215,11 @@ PlayerController.prototype.update = function(entity) {
 
             this.hitSound.currentTime = 0;
             this.hitSound.play();
+
+            var interactable = collider.entity.getComponent(Interactable);
+            if (interactable) {
+                interactable.interact();
+            }
         }
     }
 };
