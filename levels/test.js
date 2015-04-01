@@ -360,7 +360,7 @@ var cylinder = new Entity({
     }),
     position: vec3.fromValues(8, 3, -1),
     components: [
-        new CylinderCollider({radius: 1, height: 2})
+        //new CylinderCollider({radius: 1, height: 2})
     ],
     parent: root.transform
 });
