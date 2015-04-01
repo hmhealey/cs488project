@@ -108,40 +108,26 @@ Level.prototype.draw = function() {
 
                     var shadowVolume = light.getShadowVolumeFor(occluder);
 
+                    // actually draws the shadow volumes
+                    function cd() {
+                        // c
+                        shader.enableVertexAttribute("position", shadowVolume.wallVertices, 4);
+                        gl.drawArrays(gl.TRIANGLES, 0, shadowVolume.numWallVertices);
+
+                        // d
+                        shader.enableVertexAttribute("position", shadowVolume.capVertices, 4);
+                        gl.drawArrays(gl.TRIANGLES, 0, shadowVolume.numCapVertices);
+
+                        shader.enableVertexAttribute("position", shadowVolume.baseVertices, 4);
+                        gl.drawArrays(gl.TRIANGLES, 0, shadowVolume.numBaseVertices);
+                    };
+
                     // a
-                    var facings = light.getFacingsFor(occluder);
+                    // already done by light.getShadowVolumeFor
 
                     // b
                     gl.cullFace(gl.FRONT);
                     gl.stencilOp(gl.KEEP, gl.INCR, gl.KEEP);
-
-                    // draws the shadow volumes
-                    // this is stored in a function since f is repeating this step (with some different parameters set)
-                    function cd() {
-                        // these names are a sign that I come from a Java background
-                        var wallVertices = shadowVolume.wallVertices;
-                        var numWallVertices = shadowVolume.numWallVertices;
-
-                        // c
-                        shader.enableVertexAttribute("position", wallVertices, 4);
-                        gl.drawArrays(gl.TRIANGLES, 0, numWallVertices);
-
-                        // d
-                        // now draw the frontfacing faces of the occluder as the front of the shadow volume
-                        // and project the backfacing faces to infinity to serve as the back of it
-                        var capVertices = shadowVolume.capVertices;
-                        var numCapVertices = shadowVolume.numCapVertices;
-
-                        shader.enableVertexAttribute("position", capVertices, 4);
-                        gl.drawArrays(gl.TRIANGLES, 0, numCapVertices);
-
-                        var baseVertices = shadowVolume.baseVertices;
-                        var numBaseVertices = shadowVolume.numBaseVertices;
-
-                        shader.enableVertexAttribute("position", baseVertices, 4);
-                        gl.drawArrays(gl.TRIANGLES, 0, numBaseVertices);
-
-                    };
 
                     cd();
 
