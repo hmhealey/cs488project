@@ -356,9 +356,13 @@ var camera = new Camera({
     far: 100,
     position: vec3.fromValues(0, 2, 10),
     rotation: vec3.fromValues(0, 0, 0),
+    components: [
+        new RigidBody(),
+        new BoxCollider({width: 0.7, height: 2, depth: 0.7})
+    ],
     parent: root.transform
 });
-camera.controller = new PlayerController({speed: 0.1, rotationSpeed: 5});
+camera.controller = new PlayerController({speed: 1, rotationSpeed: 5});
 
 var crosshair = new Entity({
     name: "crosshair",

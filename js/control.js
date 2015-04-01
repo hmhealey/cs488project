@@ -35,6 +35,8 @@ PlayerController.prototype.update = function(entity) {
         entity.transform.rotate('y', dyaw, 'world');
     }
 
+    var speed
+
     var dz = 0;
     var dy = 0;
     var dx = 0;
@@ -51,19 +53,27 @@ PlayerController.prototype.update = function(entity) {
         dx = 1;
     }
 
-    if (dx != 0 || dy != 0 || dz != 0) {
-        var dir = vec3.fromValues(dx, dy, dz);
-        vec3.normalize(dir, dir);
-        vec3.scale(dir, dir, this.speed);
-        vec3.transformQuat(dir, dir, entity.transform.rotation);
+    var rigidBody = entity.getComponent(RigidBody);
 
-        entity.transform.translate(dir);
+    if (dx != 0 || dy != 0 || dz != 0) {
+        var velocity = vec3.fromValues(dx, dy, dz);
+        vec3.normalize(velocity, velocity);
+        vec3.scale(velocity, velocity, this.speed);
+        vec3.transformQuat(velocity, velocity, entity.transform.rotation);
+
+        rigidBody.velocity = velocity;
+    } else {
+        vec3.set(rigidBody.velocity, 0, 0, 0);
     }
 
     if (Input.Mouse.getButtonDown(0)) {
         var hit = new RaycastHit();
 
-        if (level.raycast(entity.transform.getWorldPosition(), entity.transform.getForward(), hit)) {
+        var filter = function(collider) {
+            return collider.entity != entity;
+        };
+
+        if (level.raycast(entity.transform.getWorldPosition(), entity.transform.getForward(), hit, filter)) {
             console.log("bang! you hit " + hit.collider.entity.name);
             //hit.collider.entity.destroy();
         } else {
