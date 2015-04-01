@@ -116,29 +116,18 @@ Level.prototype.draw = function() {
                     // draws the shadow volumes
                     // this is stored in a function since f is repeating this step (with some different parameters set)
                     function cd() {
+                        // these names are a sign that I come from a Java background
+                        var wallVertices = light.getShadowVolumeWallVerticesFor(occluder);
+                        var numWallVertices = light.getShadowVolumeNumWallVerticesFor(occluder);
+
                         // c
-                        var silhouetteEdges = light.getSilhouetteEdgesFor(occluder);
-                        var numSilhouetteEdges = silhouetteEdges.length;
+                        shader.bind();
+                        shader.enableVertexAttribute("position", wallVertices, 4);
+                        gl.drawArrays(gl.TRIANGLES, 0, numWallVertices / 3);
 
-                        for (var k = 0; k < numSilhouetteEdges; k++) {
-                            var a = silhouetteEdges[k][0];
-                            var b = silhouetteEdges[k][1];
-
-                            gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
-                                mesh.vertices[3 * b], mesh.vertices[3 * b + 1], mesh.vertices[3 * b + 2], 1.0,
-                                mesh.vertices[3 * a], mesh.vertices[3 * a + 1], mesh.vertices[3 * a + 2], 1.0,
-                                mesh.vertices[3 * b] - lightPositionLocal[0],
-                                mesh.vertices[3 * b + 1] - lightPositionLocal[1],
-                                mesh.vertices[3 * b + 2] - lightPositionLocal[2],
-                                0.0,
-                                mesh.vertices[3 * a] - lightPositionLocal[0],
-                                mesh.vertices[3 * a + 1] - lightPositionLocal[1],
-                                mesh.vertices[3 * a + 2] - lightPositionLocal[2],
-                                0.0
-                            ]), gl.STREAM_DRAW);
-
-                            gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
-                        }
+                        shader.bind();
+                        gl.bindBuffer(gl.ARRAY_BUFFER, quad);
+                        shader.enableVertexAttribute("position", quad, 4);
 
                         // d
                         // now draw the frontfacing faces of the occluder as the front of the shadow volume

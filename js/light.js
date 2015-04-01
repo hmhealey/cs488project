@@ -84,16 +84,44 @@ Light.prototype.calculateShadowVolumesFor = function(renderer) {
                 }
             }
 
+            // store a buffer containing the vertices of the walls of the shadow volume (in local coordinates for the renderer)
+            // note that these vertices are stored with their W coordinates
+            var numSilhouetteEdges = silhouetteEdges.length;
+            var wallVertices = [];
+
+            for (var i = 0; i < numSilhouetteEdges; i++) {
+                var a = 3 * silhouetteEdges[i][0];
+                var b = 3 * silhouetteEdges[i][1];
+
+                wallVertices.push(
+                    mesh.vertices[b], mesh.vertices[b + 1], mesh.vertices[b + 2], 1.0,
+                    mesh.vertices[a], mesh.vertices[a + 1], mesh.vertices[a + 2], 1.0,
+                    mesh.vertices[b] - lightPosition[0], mesh.vertices[b + 1] - lightPosition[1], mesh.vertices[b + 2] - lightPosition[2], 0.0,
+                    mesh.vertices[b] - lightPosition[0], mesh.vertices[b + 1] - lightPosition[1], mesh.vertices[b + 2] - lightPosition[2], 0.0,
+                    mesh.vertices[a], mesh.vertices[a + 1], mesh.vertices[a + 2], 1.0,
+                    mesh.vertices[a] - lightPosition[0], mesh.vertices[a + 1] - lightPosition[1], mesh.vertices[a + 2] - lightPosition[2], 0.0
+                );
+            }
+
+            var wallVerticesBuffer = gl.createBuffer();
+            gl.bindBuffer(gl.ARRAY_BUFFER, wallVerticesBuffer);
+            gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(wallVertices), gl.DYNAMIC_DRAW);
+            gl.bindBuffer(gl.ARRAY_BUFFER, null);
+
             this.shadowVolumes[name] = {
                 lightPosition: lightPosition,
                 facings: facings,
-                silhouetteEdges: silhouetteEdges
+                silhouetteEdges: silhouetteEdges,
+                wallVertices: wallVerticesBuffer,
+                numWallVertices: wallVertices.length / 4
             };
         } else {
             this.shadowVolumes[name] = {
                 lightPosition: lightPosition,
                 facings: [],
-                silhouetteEdges: []
+                silhouetteEdges: [],
+                wallVertices: null,
+                numWallVertices: 0
             };
         }
     }
@@ -109,6 +137,18 @@ Light.prototype.getSilhouetteEdgesFor = function(renderer) {
     this.calculateShadowVolumesFor(renderer);
 
     return this.shadowVolumes[renderer.entity.name].silhouetteEdges;
+};
+
+Light.prototype.getShadowVolumeWallVerticesFor = function(renderer) {
+    this.calculateShadowVolumesFor(renderer);
+
+    return this.shadowVolumes[renderer.entity.name].wallVertices;
+};
+
+Light.prototype.getShadowVolumeNumWallVerticesFor = function(renderer) {
+    this.calculateShadowVolumesFor(renderer);
+
+    return this.shadowVolumes[renderer.entity.name].numWallVertices;
 };
 
 Light.applyNoLight = function(shader, ambient) {
