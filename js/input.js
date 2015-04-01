@@ -10,7 +10,9 @@ var Input = {
         73: false, // i
         74: false, // j
         75: false, // k
-        76: false, // l       
+        76: false, // l
+        67: false, // c
+        86: false, // v
         38: false, // up arrow
         37: false, // left arrow
         40: false, // down arrow

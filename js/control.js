@@ -35,6 +35,8 @@ function PlayerController(args) {
 };
 
 PlayerController.prototype.update = function(entity) {
+    var rigidBody = entity.getComponent(RigidBody);
+
     // keyboard/mouse rotation
     var dpitch = 0;
     var dyaw = 0;
@@ -63,9 +65,21 @@ PlayerController.prototype.update = function(entity) {
         entity.transform.rotate('y', dyaw, 'world');
     }
 
-    // keyboard movement
-    var rigidBody = entity.getComponent(RigidBody);
+    // toggle flying
+    if (Input.getKeyDown(86)) {
+        rigidBody.useGravity = !rigidBody.useGravity;
 
+        if (this.walkSoundPlaying) {
+            var numWalkSounds = this.walkSounds.length;
+            for (var i = 0; i < numWalkSounds; i++) {
+                this.walkSounds[i].currentTime = 0;
+                this.walkSounds[i].pause();
+            }
+            this.walkSoundPlaying = false;
+        }
+    }
+
+    // keyboard movement
     var dz = 0;
     var dy = 0;
     var dx = 0;
@@ -95,9 +109,17 @@ PlayerController.prototype.update = function(entity) {
 
         rigidBody.velocity[0] = velocity[0];
         rigidBody.velocity[2] = velocity[2];
+
+        if (!rigidBody.useGravity) {
+            rigidBody.velocity[1] = velocity[1];
+        }
     } else {
         rigidBody.velocity[0] = 0;
         rigidBody.velocity[2] = 0;
+
+        if (!rigidBody.useGravity) {
+            rigidBody.velocity[1] = 0;
+        }
     }
 
     // jumping
@@ -112,7 +134,7 @@ PlayerController.prototype.update = function(entity) {
             this.walkSounds[Math.floor(Math.random() * this.walkSounds.length)].play();
 
             this.walkSoundPlaying = true;
-        } else if (this.walkSoundPlaying && rigidBody.velocity[0] == 0 && rigidBody.velocity[1] == 0) {
+        } else if (this.walkSoundPlaying && rigidBody.velocity[0] == 0 && rigidBody.velocity[2] == 0) {
             var numWalkSounds = this.walkSounds.length;
             for (var i = 0; i < numWalkSounds; i++) {
                 this.walkSounds[i].currentTime = 0;
@@ -131,23 +153,25 @@ PlayerController.prototype.update = function(entity) {
             this.willPlayLandSound = false;
         }
     } else if (rigidBody.velocity[1] != 0) {
-        if (this.walkSoundPlaying) {
-            var numWalkSounds = this.walkSounds.length;
-            for (var i = 0; i < numWalkSounds; i++) {
-                this.walkSounds[i].currentTime = 0;
-                this.walkSounds[i].pause();
+        if (rigidBody.useGravity) {
+            if (this.walkSoundPlaying) {
+                var numWalkSounds = this.walkSounds.length;
+                for (var i = 0; i < numWalkSounds; i++) {
+                    this.walkSounds[i].currentTime = 0;
+                    this.walkSounds[i].pause();
+                }
+                this.walkSoundPlaying = false;
             }
-            this.walkSoundPlaying = false;
-        }
 
-        if (rigidBody.velocity[1] > 0) {
-            if (!this.jumpSoundPlayed) {
+            if (rigidBody.velocity[1] > 0) {
+                if (!this.jumpSoundPlayed) {
                 this.jumpSound.play();
 
                 this.jumpSoundPlayed = true;
             }
-        } else if (rigidBody.velocity[1] <= -this.jumpSpeed) {
-            this.willPlayLandSound = true;
+            } else if (rigidBody.velocity[1] <= -this.jumpSpeed) {
+                this.willPlayLandSound = true;
+            }
         }
     }
 
