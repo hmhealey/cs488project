@@ -113,21 +113,26 @@ var cube3 = new Entity({
     parent: root.transform
 });
 
-emitter = new ParticleEmitter({
+emitter = new Entity({
     name: "emitter",
-    spawnOrientation: vec3.fromValues(0, 1, 0),
-    spawnOrientationRandomness: 45,
-    minSpawnSpeed: 0.04,
-    maxSpawnSpeed: 0.12,
-    gravity: vec3.fromValues(0, -0.002, 0),
-    maxAge: 800,
-    /*pointSize: 20,
-    colour: vec4.fromValues(0.5, 0.0, 1, 1.0),*/
-    mesh: Mesh.makeCube(0.2),
-    material: new Material({
-        shininess: 10000,
-        texture: Texture.fromColour(vec4.fromValues(0.5, 0, 1, 1))
-    }),
+    components: [
+        new ParticleEmitter({
+            spawnOrientation: vec3.fromValues(0, 1, 0),
+            spawnOrientationRandomness: 45,
+            minSpawnSpeed: 0.04,
+            maxSpawnSpeed: 0.12,
+            gravity: vec3.fromValues(0, -0.002, 0),
+            maxAge: 800,
+            pointSize: 20,
+            colour: "random"
+            //colour: vec4.fromValues(0.5, 0.0, 1, 1.0),
+            /*mesh: Mesh.makeCube(0.2),
+            material: new Material({
+                texture: Texture.fromColour(vec4.fromValues(0.5, 0, 1, 1))
+            })*/
+        }),
+        new ParticleRenderer()
+    ],
     parent: cube3.transform
 });
 
@@ -363,14 +368,14 @@ var crosshair = new Entity({
     parent: camera.transform
 });
 
-var light = new Entity({
+light = new Entity({
     name: "light",
     position: vec3.fromValues(0, 2, 4),
     components: [
         new Light()
     ],
-    parent: camera.transform
-    //parent: root.transform
+    //parent: camera.transform
+    parent: root.transform
 });
 
 return new Level({root: root, mainCamera: camera, textures: textures});

@@ -7,3 +7,5 @@ function Component(args) {
 };
 
 Component.prototype.update = function() { };
+
+Component.prototype.draw = function() { };
