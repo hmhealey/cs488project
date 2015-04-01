@@ -252,6 +252,16 @@ Level.prototype.raycast = function(point, direction, hit, filter) {
         }
 
         return intersected;
+    } else {
+        return false;
+    }
+};
+
+Level.prototype.getEntityByName = function(name) {
+    if (this.root) {
+        return this.root.getEntityByName(name);
+    } else {
+        return null;
     }
 };
 

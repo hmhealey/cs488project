@@ -96,6 +96,23 @@ Entity.prototype.forEachComponent = function(type, func) {
     }
 };
 
+Entity.prototype.getEntityByName = function(name) {
+    if (this.name != name) {
+        var numChildren = this.transform.children.length;
+        for (var i = 0; i < numChildren; i++) {
+            var entity = this.transform.children[i].entity.getEntityByName(name);
+
+            if (entity) {
+                return entity;
+            }
+        }
+
+        return null;
+    } else {
+        return this;
+    }
+};
+
 Entity.prototype.destroy = function() {
     this.cleanup();
 };
