@@ -32,6 +32,10 @@ function PlayerController(args) {
 
     this.willPlayLandSound = false;
     this.landSound = new Audio(args['landSound'] || "sounds/land.wav");
+
+    this.shootSound = new Audio(args['shootSound'] || "sounds/shotgn2.wav");
+
+    this.hitSound = new Audio(args['hitSound'] || "sounds/ric2.wav");
 };
 
 PlayerController.prototype.update = function(entity) {
@@ -183,6 +187,9 @@ PlayerController.prototype.update = function(entity) {
             return collider.entity != entity && collider.entity.name != "ground" && collider.entity.name != "groundCollider";
         };
 
+        this.shootSound.currentTime = 0;
+        this.shootSound.play();
+
         // this is sketchy, but it works since the controller is no longer attached directly to the main camera
         if (level.raycast(level.mainCamera.transform.getWorldPosition(), entity.transform.getForward(), hit, filter)) {
             var collider = hit.collider;
@@ -204,6 +211,9 @@ PlayerController.prototype.update = function(entity) {
             if (!level.root.getComponent(ParticleRenderer)) {
                 level.root.addComponent(new ParticleRenderer());
             }
+
+            this.hitSound.currentTime = 0;
+            this.hitSound.play();
         }
     }
 };
