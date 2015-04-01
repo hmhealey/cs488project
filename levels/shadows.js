@@ -111,7 +111,7 @@ var crosshair = new Entity({
     parent: camera.transform
 });
 
-var light = new Entity({
+light = new Entity({
     name: "light",
     position: vec3.fromValues(0, 0.5, 0),
     components: [
@@ -122,7 +122,7 @@ var light = new Entity({
     parent: root.transform
 });
 
-var light2 = new Entity({
+light2 = new Entity({
     name: "light2",
     position: vec3.fromValues(5, 8.5, -5),
     components: [

@@ -32,20 +32,14 @@ var ayreon = new Material({
 // TODO come up with a way to construct this automatically?
 var textures = [grass.texture, red.texture, blue.texture, yellow.texture, ayreon.texture];
 
-var ground = new Entity({
+ground = new Entity({
     name: "ground",
-    mesh: Mesh.makeRectangle(40, 60),
+    mesh: Mesh.makeBox(50, 1, 60),
     material: grass,
-    position: vec3.fromValues(0, 0, 20),
-    rotation: vec3.fromValues(-90, 0, 0),
-    parent: root.transform
-});
-
-var groundCollider = new Entity({
-    name: "groundCollider",
-    position: vec3.fromValues(0, -0.5, 20),
+    position: vec3.fromValues(0, -0.5, 0),
     components: [
-        new BoxCollider({width: 40, height: 1, depth: 60})
+        new MeshRenderer(),
+        new BoxCollider({width: 50, height: 1, depth: 60})
     ],
     parent: root.transform
 });
@@ -155,6 +149,9 @@ var n1 = new Entity({
         shader: Shader.getShader("normalMap")
     }),
     position: vec3.fromValues(-10, 2, 4),
+    components: [
+        new BoxCollider({width: 4, height: 4, depth: 4})
+    ],
     parent: root.transform
 });
 
@@ -167,6 +164,9 @@ var n2 = new Entity({
         shader: phong
     }),
     position: vec3.fromValues(-10, 2, 8),
+    components: [
+        new BoxCollider({width: 4, height: 4, depth: 4})
+    ],
     parent: root.transform
 });
 
@@ -179,6 +179,9 @@ var n3 = new Entity({
         shader: phong
     }),
     position: vec3.fromValues(-10, 2, 12),
+    components: [
+        new BoxCollider({width: 4, height: 4, depth: 4})
+    ],
     parent: root.transform
 });
 
@@ -194,6 +197,9 @@ var b1 = new Entity({
         shader: Shader.getShader("blend")
     }),
     position: vec3.fromValues(10, 2, 4),
+    components: [
+        new BoxCollider({width: 4, height: 4, depth: 4})
+    ],
     parent: root.transform
 });
 
@@ -224,6 +230,9 @@ var bm1 = new Entity({
         shader: Shader.getShader("blendMap")
     }),
     position: vec3.fromValues(10, 2, 12),
+    components: [
+        new BoxCollider({width: 4, height: 4, depth: 4})
+    ],
     parent: root.transform
 });
 
@@ -236,6 +245,9 @@ var bm2 = new Entity({
         shader: phong
     }),
     position: vec3.fromValues(10, 2, 18),
+    components: [
+        new BoxCollider({width: 4, height: 4, depth: 4})
+    ],
     parent: root.transform
 });
 
@@ -248,6 +260,9 @@ var bump0 = new Entity({
         shader: phong
     }),
     position: vec3.fromValues(-6, 2, 28),
+    components: [
+        new BoxCollider({width: 4, height: 4, depth: 4})
+    ],
     parent: root.transform
 });
 
@@ -260,6 +275,9 @@ var bump1 = new Entity({
         shader: phong
     }),
     position: vec3.fromValues(-2, 2, 28),
+    components: [
+        new BoxCollider({width: 4, height: 4, depth: 4})
+    ],
     parent: root.transform
 });
 
@@ -276,6 +294,9 @@ var bump2 = new Entity({
         shader: Shader.getShader("bumpMap")
     }),
     position: vec3.fromValues(2, 2, 28),
+    components: [
+        new BoxCollider({width: 4, height: 4, depth: 4})
+    ],
     parent: root.transform
 });
 
@@ -289,6 +310,9 @@ var bump3 = new Entity({
         shader: Shader.getShader("normalMap")
     }),
     position: vec3.fromValues(6, 2, 28),
+    components: [
+        new BoxCollider({width: 4, height: 4, depth: 4})
+    ],
     parent: root.transform
 });
 
@@ -360,8 +384,19 @@ var cylinder = new Entity({
     }),
     position: vec3.fromValues(8, 3, -1),
     components: [
-        //new CylinderCollider({radius: 1, height: 2})
+        new CylinderCollider({radius: 1, height: 2})
     ],
+    parent: root.transform
+});
+
+player = new Entity({
+    name: "player",
+    position: vec3.fromValues(0, 1, 10),
+    components: [
+        new RigidBody({useGravity: true}),
+        new BoxCollider({width: 0.7, height: 1.8, depth: 0.7})
+    ],
+    controller: new PlayerController({speed: 1, rotationSpeed: 5, jumpSpeed: 2}),
     parent: root.transform
 });
 
@@ -369,21 +404,18 @@ camera = new Camera({
     name: "camera",
     fov: 45,
     near: 0.1,
-    far: 100,
-    position: vec3.fromValues(0, 2, 10),
-    rotation: vec3.fromValues(0, 0, 0),
-    components: [
-        new RigidBody({useGravity: true}),
-        new BoxCollider({width: 0.7, height: 2, depth: 0.7})
-    ],
-    parent: root.transform
+    far: Infinity,
+    position: vec3.fromValues(0, 0.5, 0),
+    parent: player.transform
 });
-camera.controller = new PlayerController({speed: 1, rotationSpeed: 5, jumpSpeed: 2});
 
 var crosshair = new Entity({
     name: "crosshair",
     mesh: Mesh.makeCircle(0.0005, 10),
-    material: grass,
+    material: new Material({
+        texture: Texture.fromColour(vec4.fromValues(0.3, 0.0, 1.0, 1.0)),
+        shader: flat
+    }),
     position: vec3.fromValues(0, 0, -0.101),
     parent: camera.transform
 });
@@ -394,8 +426,7 @@ light = new Entity({
     components: [
         new Light()
     ],
-    //parent: camera.transform
-    parent: root.transform
+    parent: camera.transform
 });
 
 return new Level({
