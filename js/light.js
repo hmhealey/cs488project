@@ -1,13 +1,16 @@
 function Light(args) {
     args = args || {};
 
-    this.entity = args['entity'] || null;
+    Component.call(this, args);
 
     this.diffuse = args['diffuse'] || vec4.fromValues(0.8, 0.8, 0.8, 1.0);
     this.specular = args['specular'] || vec4.fromValues(0.4, 0.4, 0.4, 1.0);
 
     this.falloff = args['falloff'] || vec3.fromValues(1.0, 0.0, 0.0);
 };
+
+Light.prototype = Object.create(Component.prototype);
+Light.prototype.constructor = Light;
 
 Light.prototype.update = function() { };
 
