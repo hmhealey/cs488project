@@ -9,3 +9,13 @@ function Component(args) {
 Component.prototype.update = function() { };
 
 Component.prototype.draw = function() { };
+
+Component.prototype.cleanup = function() { };
+
+Component.prototype.destroy = function() {
+    this.cleanup();
+
+    removeFromArray(this.entity.components, this);
+
+    this.entity = null;
+};
