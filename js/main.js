@@ -18,7 +18,6 @@ var TICK_RATE = 10;
 
 var onLoad = function(e) {
     var canvas = document.getElementById("canvas");
-    var asdf = document.getElementById("asdf");
 
     try {
         gl = canvas.getContext("webgl", {stencil: true}) || canvas.getContext("experimental-webgl", {stencil: true});
