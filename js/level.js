@@ -106,6 +106,8 @@ Level.prototype.draw = function() {
                     shader.setModelMatrix(occluder.entity.transform.getLocalToWorldMatrix());
                     shader.updateMatrices();
 
+                    var shadowVolume = light.getShadowVolumeFor(occluder);
+
                     // a
                     var facings = light.getFacingsFor(occluder);
 
@@ -117,55 +119,28 @@ Level.prototype.draw = function() {
                     // this is stored in a function since f is repeating this step (with some different parameters set)
                     function cd() {
                         // these names are a sign that I come from a Java background
-                        var wallVertices = light.getShadowVolumeWallVerticesFor(occluder);
-                        var numWallVertices = light.getShadowVolumeNumWallVerticesFor(occluder);
+                        var wallVertices = shadowVolume.wallVertices;
+                        var numWallVertices = shadowVolume.numWallVertices;
 
                         // c
-                        shader.bind();
                         shader.enableVertexAttribute("position", wallVertices, 4);
                         gl.drawArrays(gl.TRIANGLES, 0, numWallVertices);
-
-                        shader.bind();
-                        gl.bindBuffer(gl.ARRAY_BUFFER, quad);
-                        shader.enableVertexAttribute("position", quad, 4);
 
                         // d
                         // now draw the frontfacing faces of the occluder as the front of the shadow volume
                         // and project the backfacing faces to infinity to serve as the back of it
-                        for (var k = 0; k < numTriangles; k++) {
-                            var triangle = triangles[k];
+                        var capVertices = shadowVolume.capVertices;
+                        var numCapVertices = shadowVolume.numCapVertices;
 
-                            var a = triangle.indices[0];
-                            var b = triangle.indices[1];
-                            var c = triangle.indices[2];
+                        shader.enableVertexAttribute("position", capVertices, 4);
+                        gl.drawArrays(gl.TRIANGLES, 0, numCapVertices);
 
-                            if (!facings[triangle]) {
-                                // this face is backwards, so project it to infinity
-                                gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
-                                    mesh.vertices[3 * a] - lightPositionLocal[0],
-                                    mesh.vertices[3 * a + 1] - lightPositionLocal[1],
-                                    mesh.vertices[3 * a + 2] - lightPositionLocal[2],
-                                    0.0,
-                                    mesh.vertices[3 * b] - lightPositionLocal[0],
-                                    mesh.vertices[3 * b + 1] - lightPositionLocal[1],
-                                    mesh.vertices[3 * b + 2] - lightPositionLocal[2],
-                                    0.0,
-                                    mesh.vertices[3 * c] - lightPositionLocal[0],
-                                    mesh.vertices[3 * c + 1] - lightPositionLocal[1],
-                                    mesh.vertices[3 * c + 2] - lightPositionLocal[2],
-                                    0.0
-                                ]), gl.STREAM_DRAW);
-                            } else {
-                                // this face is forwards so render it as is
-                                gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
-                                    mesh.vertices[3 * a], mesh.vertices[3 * a + 1], mesh.vertices[3 * a + 2], 1.0,
-                                    mesh.vertices[3 * b], mesh.vertices[3 * b + 1], mesh.vertices[3 * b + 2], 1.0,
-                                    mesh.vertices[3 * c], mesh.vertices[3 * c + 1], mesh.vertices[3 * c + 2], 1.0
-                                ]), gl.STREAM_DRAW);
-                            }
+                        var baseVertices = shadowVolume.baseVertices;
+                        var numBaseVertices = shadowVolume.numBaseVertices;
 
-                            gl.drawArrays(gl.TRIANGLES, 0, 3);
-                        }
+                        shader.enableVertexAttribute("position", baseVertices, 4);
+                        gl.drawArrays(gl.TRIANGLES, 0, numBaseVertices);
+
                     };
 
                     cd();

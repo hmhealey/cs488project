@@ -106,6 +106,53 @@ Light.prototype.calculateShadowVolumesFor = function(renderer) {
             var wallVerticesBuffer = gl.createBuffer();
             gl.bindBuffer(gl.ARRAY_BUFFER, wallVerticesBuffer);
             gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(wallVertices), gl.DYNAMIC_DRAW);
+
+            // store the shadow volume cap and other end (let's call that the base) in buffers as well so that we can
+            // draw the whole shadow volume in only 3 calls
+            var capVertices = [];
+            var baseVertices = [];
+
+            for (var i = 0; i < numTriangles; i++) {
+                var triangle = triangles[i];
+
+                var a = triangle.indices[0];
+                var b = triangle.indices[1];
+                var c = triangle.indices[2];
+
+                if (facings[triangle]) {
+                    // this triangle is facing the light so it's part of the cap
+                    capVertices.push(
+                        mesh.vertices[3 * a], mesh.vertices[3 * a + 1], mesh.vertices[3 * a + 2], 1.0,
+                        mesh.vertices[3 * b], mesh.vertices[3 * b + 1], mesh.vertices[3 * b + 2], 1.0,
+                        mesh.vertices[3 * c], mesh.vertices[3 * c + 1], mesh.vertices[3 * c + 2], 1.0
+                    );
+                } else {
+                    // this triangle is facing away from the light so project it to infinity as the base
+                    baseVertices.push(
+                        mesh.vertices[3 * a] - lightPosition[0],
+                        mesh.vertices[3 * a + 1] - lightPosition[1],
+                        mesh.vertices[3 * a + 2] - lightPosition[2],
+                        0.0,
+                        mesh.vertices[3 * b] - lightPosition[0],
+                        mesh.vertices[3 * b + 1] - lightPosition[1],
+                        mesh.vertices[3 * b + 2] - lightPosition[2],
+                        0.0,
+                        mesh.vertices[3 * c] - lightPosition[0],
+                        mesh.vertices[3 * c + 1] - lightPosition[1],
+                        mesh.vertices[3 * c + 2] - lightPosition[2],
+                        0.0
+                    );
+                }
+            }
+
+            var capVerticesBuffer = gl.createBuffer();
+            gl.bindBuffer(gl.ARRAY_BUFFER, capVerticesBuffer);
+            gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(capVertices), gl.DYNAMIC_DRAW);
+
+            var baseVerticesBuffer = gl.createBuffer();
+            gl.bindBuffer(gl.ARRAY_BUFFER, baseVerticesBuffer);
+            gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(baseVertices), gl.DYNAMIC_DRAW);
+
             gl.bindBuffer(gl.ARRAY_BUFFER, null);
 
             this.shadowVolumes[name] = {
@@ -113,7 +160,11 @@ Light.prototype.calculateShadowVolumesFor = function(renderer) {
                 facings: facings,
                 silhouetteEdges: silhouetteEdges,
                 wallVertices: wallVerticesBuffer,
-                numWallVertices: wallVertices.length / 4
+                numWallVertices: wallVertices.length / 4,
+                capVertices: capVerticesBuffer,
+                numCapVertices: capVertices.length / 4,
+                baseVertices: baseVerticesBuffer,
+                numBaseVertices: baseVertices.length / 4
             };
         } else {
             this.shadowVolumes[name] = {
@@ -121,10 +172,20 @@ Light.prototype.calculateShadowVolumesFor = function(renderer) {
                 facings: [],
                 silhouetteEdges: [],
                 wallVertices: null,
-                numWallVertices: 0
+                numWallVertices: 0,
+                capVertices: null,
+                numCapVertices: 0,
+                baseVertices: null,
+                numBaseVertices: 0
             };
         }
     }
+};
+
+Light.prototype.getShadowVolumeFor = function(renderer) {
+    this.calculateShadowVolumesFor(renderer);
+
+    return this.shadowVolumes[renderer.entity.name];
 };
 
 Light.prototype.getFacingsFor = function(renderer) {
