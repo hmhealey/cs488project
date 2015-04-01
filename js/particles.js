@@ -41,7 +41,7 @@ function ParticleEmitter(args) {
     }
     this.spawnOrientationRandomness = args['spawnOrientationRandomness'] || 0;
 
-    this.gravity = args['gravity'] || vec3.fromValues(0, -0.981 / 60, 0); // 1 unit = 1 metre
+    this.gravity = args['gravity'] || vec3.fromValues(0, -9.81 / 60, 0); // 1 unit = 1 metre
 
     // we can either explicitly set the maximum number of particles or just infer it from the
     // max age and spawn rate (but pretend we spawn a bit faster than we actually do just to
