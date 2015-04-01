@@ -157,6 +157,7 @@ ParticleEmitter.prototype.spawnParticle = function() {
         // pick a random vector on the x-z plane as the axis
         var x = Math.random();
         var deltaAxis = vec3.fromValues(x, 0, Math.sqrt(1 - x * x));
+        vec3.transformQuat(deltaAxis, deltaAxis, this.spawnOrientation);
 
         // randomly flip the components of the axis so that we cover all possible axes
         if (Math.random() > 0.5) deltaAxis[0] *= -1;
