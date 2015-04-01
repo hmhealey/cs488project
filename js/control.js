@@ -196,6 +196,7 @@ PlayerController.prototype.update = function(entity) {
 
             var emitter = level.root.addComponent(new ParticleEmitter({
                 spawnOffset: hit.point,
+                spawnOrientation: hit.normal,
                 spawnOrientationRandomness: 60,
                 minSpawnSpeed: 0.4,
                 maxSpawnSpeed: 0.6,
