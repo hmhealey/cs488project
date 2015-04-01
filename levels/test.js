@@ -308,7 +308,7 @@ mover = new Entity({
         //new CylinderCollider({radius: 0.5, height: 1})
         new BoxCollider({width: 1, height: 1, depth: 1})
     ],
-    controller: {
+    /*controller: {
         update: function(entity) {
             var rigidBody = entity.getComponent(RigidBody);
 
@@ -338,7 +338,7 @@ mover = new Entity({
                 }
             }
         }
-    },
+    },*/
     parent: root.transform
 });
 
@@ -378,7 +378,7 @@ camera = new Camera({
     ],
     parent: root.transform
 });
-camera.controller = new PlayerController({speed: 1, rotationSpeed: 5});
+camera.controller = new PlayerController({speed: 1, rotationSpeed: 5, jumpSpeed: 2});
 
 var crosshair = new Entity({
     name: "crosshair",

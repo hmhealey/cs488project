@@ -4,7 +4,34 @@ function PlayerController(args) {
     this.speed = args['speed'] || 0;
     this.rotationSpeed = args['rotationSpeed'] || 0;
 
+    this.jumpSpeed = args['jumpSpeed'] || 0;
+
     this.noclip = args['noclip'] || false;
+
+    this.walkSoundPlaying = false;
+    this.walkSounds = [
+        new Audio("sounds/step1.wav"),
+        new Audio("sounds/step2.wav"),
+        new Audio("sounds/step3.wav"),
+        new Audio("sounds/step4.wav")
+    ];
+    for (var i = 0; i < this.walkSounds.length; i++) {
+        attachEvent(this.walkSounds[i], "ended", (function(controller, _i) {
+            return function() {
+                this.currentTime = 0;
+
+                var next = (_i + 1) % controller.walkSounds.length;
+                controller.walkSounds[next].currentTime = -100;
+                controller.walkSounds[next].play();
+            }
+        })(this, i));
+    }
+
+    this.jumpSoundPlayed = false;
+    this.jumpSound = new Audio(args['jumpSound'] || "sounds/plyrjmp8.wav");
+
+    this.willPlayLandSound = false;
+    this.landSound = new Audio(args['landSound'] || "sounds/land.wav");
 };
 
 PlayerController.prototype.update = function(entity) {
@@ -75,7 +102,53 @@ PlayerController.prototype.update = function(entity) {
 
     // jumping
     if (rigidBody.useGravity && rigidBody.velocity[1] == 0 && Input.getKey(32)) {
-        rigidBody.velocity[1] = 2;
+        rigidBody.velocity[1] = this.jumpSpeed;
+    }
+
+    // sound effects
+    if (rigidBody.velocity[1] == 0) {
+        // on the ground
+        if (!this.walkSoundPlaying && (rigidBody.velocity[0] != 0 || rigidBody.velocity[2] != 0)) {
+            this.walkSounds[Math.floor(Math.random() * this.walkSounds.length)].play();
+
+            this.walkSoundPlaying = true;
+        } else if (this.walkSoundPlaying && rigidBody.velocity[0] == 0 && rigidBody.velocity[1] == 0) {
+            var numWalkSounds = this.walkSounds.length;
+            for (var i = 0; i < numWalkSounds; i++) {
+                this.walkSounds[i].currentTime = 0;
+                this.walkSounds[i].pause();
+            }
+            this.walkSoundPlaying = false;
+        }
+
+        if (this.jumpSoundPlayed) {
+            this.jumpSoundPlayed = false;
+        }
+
+        if (this.willPlayLandSound) {
+            this.landSound.play();
+
+            this.willPlayLandSound = false;
+        }
+    } else if (rigidBody.velocity[1] != 0) {
+        if (this.walkSoundPlaying) {
+            var numWalkSounds = this.walkSounds.length;
+            for (var i = 0; i < numWalkSounds; i++) {
+                this.walkSounds[i].currentTime = 0;
+                this.walkSounds[i].pause();
+            }
+            this.walkSoundPlaying = false;
+        }
+
+        if (rigidBody.velocity[1] > 0) {
+            if (!this.jumpSoundPlayed) {
+                this.jumpSound.play();
+
+                this.jumpSoundPlayed = true;
+            }
+        } else if (rigidBody.velocity[1] <= -this.jumpSpeed) {
+            this.willPlayLandSound = true;
+        }
     }
 
     // interaction
