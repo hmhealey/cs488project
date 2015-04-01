@@ -156,11 +156,34 @@ PlayerController.prototype.update = function(entity) {
         var hit = new RaycastHit();
 
         var filter = function(collider) {
-            return collider.entity != entity && collider.entity.name != "groundCollider";
+            return collider.entity != entity && collider.entity.name != "ground" && collider.entity.name != "groundCollider";
         };
 
-        if (level.raycast(entity.transform.getWorldPosition(), entity.transform.getForward(), hit, filter)) {
+        // this is sketchy, but it works since the controller is no longer attached directly to the main camera
+        if (level.raycast(level.mainCamera.transform.getWorldPosition(), entity.transform.getForward(), hit, filter)) {
+            var collider = hit.collider;
+
+            var emitter = level.root.addComponent(new ParticleEmitter({
+                spawnOffset: hit.point,
+                spawnOrientationRandomness: 60,
+                minSpawnSpeed: 0.4,
+                maxSpawnSpeed: 0.6,
+                spawnRate: 25,
+                gravity: vec3.fromValues(0, -0.4, 0),
+                maxAge: 500,
+                mesh: Mesh.makeCube(0.15),
+                material: collider.entity.material
+            }));
+
+            emitter.emitFor(150, true);
+
+            if (!level.root.getComponent(ParticleRenderer)) {
+                level.root.addComponent(new ParticleRenderer());
+            }
+
             console.log("bang! you hit " + hit.collider.entity.name);
+            console.log(hit.point);
+            console.log(hit.normal);
             //hit.collider.entity.destroy();
         } else {
             console.log("bang! you missed");

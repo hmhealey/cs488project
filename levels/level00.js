@@ -33,7 +33,7 @@ ground = new Entity({
     position: vec3.fromValues(0, -0.5, 0),
     components: [
         new MeshRenderer(),
-        new BoxCollider({width: 50, height: 1, depth: 80})
+        new BoxCollider({width: 50, height: 1, depth: 60})
     ],
     parent: root.transform
 });
@@ -45,7 +45,7 @@ var stairs1 = new Entity({
     position: vec3.fromValues(-11, 0.5, -11),
     components: [
         new MeshRenderer({castsShadows: true}),
-        new BoxCollider({width: 4, height: 2, depth: 2}),
+        new BoxCollider({width: 4, height: 1, depth: 2})
     ],
     parent: root.transform
 });
@@ -57,7 +57,7 @@ var stairs2 = new Entity({
     position: vec3.fromValues(0, 1, -2),
     components: [
         new MeshRenderer({castsShadows: true}),
-        new BoxCollider({width: 4, height: 2, depth: 2}),
+        new BoxCollider({width: 4, height: 1, depth: 2})
     ],
     parent: stairs1.transform
 });
@@ -69,7 +69,7 @@ var stairs3 = new Entity({
     position: vec3.fromValues(0, 1, -2),
     components: [
         new MeshRenderer({castsShadows: true}),
-        new BoxCollider({width: 4, height: 2, depth: 2}),
+        new BoxCollider({width: 4, height: 1, depth: 2})
     ],
     parent: stairs2.transform
 });
@@ -81,7 +81,7 @@ var stairs4 = new Entity({
     position: vec3.fromValues(0, 1, -2),
     components: [
         new MeshRenderer({castsShadows: true}),
-        new BoxCollider({width: 4, height: 2, depth: 2}),
+        new BoxCollider({width: 4, height: 1, depth: 2}),
     ],
     parent: stairs3.transform
 });
@@ -126,7 +126,7 @@ var stairsPillar2 = new Entity({
 
 light = new Entity({
     name: "light",
-    position: vec3.fromValues(100, 1000, 100),
+    position: vec3.fromValues(1000, 1000, -300),
     components: [
         new Light()
     ],
@@ -140,7 +140,7 @@ player = new Entity({
     position: vec3.fromValues(0, 1, 10),
     components: [
         new RigidBody({useGravity: true}),
-        new BoxCollider({width: 0.7, height: 1, depth: 0.7})
+        new BoxCollider({width: 0.7, height: 1.8, depth: 0.7})
     ],
     controller: new PlayerController({speed: 1, rotationSpeed: 5, jumpSpeed: 2}),
     parent: root.transform
@@ -151,7 +151,7 @@ camera = new Camera({
     fov: 45,
     near: 0.1,
     far: Infinity,
-    position: vec3.fromValues(0, 1.1, 0),
+    position: vec3.fromValues(0, 0.5, 0),
     parent: player.transform
 });
 
