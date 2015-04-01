@@ -117,36 +117,27 @@ Level.prototype.draw = function() {
                     // this is stored in a function since f is repeating this step (with some different parameters set)
                     function cd() {
                         // c
-                        // look for silhouette edges (those between a frontfacing and backfacing face) since those will make up
-                        // the outside of the shadow volume when projected to infinity
-                        for (var k = 0; k < numTriangles; k++) {
-                            var triangle = triangles[k];
+                        var silhouetteEdges = light.getSilhouetteEdgesFor(occluder);
+                        var numSilhouetteEdges = silhouetteEdges.length;
 
-                            if (facings[triangle]) {
-                                var adjacent = triangles[k].getAdjacent();
+                        for (var k = 0; k < numSilhouetteEdges; k++) {
+                            var a = silhouetteEdges[k][0];
+                            var b = silhouetteEdges[k][1];
 
-                                for (var l = 0; l < 3; l++) {
-                                    if (!facings[adjacent[l]]) {
-                                        var a = triangle.indices[l];
-                                        var b = triangle.indices[(l + 1) % 3];
+                            gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
+                                mesh.vertices[3 * b], mesh.vertices[3 * b + 1], mesh.vertices[3 * b + 2], 1.0,
+                                mesh.vertices[3 * a], mesh.vertices[3 * a + 1], mesh.vertices[3 * a + 2], 1.0,
+                                mesh.vertices[3 * b] - lightPositionLocal[0],
+                                mesh.vertices[3 * b + 1] - lightPositionLocal[1],
+                                mesh.vertices[3 * b + 2] - lightPositionLocal[2],
+                                0.0,
+                                mesh.vertices[3 * a] - lightPositionLocal[0],
+                                mesh.vertices[3 * a + 1] - lightPositionLocal[1],
+                                mesh.vertices[3 * a + 2] - lightPositionLocal[2],
+                                0.0
+                            ]), gl.STREAM_DRAW);
 
-                                        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
-                                            mesh.vertices[3 * b], mesh.vertices[3 * b + 1], mesh.vertices[3 * b + 2], 1.0,
-                                            mesh.vertices[3 * a], mesh.vertices[3 * a + 1], mesh.vertices[3 * a + 2], 1.0,
-                                            mesh.vertices[3 * b] - lightPositionLocal[0],
-                                            mesh.vertices[3 * b + 1] - lightPositionLocal[1],
-                                            mesh.vertices[3 * b + 2] - lightPositionLocal[2],
-                                            0.0,
-                                            mesh.vertices[3 * a] - lightPositionLocal[0],
-                                            mesh.vertices[3 * a + 1] - lightPositionLocal[1],
-                                            mesh.vertices[3 * a + 2] - lightPositionLocal[2],
-                                            0.0
-                                        ]), gl.STREAM_DRAW);
-
-                                        gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
-                                    }
-                                }
-                            }
+                            gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
                         }
 
                         // d

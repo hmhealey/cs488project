@@ -55,24 +55,45 @@ Light.prototype.calculateShadowVolumesFor = function(renderer) {
         if (renderer.enabled && renderer.castsShadows && renderer.entity.mesh && renderer.entity.mesh.loaded) {
             var triangles = renderer.entity.mesh.getTriangles();
             var numTriangles = triangles.length;
+
+            // calculate if each triangle is facing towards or away from this light
             var facings = {};
 
-            for (var k = 0; k < numTriangles; k++) {
-                var triangle = triangles[k];
+            for (var i = 0; i < numTriangles; i++) {
+                var triangle = triangles[i];
 
                 var normal = triangle.getNormal();
                 var surfaceToLight = vec3.subtract(vec3.create(), lightPosition, triangle.getCenter());
                 facings[triangle] = vec3.dot(surfaceToLight, normal) > 0;
             }
 
+            // store pairs of indices which lie along silhouette edges (ie edges between front and back facing triangles)
+            var silhouetteEdges = [];
+
+            for (var i = 0; i < numTriangles; i++) {
+                var triangle = triangles[i];
+
+                if (facings[triangle]) {
+                    var adjacent = triangles[i].getAdjacent();
+
+                    for (var j = 0; j < 3; j++) {
+                        if (!facings[adjacent[j]]) {
+                            silhouetteEdges.push([triangle.indices[j], triangle.indices[(j + 1) % 3]]);
+                        }
+                    }
+                }
+            }
+
             this.shadowVolumes[name] = {
                 lightPosition: lightPosition,
-                facings: facings
+                facings: facings,
+                silhouetteEdges: silhouetteEdges
             };
         } else {
             this.shadowVolumes[name] = {
                 lightPosition: lightPosition,
-                facings: []
+                facings: [],
+                silhouetteEdges: []
             };
         }
     }
