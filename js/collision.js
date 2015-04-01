@@ -71,7 +71,9 @@ BoxCollider.prototype.draw = function() {
             gl.disable(gl.DEPTH_TEST);
 
             shader.bind();
-            shader.updateMatrices(level.mainCamera, this.entity.transform.getLocalToWorldMatrix());
+            shader.setCamera(level.mainCamera);
+            shader.setModelMatrix(this.entity.transform.getLocalToWorldMatrix());
+            shader.updateMatrices();
 
             shader.setUniformVector4("colour", vec4.fromValues(0.5, 0.0, 1.0, 1.0));
 
@@ -91,8 +93,8 @@ BoxCollider.prototype.draw = function() {
 };
 
 BoxCollider.prototype.raycastLocal = function(point, direction, hit) {
-    var intersected = Raycast.againstBox(-this.width / 2, this.width / 2, -this.height / 2, this.height / 2,
-                                         -this.depth / 2, this.depth / 2, point, direction, hit);
+    var intersected = Raycast.againstBox(-this.width / 2.0, this.width / 2.0, -this.height / 2.0, this.height / 2.0,
+                                         -this.depth / 2.0, this.depth / 2.0, point, direction, hit);
 
     if (intersected) {
         hit.collider = this;

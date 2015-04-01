@@ -167,6 +167,16 @@ Level.prototype.draw = function() {
         gl.depthMask(1);
 
         gl.deleteBuffer(quad);
+
+        // temporarily handle enabling collider drawing since it's not a renderer, but still needs to draw
+        if (Collider.draw) {
+            var colliders = this.root.getComponentsInChildren(Collider);
+            var numColliders = colliders.length;
+
+            for (var i = 0; i < numColliders; i++) {
+                colliders[i].draw();
+            }
+        }
     }
 };
 
