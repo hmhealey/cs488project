@@ -123,7 +123,7 @@ Level.prototype.draw = function() {
                         // c
                         shader.bind();
                         shader.enableVertexAttribute("position", wallVertices, 4);
-                        gl.drawArrays(gl.TRIANGLES, 0, numWallVertices / 3);
+                        gl.drawArrays(gl.TRIANGLES, 0, numWallVertices);
 
                         shader.bind();
                         gl.bindBuffer(gl.ARRAY_BUFFER, quad);
