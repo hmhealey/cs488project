@@ -43,7 +43,7 @@ var ground = new Entity({
 
 var groundCollider = new Entity({
     name: "groundCollider",
-    position: vec3.fromValues(0, -0.5, 0),
+    position: vec3.fromValues(0, -0.5, 20),
     components: [
         new BoxCollider({width: 40, height: 1, depth: 60})
     ],
