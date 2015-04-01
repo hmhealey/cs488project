@@ -2,6 +2,8 @@ function Renderer(args) {
     args = args || {};
 
     Component.call(this, args);
+
+    this.visible = 'visible' in args ? args['visible'] : true;
 };
 
 Renderer.prototype = Object.create(Component.prototype);
@@ -16,7 +18,6 @@ function MeshRenderer(args) {
 
     Renderer.call(this, args);
 
-    this.visible = 'visible' in args ? args['visible'] : true;
     this.castsShadows = args['castsShadows'] || false;
 };
 
