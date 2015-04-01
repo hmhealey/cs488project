@@ -97,6 +97,10 @@ vec3.transformMat4AsVector = function(out, a, m) {
     return out;
 };
 
+vec3.equals = function(a, b) {
+    return a[0] === b[0] && a[1] === b[1] && a[2] === b[2];
+};
+
 /** Sets a matrix's components to those that are provided in row-major ordering. **/
 mat4.set = function(out, a1, a2, a3, a4, b1, b2, b3, b4, c1, c2, c3, c4, d1, d2, d3, d4) {
     out[0] = a1;
@@ -141,4 +145,11 @@ mat4.infinitePerspective = function(out, fovy, aspect, near) {
     out[15] = 0;
 
     return out;
+};
+
+mat4.equals = function(a, b) {
+    return a[0] === b[0] && a[1] === b[1] && a[2] === b[2] && a[3] === b[3] &&
+           a[4] === b[4] && a[5] === b[5] && a[6] === b[6] && a[7] === b[7] &&
+           a[8] === b[8] && a[9] === b[9] && a[10] === b[10] && a[11] === b[11] &&
+           a[12] === b[12] && a[13] === b[13] && a[14] === b[14] && a[15] === b[15];
 };
