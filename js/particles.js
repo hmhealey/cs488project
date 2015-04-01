@@ -173,7 +173,6 @@ ParticleEmitter.prototype.spawnParticle = function() {
 
     // actually set particle properties
     vec3.add(this.particles[index].position, this.entity.transform.position, this.spawnOffset);
-    console.log("spawning at " + vec3.str(this.particles[index].position));
     vec3.copy(this.particles[index].velocity, velocity);
 
     this.particles[index].life = this.maxAge;

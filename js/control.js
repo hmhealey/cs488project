@@ -180,13 +180,6 @@ PlayerController.prototype.update = function(entity) {
             if (!level.root.getComponent(ParticleRenderer)) {
                 level.root.addComponent(new ParticleRenderer());
             }
-
-            console.log("bang! you hit " + hit.collider.entity.name);
-            console.log(hit.point);
-            console.log(hit.normal);
-            //hit.collider.entity.destroy();
-        } else {
-            console.log("bang! you missed");
         }
     }
 };
