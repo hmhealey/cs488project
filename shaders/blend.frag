@@ -26,12 +26,12 @@ varying vec2 fTexCoord4;
 varying vec4 fTexWeights;
 
 void main() {
-    vec4 ambient = materialAmbient * lightAmbient;
-    vec4 diffuse = materialDiffuse * lightDiffuse *
-                   (fTexWeights.x * texture2D(texture, fTexCoord) +
-                    fTexWeights.y * texture2D(texture2, fTexCoord2) +
-                    fTexWeights.z * texture2D(texture3, fTexCoord3) + 
-                    fTexWeights.w * texture2D(texture4, fTexCoord4));
+    vec4 tex = fTexWeights.x * texture2D(texture, fTexCoord) +
+               fTexWeights.y * texture2D(texture2, fTexCoord2) +
+               fTexWeights.z * texture2D(texture3, fTexCoord3) + 
+               fTexWeights.w * texture2D(texture4, fTexCoord4);
+    vec4 ambient = materialAmbient * tex * lightAmbient;
+    vec4 diffuse = materialDiffuse * tex * lightDiffuse;
     vec4 specular = materialSpecular * lightSpecular;
     float shininess = materialShininess;
 

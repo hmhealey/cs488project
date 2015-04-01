@@ -30,12 +30,12 @@ void main() {
     // fourth texture coordinate for this
     vec3 texWeights = normalize(texture2D(blendMap, fTexCoord4).rgb);
 
-    vec4 ambient = materialAmbient * lightAmbient;
-    vec4 diffuse = materialDiffuse * lightDiffuse *
-                   (texWeights.r * texture2D(texture, fTexCoord) +
-                    texWeights.g * texture2D(texture2, fTexCoord2) +
-                    texWeights.b * texture2D(texture3, fTexCoord3) +
-                    vec4(0.0, 0.0, 0.0, 1.0)); 
+    vec4 tex = texWeights.r * texture2D(texture, fTexCoord) +
+               texWeights.g * texture2D(texture2, fTexCoord2) +
+               texWeights.b * texture2D(texture3, fTexCoord3) +
+               vec4(0.0, 0.0, 0.0, 1.0); 
+    vec4 ambient = materialAmbient * tex * lightAmbient;
+    vec4 diffuse = materialDiffuse * tex * lightDiffuse;
     vec4 specular = materialSpecular * lightSpecular;
     float shininess = materialShininess;
 

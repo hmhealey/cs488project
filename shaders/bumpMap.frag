@@ -29,7 +29,7 @@ void main() {
     float bv = 2.0 * (texture2D(bumpMap, fTexCoord + vec2(0, delta)).x - texture2D(bumpMap, fTexCoord).x);
     vec3 normal = normalize(fNormal + bu * fTangent - bv * fBittangent);
 
-    vec4 ambient = materialAmbient * lightAmbient;
+    vec4 ambient = materialAmbient * texture2D(texture, fTexCoord) * lightAmbient;
     vec4 diffuse = materialDiffuse * texture2D(texture, fTexCoord) * lightDiffuse;
     vec4 specular = materialSpecular * lightSpecular;
     float shininess = materialShininess;

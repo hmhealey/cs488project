@@ -27,7 +27,7 @@ void main() {
     mat3 tangentToImageSpace = mat3(fTangent, fBittangent, fNormal);
     vec3 normal = normalize(tangentToImageSpace * (texture2D(normalMap, fTexCoord).rgb * 2.0 - 1.0));
 
-    vec4 ambient = materialAmbient * lightAmbient;
+    vec4 ambient = materialAmbient * texture2D(texture, fTexCoord) * lightAmbient;
     vec4 diffuse = materialDiffuse * texture2D(texture, fTexCoord) * lightDiffuse;
     vec4 specular = materialSpecular * lightSpecular;
     float shininess = materialShininess;

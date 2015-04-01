@@ -117,4 +117,9 @@ var light2 = new Entity({
     parent: root.transform
 });
 
-return new Level({root: root, mainCamera: camera, textures: textures});
+return new Level({
+    root: root,
+    mainCamera: camera,
+    textures: textures,
+    ambient: vec4.fromValues(0.15, 0.15, 0.15, 1.0)
+});

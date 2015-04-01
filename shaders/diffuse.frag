@@ -16,7 +16,7 @@ varying vec3 fNormal;
 varying vec2 fTexCoord;
 
 void main() {
-    vec4 ambient = materialAmbient * lightAmbient;
+    vec4 ambient = materialAmbient * texture2D(texture, fTexCoord) * lightAmbient;
     vec4 diffuse = materialDiffuse * texture2D(texture, fTexCoord) * lightDiffuse;
 
     // lightPosition is already in view space
