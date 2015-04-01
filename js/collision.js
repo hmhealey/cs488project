@@ -132,8 +132,6 @@ BoxCollider.prototype.collidesWith = function(other, delta) {
         var otherFront = otherWorldPosition[2] + other.depth / 2;
 
         return right > otherLeft && left < otherRight && top > otherBottom && bottom < otherTop && front > otherBack && back < otherFront;
-    } else if (other instanceof CylinderCollider) {
-        
     } else {
         console.log(this.entity.name + " is unable to collide with " + other.entity.name);
         return false;
