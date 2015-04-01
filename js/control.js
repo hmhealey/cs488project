@@ -101,7 +101,7 @@ PlayerController.prototype.update = function(entity) {
     }
 
     // jumping
-    if (rigidBody.useGravity && rigidBody.velocity[1] == 0 && Input.getKey(32)) {
+    if (rigidBody.useGravity && rigidBody.velocity[1] == 0 && Input.getKeyDown(32)) {
         rigidBody.velocity[1] = this.jumpSpeed;
     }
 
