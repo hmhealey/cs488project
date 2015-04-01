@@ -135,7 +135,7 @@ BoxCollider.prototype.collidesWith = function(other, delta) {
 
         return right > otherLeft && left < otherRight && top > otherBottom && bottom < otherTop && front > otherBack && back < otherFront;
     } else {
-        console.log(this.entity.name + " is unable to collide with " + other.entity.name);
+        //console.log(this.entity.name + " is unable to collide with " + other.entity.name);
         return false;
     }
 };
