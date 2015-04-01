@@ -16,11 +16,15 @@ function ParticleEmitter(args) {
 
     var time = getTime();
     this.spawnEnd = 'spawnDuration' in args ? time + args['spawnDuration'] : 0;
+    this.destroyAfterSpawning = args['destroyAfterSpawning'] || false;
+
     this.lastSpawn = time;
     this.spawnRate = args['spawnRate'] || 10;
 
     this.minSpawnSpeed = args['minSpawnSpeed'] || args['spawnSpeed'] || 1;
     this.maxSpawnSpeed = args['maxSpawnSpeed'] || args['spawnSpeed'] || 1;
+
+    this.spawnOffset = args['spawnOffset'] || vec3.create();
 
     if ('spawnOrientation' in args) {
         if (args['spawnOrientation'].length == 3) {
@@ -62,7 +66,7 @@ function ParticleEmitter(args) {
     this.colours = new Float32Array(this.maxParticleCount * 4);
 };
 
-ParticleEmitter.prototype = Object.create(Entity.prototype);
+ParticleEmitter.prototype = Object.create(Component.prototype);
 ParticleEmitter.prototype.constructor = ParticleEmitter;
 
 ParticleEmitter.prototype.update = function(time) {
@@ -75,8 +79,8 @@ ParticleEmitter.prototype.update = function(time) {
 
         // only bother updating the particle if it's alive
         if (particle.life > 0) {
-            vec3.add(particle.position, particle.position, particle.velocity);
-            vec3.add(particle.velocity, particle.velocity, this.gravity);
+            vec3.scaleAndAdd(particle.position, particle.position, particle.velocity, 1 / TICK_RATE);
+            vec3.scaleAndAdd(particle.velocity, particle.velocity, this.gravity, 1 / TICK_RATE);
 
             particle.life -= TICK_RATE;
 
@@ -103,6 +107,10 @@ ParticleEmitter.prototype.update = function(time) {
 
             this.lastSpawn += this.spawnRate;
         }
+    } else {
+        if (this.destroyAfterSpawning && this.particleCount == 0) {
+            this.destroy();
+        }
     }
 };
 
@@ -112,7 +120,7 @@ ParticleEmitter.prototype.cleanup = function(shader) {
     }
 
     if (this.colourBuffer != null) {
-        gl.deleteBuffers(this.colourBuffer);
+        gl.deleteBuffer(this.colourBuffer);
     }
 };
 
@@ -164,7 +172,8 @@ ParticleEmitter.prototype.spawnParticle = function() {
     vec3.scale(velocity, velocity, (this.maxSpawnSpeed - this.minSpawnSpeed) * Math.random() + this.minSpawnSpeed);
 
     // actually set particle properties
-    vec3.copy(this.particles[index].position, this.entity.transform.position);
+    vec3.add(this.particles[index].position, this.entity.transform.position, this.spawnOffset);
+    console.log("spawning at " + vec3.str(this.particles[index].position));
     vec3.copy(this.particles[index].velocity, velocity);
 
     this.particles[index].life = this.maxAge;
@@ -176,15 +185,17 @@ ParticleEmitter.prototype.spawnParticle = function() {
     }
 };
 
-ParticleEmitter.prototype.emitFor = function(spawnDuration) {
+ParticleEmitter.prototype.emitFor = function(spawnDuration, destroyAfterSpawning) {
     var time = getTime();
     this.spawnEnd = time + spawnDuration;
     this.lastSpawn = time;
+    this.destroyAfterSpawning = destroyAfterSpawning || false;
 };
 
-ParticleEmitter.prototype.emitUntil = function(spawnEnd) {
+ParticleEmitter.prototype.emitUntil = function(spawnEnd, destoryAfterSpawning) {
     this.spawnEnd = spawnEnd;
     this.lastSpawn = getTime();
+    this.destroyAfterSpawning = destroyAfterSpawning || false;
 };
 
 ParticleEmitter.prototype.startEmitting = function() {
@@ -213,88 +224,92 @@ ParticleRenderer.prototype = Object.create(Renderer.prototype);
 ParticleRenderer.prototype.constructor = ParticleRenderer;
 
 ParticleRenderer.prototype.draw = function(light, ambient) {
-    var emitter = this.entity.getComponent(ParticleEmitter);
+    var emitters = this.entity.getComponents(ParticleEmitter);
+    var numEmitters = emitters.length;
+
+    for (var i = 0; i < numEmitters; i++) {
+        this.drawFor(emitters[i], light, ambient);
+    }
+};
+
+ParticleRenderer.prototype.drawFor = function(emitter, light, ambient) {
     var mesh = emitter.mesh;
     var material = emitter.material;
 
-    if (emitter) {
-        var shader;
-        if (mesh) {
-            if (material.shininess) {
-                shader = Shader.getShader("particles/phong");
-            } else {
-                shader = Shader.getShader("particles/diffuse");
-            }
+    var shader;
+    if (mesh) {
+        if (material.shininess) {
+            shader = Shader.getShader("particles/phong");
         } else {
-            shader = Shader.getShader("particles/point");
-        }
-
-        if (emitter.particleCount > 0 && shader.linked) {
-            shader.bind();
-
-            // super sketchy setup of camera
-            shader.setCamera(level.mainCamera);
-
-            // set model matrix
-            shader.setModelMatrix(this.entity.transform.getLocalToWorldMatrix());
-
-            shader.updateMatrices();
-
-            // update particle properties
-            shader.enableVertexAttribute("offset", emitter.offsetBuffer);
-            gl.bufferData(gl.ARRAY_BUFFER, emitter.positions.subarray(0, emitter.particleCount * 3), gl.STREAM_DRAW);
-
-            if (material) {
-                material.apply(shader);
-            } else {
-                shader.enableVertexAttribute("colour", emitter.colourBuffer, 4);
-                gl.bufferData(gl.ARRAY_BUFFER, emitter.colours.subarray(0, emitter.particleCount * 4), gl.STREAM_DRAW);
-            }
-
-            if (light) {
-                light.apply(shader, ambient);
-            } else {
-                Light.applyNoLight(shader, ambient);
-            }
-
-            if (mesh) {
-                // set up the attributes that are per-instance (and shared by all vertices)
-                ext.vertexAttribDivisorANGLE(shader.getAttributeLocation("offset"), 1);
-
-                mesh.enableAttributes(shader);
-
-                // slightly duplicates mesh code, but that's okay for now since I don't want to deal with
-                // this extension all over the place
-                if (!mesh.indexBuffer) {
-                    ext.drawArraysInstancedANGLE(mesh.type, 0, emitter.mesh.numVertices, emitter.particleCount);
-                } else {
-                    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, mesh.indexBuffer);
-
-                    ext.drawElementsInstancedANGLE(mesh.type, mesh.numIndices, gl.UNSIGNED_INT, 0, emitter.particleCount);
-
-                    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
-                }
-
-                mesh.disableAttributes(shader);
-
-                // for some reason, we need to disable these or it affects other shaders somehow
-                ext.vertexAttribDivisorANGLE(shader.getAttributeLocation("offset"), 0);
-
-                if (!material) {
-                    ext.vertexAttribDivisorANGLE(shader.getAttributeLocation("colour"), 0);
-                }
-            } else {
-                shader.setUniformFloat("pointSize", emitter.pointSize);
-
-                gl.drawArrays(gl.POINTS, 0, emitter.particleCount);
-            }
-
-            shader.disableVertexAttribute("offset");
-            gl.bindBuffer(gl.ARRAY_BUFFER, null);
-
-            shader.release();
+            shader = Shader.getShader("particles/diffuse");
         }
     } else {
-        console.log("ParticleRenderer.draw - " + this.entity.name + " has no ParticleEmitter attached");
+        shader = Shader.getShader("particles/point");
+    }
+
+    if (emitter.particleCount > 0 && shader.linked) {
+        shader.bind();
+
+        // super sketchy setup of camera
+        shader.setCamera(level.mainCamera);
+
+        // set model matrix
+        shader.setModelMatrix(this.entity.transform.getLocalToWorldMatrix());
+
+        shader.updateMatrices();
+
+        // update particle properties
+        shader.enableVertexAttribute("offset", emitter.offsetBuffer);
+        gl.bufferData(gl.ARRAY_BUFFER, emitter.positions.subarray(0, emitter.particleCount * 3), gl.STREAM_DRAW);
+
+        if (material) {
+            material.apply(shader);
+        } else {
+            shader.enableVertexAttribute("colour", emitter.colourBuffer, 4);
+            gl.bufferData(gl.ARRAY_BUFFER, emitter.colours.subarray(0, emitter.particleCount * 4), gl.STREAM_DRAW);
+        }
+
+        if (light) {
+            light.apply(shader, ambient);
+        } else {
+            Light.applyNoLight(shader, ambient);
+        }
+
+        if (mesh) {
+            // set up the attributes that are per-instance (and shared by all vertices)
+            ext.vertexAttribDivisorANGLE(shader.getAttributeLocation("offset"), 1);
+
+            mesh.enableAttributes(shader);
+
+            // slightly duplicates mesh code, but that's okay for now since I don't want to deal with
+            // this extension all over the place
+            if (!mesh.indexBuffer) {
+                ext.drawArraysInstancedANGLE(mesh.type, 0, emitter.mesh.numVertices, emitter.particleCount);
+            } else {
+                gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, mesh.indexBuffer);
+
+                ext.drawElementsInstancedANGLE(mesh.type, mesh.numIndices, gl.UNSIGNED_INT, 0, emitter.particleCount);
+
+                gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
+            }
+
+            mesh.disableAttributes(shader);
+
+            // for some reason, we need to disable these or it affects other shaders somehow
+            ext.vertexAttribDivisorANGLE(shader.getAttributeLocation("offset"), 0);
+
+            if (!material) {
+                ext.vertexAttribDivisorANGLE(shader.getAttributeLocation("colour"), 0);
+            }
+        } else {
+            shader.setUniformFloat("pointSize", emitter.pointSize);
+
+            gl.drawArrays(gl.POINTS, 0, emitter.particleCount);
+        }
+
+        shader.disableVertexAttribute("offset");
+        gl.bindBuffer(gl.ARRAY_BUFFER, null);
+
+        shader.release();
     }
 };
