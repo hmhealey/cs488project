@@ -1,0 +1,67 @@
+/*****************************************
+ * Harrison Healey - hmhealey - 20376857 *
+ *****************************************/
+
+Running:
+    To run this application, start a web server in the current directory and navigate to index.html. The simplest way to do this is to navigate to the
+    current directory in terminal and then run Python's built-in web server.
+    $ python -m SimpleHTTPServer
+
+    You will then be able to access the game at http://localhost:8000/index.html
+
+    When loading the game, you can specify a level to load by adding ?level=LEVEL to the end of the url (eg. http://localhost:8000/index.html?level=test).
+    A description of each level follows. By default, level00 is loaded if none are specified.
+        level00 - A test level demonstrating hierarchical scene nodes, texture mapping, multitexturing, particle emitters, dynamic shadows, and collision
+        test - A test level demonstrating hierarchical scene nodes, texture mapping, multitexturing, normal mapping, bump mapping, and collision
+        shadows - A test level demonstrating dynamic shadows and non-primitive meshes
+
+Controls:
+    In any of the provided levels, the player is able to navigate using standard first-person shooter controls (WASD to move forward, backward, and
+    strafe) and they can turn using either arrow keys or the mouse. To enable mouse turning, you must click on the canvas to lock the mouse. As is standard,
+    the player may left click to shoot at an object or press the space bar to jump. The V key may be used to toggle the ability for the player to fly.
+    When flying, the player will move parallel to the camera's view direction when moving forwards or backwards.
+
+    In summary,
+        WASD - move
+        arrow keys/mouse - look
+        left mouse - shoot/interact
+        space - jump
+        V - toggle flying
+        P - pause/unpause the game
+
+Objectives:
+    1. Modeling a scene
+        This can be seen in any of the provided levels.
+    2. First-person shooter user interface
+        This can be seen in any of the provided levels. See controls for more information.
+    3. Static collision detection
+        This is most easy to see in level00. The structure directly in front of the player when they spawn supports full collision detection. NOTE THAT
+        NOT ALL SURFACES CAN BE COLLIDED WITH. To see which objects will collide with the player, open the JavaScript debug console and enter the following:
+        $ Collider.draw = true;
+    4. Texture mapping
+        This is visible in level00 and test.
+    5. Multitexturing
+        This is visible in level00. See the multicoloured cubes to the right of the player. The faces on these cubes are rendered with a blend of 3 or 4 textures.
+    6. Bump mapping
+        This is visible in test. Directly behind the player, there are four cubes. From the left, these display a normal mapped surface, a bump mapped surface,
+        a flat surface, and a flat surface textured with the bump map.
+    7. Sound effects
+        These are audible in any level. They can be triggered by walking, jumping, falling, shooting into the sky (no ricochet sound), and shooting at a
+        collidable surface (ricochet sound).
+    8. Particle emitters (emitting points)
+        This is visible in level00. Shoot at the balloon-textured cube on top of the structure for it to emit point particles.
+    9. Particle emitters (emitting meshes)
+        This is visbile in any level. Shoot at any collidable surface for it to release cubes textured to match the surface.
+    10. Dynamic shadows
+        This is visible in shadows and level00, but it is best observable in shadows. The lights may be moved by entering the following commands in the
+        JavaScript debug console (where X, Y, and Z are the desired position deltas):
+        $ light.entity.transform.translate(vec3.fromValues(X, Y, Z));
+        $ light2.entity.transform.translate(vec3.fromValues(X, Y, Z));
+
+Extra features:
+    1. Raycasting
+    2. Normal mapping
+    3. Loading OBJ files
+    4. Coloured lights
+    5. Multiple light sources
+    6. Entity-Component System
