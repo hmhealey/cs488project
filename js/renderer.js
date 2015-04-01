@@ -26,7 +26,7 @@ MeshRenderer.prototype.constructor = MeshRenderer;
 MeshRenderer.prototype.draw = function(light, ambient) {
     var shader = this.entity.material.apply();
 
-    if (shader) {
+    if (shader && this.entity.mesh && this.entity.mesh.loaded) {
         // TODO come up with a better way to set/store the camera
         shader.setModelMatrix(this.entity.transform.getLocalToWorldMatrix());
         shader.setCamera(level.mainCamera);

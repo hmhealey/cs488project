@@ -29,6 +29,8 @@ var requestFile = function(url, callback, errorCallback) {
             } else {
                 if (errorCallback) {
                     errorCallback(url, request.status);
+                } else {
+                    console.log("requestFile - Unable to load resource at " + url + " due to " + request.status + " response");
                 }
             }
         }

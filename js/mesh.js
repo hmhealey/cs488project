@@ -33,6 +33,8 @@ function Mesh(type) {
 
     this.trianglesDirty = false;
     this.dirty = false;
+
+    this.loaded = true;
 };
 
 Mesh.prototype.cleanup = function() {
@@ -129,7 +131,6 @@ Mesh.prototype.setVertices = function(vertices) {
 Mesh.prototype.setNormals = function(normals) {
     this.normals = new Float32Array(normals);
 
-    this.trianglesDirty = true;
     this.dirty = true;
 };
 
@@ -219,6 +220,7 @@ Mesh.prototype.getTriangles = function() {
             var numTriangles = this.indices.length / 3;
 
             // hopefully we shouldn't be regenerating this too often
+            console.log(numTriangles);
             this.triangles = new Array(numTriangles);
 
             for (var i = 0; i < numTriangles; i++) {
@@ -232,7 +234,7 @@ Mesh.prototype.getTriangles = function() {
             console.log("Mesh.getTriangles - Unable to generate triangles for a mesh that isn't of type gl.TRIANGLES.");
         }
 
-        for (var i = 0; i < numTriangles; i++) {
+        /*for (var i = 0; i < numTriangles; i++) {
             var triangle = this.triangles[i];
             var adjacent = triangle.getAdjacent();
 
@@ -248,10 +250,49 @@ Mesh.prototype.getTriangles = function() {
                         ") (" + this.vertices[3 * c] + ", " + this.vertices[3 * c + 1] + ", " + this.vertices[3 * c + 2] + ")");
             console.log("normal: " + vec3.str(triangle.getNormal()));
             console.log("adjacent: (" + adjacent[0] + ") (" + adjacent[1] + ") (" + adjacent[2] + ")");
-        }
+        }*/
     }
 
     return this.triangles;
+};
+
+Mesh.prototype.calculateNormals = function() {
+    var normals = [];
+
+    var triangles = this.getTriangles();
+    var numTriangles = triangles.length;
+
+    // populate an array with each vertex's normal being the sum of all faces including it
+    for (var i = 0; i < numTriangles; i++) {
+        var triangle = triangles[i];
+        var normal = triangle.getNormal();
+
+        for (var j = 0; j < 3; j++) {
+            normals[3 * triangle.indices[j]] = (normals[3 * triangle.indices[j]] || 0) + normal[0];
+            normals[3 * triangle.indices[j] + 1] = (normals[3 * triangle.indices[j] + 1] || 0) + normal[0];
+            normals[3 * triangle.indices[j] + 2] = (normals[3 * triangle.indices[j] + 2] || 0) + normal[0];
+        }
+    }
+
+    // and then go through and normalize each of the normals
+    var numNormals = normals.length;
+    for (var i = 0; i < numNormals; i++) {
+        var x = normals[3 * i];
+        var y = normals[3 * i + 1];
+        var z = normals[3 * i + 2];
+
+        var len = x * x + y * y + z * z;
+
+        if (len > 0) {
+            len = 1 / Math.sqrt(len);
+
+            normals[3 * i] *= len;
+            normals[3 * i + 1] *= len;
+            normals[3 * i + 2] *= len;
+        }
+    }
+
+    this.setNormals(normals);
 };
 
 Mesh.makeSquare = function(size) {
@@ -710,6 +751,95 @@ Mesh.makeCylinder = function(radius, height, resolution) {
     mesh.setTexCoords3(texCoords);
     mesh.setTexCoords4(texCoords);
     mesh.setIndices(indices);
+
+    return mesh;
+};
+
+Mesh.fromObjPath = function(path) {
+    var mesh = new Mesh();
+    mesh.loaded = false;
+
+    var callback = (function(_mesh) {
+        return function(text) {
+            var vertices = [];
+            var normals = [];
+            var texCoords = [];
+            var indices = [];
+
+            var lines = text.split("\n");
+            var numLines = lines.length;
+
+            for (var i = 0; i < numLines; i++) {
+                var line = lines[i];
+
+                if (line.startsWith("v ")) {
+                    var coords = line.split(" ");
+
+                    vertices.push(parseFloat(coords[1]));
+                    vertices.push(parseFloat(coords[2]));
+                    vertices.push(parseFloat(coords[3]));
+
+                    if (coords.length > 4) {
+                        console.log("Mesh.fromObjPath - Mesh contains vertices with w coordinate specified");
+                    }
+                } else if (line.startsWith("f ")) {
+                    // note that vertex indices in the obj file are 1-based
+                    var elements = line.split(" ");
+
+                    if (elements.length == 4) {
+                        // just a triangular face
+                        indices.push(parseInt(elements[1]) - 1);
+                        indices.push(parseInt(elements[2]) - 1);
+                        indices.push(parseInt(elements[3]) - 1);
+                    } else if (elements.length == 5) {
+                        // quad face (that will be split into two faces in our mesh)
+                        var a = parseInt(elements[1]) - 1;
+                        var b = parseInt(elements[2]) - 1;
+                        var c = parseInt(elements[3]) - 1;
+                        var d = parseInt(elements[4]) - 1;
+
+                        indices.push(a);
+                        indices.push(b);
+                        indices.push(c);
+                        indices.push(c);
+                        indices.push(b);
+                        indices.push(d);
+                    } else {
+                        console.log("Mesh.fromObjPath - Mesh contains face with " + (elements.length - 1) + " indices");
+                    }
+                }
+            }
+
+            if (vertices.length > 0) {
+                _mesh.setVertices(vertices);
+            }
+
+            if (indices.length > 0) {
+                _mesh.setIndices(indices);
+            }
+
+            if (normals.length > 0) {
+                _mesh.setNormals(normals);
+            } else {
+                _mesh.calculateNormals();
+            }
+
+            if (texCoords.length > 0) {
+                _mesh.setTexCoords(texCoords);
+                _mesh.setTexCoords2(texCoords);
+                _mesh.setTexCoords3(texCoords);
+                _mesh.setTexCoords4(texCoords);
+            }
+
+            _mesh.updateBuffers();
+
+            _mesh.loaded = true;
+            console.log(_mesh);
+            console.log("loaded");
+        };
+    })(mesh);
+
+    requestFile("meshes/" + path, callback);
 
     return mesh;
 };

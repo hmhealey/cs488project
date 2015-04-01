@@ -87,7 +87,7 @@ Level.prototype.draw = function() {
             // C
             // for each occluder
             for (var j = 0; j < numRenderers; j++) {
-                if (renderers[j].castsShadows && renderers[j].entity.mesh) {
+                if (renderers[j].castsShadows && renderers[j].entity.mesh && renderers[j].entity.mesh.loaded) {
                     var occluder = renderers[j];
                     var mesh = occluder.entity.mesh;
 
