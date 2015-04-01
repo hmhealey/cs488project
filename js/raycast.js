@@ -92,7 +92,7 @@ Raycast.againstBox = function(left, right, bottom, top, back, front, point, dire
     }
 
     if (t != Infinity) {
-        vec3.copy(result.point, point);
+        vec3.copy(result.point, hit);
         vec3.copy(result.normal, normal);
         result.t = t;
 
@@ -220,8 +220,5 @@ RaycastHit.prototype.transform = function(transform, inverse) {
     vec3.transformMat4(this.point, this.point, transform);
 
     // transforming the normal involves using the transpose of transform
-    var normal = vec4.fromValues(this.normal[0], this.normal[1], this.normal[2], 0);
-    vec4.transformMat4(normal, normal, inverse);
-    vec3.set(this.normal, normal[0], normal[1], normal[2]);
-    vec3.normalize(this.normal, this.normal);
+    vec3.transformMat4AsVector(this.normal, this.normal, inverse);
 }
